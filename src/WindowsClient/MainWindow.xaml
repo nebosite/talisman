@@ -8,11 +8,11 @@
         BorderBrush="Transparent"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        Title="MainWindow" Height="98.955" Width="89.257" WindowStyle="None" ShowInTaskbar="False" 
+        Title="MainWindow" Height="177.355" Width="156.457" WindowStyle="None" ShowInTaskbar="False" 
         Topmost="True"
         Background="Transparent">
-    <Grid>
-        <Ellipse Fill="Red" Width="80" Height="90"></Ellipse>
-
+    <Grid Margin="0,0,0.6,0.2">
+        <Image x:Name="Glow"  Source="Assets/Glow.png" Width="150"></Image>
+        <Image Source="Assets/MainObject.png" Width="80"></Image>
     </Grid>
 </Window>

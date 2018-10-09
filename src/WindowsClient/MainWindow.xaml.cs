@@ -35,7 +35,7 @@ namespace Talisman
             {
                 this.Left -= 2;
                 this.Top += 1;
-
+                Glow.Opacity = (Math.Sin(frame / 20) + 1) / 2;
             }
         }
     }
