@@ -13,6 +13,12 @@
         Background="Transparent">
     <Grid Margin="0,0,0.6,0.2">
         <Image x:Name="Glow"  Source="Assets/Glow.png" Width="150"></Image>
-        <Image Source="Assets/MainObject.png" Width="80"></Image>
+        <Image x:Name="Stone"
+            Source="Assets/MainObject.png" Width="80" VerticalAlignment="Center"
+               MouseDown="HandleMouseDown"
+               MouseMove="HandleMouseMove"
+               MouseUp="HandleMouseUp"
+
+               ></Image>
     </Grid>
 </Window>
