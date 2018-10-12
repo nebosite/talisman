@@ -14,12 +14,20 @@ using System.Windows.Shapes;
 
 namespace Talisman
 {
+    // --------------------------------------------------------------------------
     /// <summary>
     /// Interaction logic for SettingsForm.xaml
     /// </summary>
+    // --------------------------------------------------------------------------
     public partial class SettingsForm : Window
     {
         AppModel _appModel;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// ctor
+        /// </summary>
+        // --------------------------------------------------------------------------
         public SettingsForm(AppModel appModel)
         {
             _appModel = appModel;
@@ -27,6 +35,11 @@ namespace Talisman
             this.DataContext = appModel;
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// 
+        /// </summary>
+        // --------------------------------------------------------------------------
         private void QuickTimerClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;

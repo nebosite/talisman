@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using Talisman.Properties;
 
 namespace Talisman
 {
@@ -42,6 +44,19 @@ namespace Talisman
             _xCorrection = 1.0/source.CompositionTarget.TransformToDevice.M11;
             _yCorrection = 1.0/source.CompositionTarget.TransformToDevice.M22;
             _settingsWindow = new SettingsForm(_theModel);
+
+            var locationSetting = Settings.Default.Location;
+            if(!string.IsNullOrEmpty(locationSetting))
+            {
+                var location = JsonConvert.DeserializeObject<Point>(locationSetting);
+                this.Left = location.X;
+                this.Top = location.Y;
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Settings.Default.Save();
         }
 
         int frame = 0;
@@ -96,12 +111,17 @@ namespace Talisman
                 _settingsWindow.Top = this.Top;
                 _settingsWindow.Show();
             }
+            else if(_dragging)
+            {
+                Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
+                Settings.Default.Save();
+            }
             _dragging = false;
             Stone.ReleaseMouseCapture();
         }
 
 
-
+        
      
     }
 }
