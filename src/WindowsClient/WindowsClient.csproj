@@ -102,5 +102,8 @@
     <Resource Include="Assets\Glow.png" />
     <Resource Include="Assets\MainObject.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="TODO.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

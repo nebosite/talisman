@@ -1,0 +1,20 @@
+﻿TODO
+        [x] Give it a shadow
+        [ ] Click it to set a quick timer
+        [ ] Always show time to next event
+        [ ] Hover over time to see text for next event
+        [ ] Whenever it goes off:
+            [ ] Flashes
+            [ ] Moves to center of main screen
+            [ ] shows expired time
+            [ ] Clicking resets and it goes back to where it started
+            [ ] Play etherial sound
+        [ ] Calendar button to set up calendar access
+            [ ] Read from outlook calendar
+            [ ] Read from internet calendar
+        [ ] Custom button for quick times
+        [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
+            https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
+        [ ] Snipping tool
+            [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
+        [ ] Kick off screen saver & lock machine
