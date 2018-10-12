@@ -2,7 +2,8 @@
         [x] Give it a shadow
         [x] Click it to set a quick timer
         [x] Always show time to next event
-        [ ] Hover over time to see text for next event
+        [x] Hover over time to see text for next event
+		[ ] Remember where we left it
         [ ] Whenever it goes off:
             [ ] Flashes
             [ ] Moves to center of main screen

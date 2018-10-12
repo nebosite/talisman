@@ -19,6 +19,7 @@
                MouseDown="HandleMouseDown"
                MouseMove="HandleMouseMove"
                MouseUp="HandleMouseUp"
+               ToolTip="{Binding TimerName}"
                ></Image>
         <Label Content="{Binding TimeRemainingText}" Padding="0" HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
                Foreground="#80000000"/>

@@ -25,6 +25,17 @@ namespace Talisman
 
         public string TimeRemainingText => TimeRemaining.ToString(@"hh\:mm\:ss");
 
+        string _timerName = "No Timers Are Active.";
+        public string TimerName
+        {
+            get => _timerName;
+            set
+            {
+                _timerName = value;
+                NotifyPropertyChanged(nameof(TimerName));
+            }
+        }
+
         public AppModel()
         {
             _tickTimer = new Timer();
@@ -41,7 +52,8 @@ namespace Talisman
 
         internal void StartTimer(double minutes)
         {
-            _endTime = DateTime.Now.AddMinutes(minutes);   
+            _endTime = DateTime.Now.AddMinutes(minutes);
+            TimerName = $"QuickTimer {minutes.ToString(".0")} min";
         }
     }
 }
