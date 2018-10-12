@@ -1,0 +1,21 @@
+﻿<Window x:Class="Talisman.SettingsForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Talisman"
+        mc:Ignorable="d"
+        Topmost="True"
+        Title="SettingsForm" Height="97.945" Width="344.521" WindowStyle="ToolWindow">
+    <Grid>
+        <StackPanel Orientation="Horizontal" Height="30">
+            <Label Content="Quick Timer:" />
+            <Button Content="1 min" Tag="1" Click="QuickTimerClick" />
+            <Button Content="5 min" Tag="5" Click="QuickTimerClick" />
+            <Button Content="10 min" Tag="10" Click="QuickTimerClick" />
+            <Button Content="15 min" Tag="15" Click="QuickTimerClick" />
+            <Button Content="30 min" Tag="30" Click="QuickTimerClick" />
+            <Button Content="60 min" Tag="60" Click="QuickTimerClick" />
+        </StackPanel>
+    </Grid>
+</Window>

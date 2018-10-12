@@ -26,11 +26,14 @@ namespace Talisman
         double _xCorrection;
         double _yCorrection;
 
+        AppModel _theModel = new AppModel();
+
         public MainWindow()
         {
             InitializeComponent();
             CompositionTarget.Rendering += CompositionTarget_Rendering;
             this.Loaded += MainWindow_Loaded;
+            this.DataContext = _theModel;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -38,6 +41,7 @@ namespace Talisman
             var source = PresentationSource.FromVisual((Window)sender);
             _xCorrection = 1.0/source.CompositionTarget.TransformToDevice.M11;
             _yCorrection = 1.0/source.CompositionTarget.TransformToDevice.M22;
+            _settingsWindow = new SettingsForm(_theModel);
         }
 
         int frame = 0;
@@ -45,8 +49,6 @@ namespace Talisman
         {
             if(frame == 0)
             {
-
-
             }
             frame++;
             //if (frame % 3 == 0)
@@ -59,12 +61,14 @@ namespace Talisman
 
 
         bool _dragging = false;
+        double _dragDelta = 0;
         Point _lastMousePosition;
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 _dragging = true;
+                _dragDelta = 0;
                 _lastMousePosition = this.PointToScreen(Mouse.GetPosition(this));
                 Stone.CaptureMouse();
             }
@@ -77,13 +81,21 @@ namespace Talisman
                 var newPosition = this.PointToScreen(Mouse.GetPosition(this));
                 this.Left += (newPosition.X - _lastMousePosition.X) * _xCorrection;
                 this.Top += (newPosition.Y - _lastMousePosition.Y) * _yCorrection;
+                _dragDelta += (_lastMousePosition - newPosition).Length;
                 _lastMousePosition = newPosition;
 
             }
         }
 
+        Window _settingsWindow;
         private void HandleMouseUp(object sender, MouseButtonEventArgs e)
         {
+            if(_dragDelta < 3)
+            {
+                _settingsWindow.Left = this.Left;
+                _settingsWindow.Top = this.Top;
+                _settingsWindow.Show();
+            }
             _dragging = false;
             Stone.ReleaseMouseCapture();
         }

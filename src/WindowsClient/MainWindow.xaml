@@ -19,7 +19,8 @@
                MouseDown="HandleMouseDown"
                MouseMove="HandleMouseMove"
                MouseUp="HandleMouseUp"
-
                ></Image>
+        <Label Content="{Binding TimeRemainingText}" Padding="0" HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
+               Foreground="#80000000"/>
     </Grid>
 </Window>

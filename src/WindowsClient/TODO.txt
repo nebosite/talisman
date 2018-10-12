@@ -1,7 +1,7 @@
 ﻿TODO
         [x] Give it a shadow
-        [ ] Click it to set a quick timer
-        [ ] Always show time to next event
+        [x] Click it to set a quick timer
+        [x] Always show time to next event
         [ ] Hover over time to see text for next event
         [ ] Whenever it goes off:
             [ ] Flashes
