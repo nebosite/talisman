@@ -37,7 +37,7 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// 
+        /// Start a quick timer
         /// </summary>
         // --------------------------------------------------------------------------
         private void QuickTimerClick(object sender, RoutedEventArgs e)

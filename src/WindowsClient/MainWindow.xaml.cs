@@ -20,24 +20,47 @@ using Talisman.Properties;
 
 namespace Talisman
 {
+    // --------------------------------------------------------------------------
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// The main interaction window
     /// </summary>
+    // --------------------------------------------------------------------------
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Correction values for dealing with magnified screens
+        /// </summary>
         double _xCorrection;
         double _yCorrection;
 
+        /// <summary>
+        /// App model
+        /// </summary>
         AppModel _theModel = new AppModel();
 
+        /// <summary>
+        /// The settings window
+        /// </summary>
+        Window _settingsWindow;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// ctor
+        /// </summary>
+        // --------------------------------------------------------------------------
         public MainWindow()
         {
             InitializeComponent();
-            CompositionTarget.Rendering += CompositionTarget_Rendering;
+            CompositionTarget.Rendering += AnimateFrame;
             this.Loaded += MainWindow_Loaded;
             this.DataContext = _theModel;
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Stuff to do when we know about the display mode
+        /// </summary>
+        // --------------------------------------------------------------------------
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var source = PresentationSource.FromVisual((Window)sender);
@@ -54,30 +77,36 @@ namespace Talisman
             }
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Stuff to do when we are done
+        /// </summary>
+        // --------------------------------------------------------------------------
         protected override void OnClosing(CancelEventArgs e)
         {
             Settings.Default.Save();
         }
 
-        int frame = 0;
-        private void CompositionTarget_Rendering(object sender, EventArgs e)
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Animations Handled here
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AnimateFrame(object sender, EventArgs e)
         {
-            if(frame == 0)
-            {
-            }
-            frame++;
-            //if (frame % 3 == 0)
-            //{
-            //    this.Left -= 2;
-            //    this.Top += 1;
-            //    Glow.Opacity = (Math.Sin(frame / 20) + 1) / 2;
-            //}
         }
 
 
         bool _dragging = false;
         double _dragDelta = 0;
         Point _lastMousePosition;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Mouse Down
+        /// </summary>
+        // --------------------------------------------------------------------------
+
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
@@ -89,6 +118,11 @@ namespace Talisman
             }
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Mouse Move
+        /// </summary>
+        // --------------------------------------------------------------------------
         private void HandleMouseMove(object sender, MouseEventArgs e)
         {
             if (_dragging)
@@ -102,7 +136,11 @@ namespace Talisman
             }
         }
 
-        Window _settingsWindow;
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Mouse Up
+        /// </summary>
+        // --------------------------------------------------------------------------
         private void HandleMouseUp(object sender, MouseButtonEventArgs e)
         {
             if(_dragDelta < 3)

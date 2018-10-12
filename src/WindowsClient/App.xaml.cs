@@ -8,9 +8,11 @@ using System.Windows;
 
 namespace Talisman
 {
+    // --------------------------------------------------------------------------
     /// <summary>
-    /// Interaction logic for App.xaml
+    /// The Application
     /// </summary>
+    // --------------------------------------------------------------------------
     public partial class App : Application
     {
     }

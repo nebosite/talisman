@@ -7,12 +7,19 @@ using System.Timers;
 
 namespace Talisman
 {
+    // --------------------------------------------------------------------------
+    /// <summary>
+    /// The Application Model
+    /// </summary>
+    // --------------------------------------------------------------------------
     public class AppModel : BaseModel
     {
         DateTime _endTime;
         Timer _tickTimer; 
 
-
+        /// <summary>
+        /// Time remaining on current timer
+        /// </summary>
         public TimeSpan TimeRemaining
         {
             get
@@ -23,8 +30,14 @@ namespace Talisman
             }
         }
 
+        /// <summary>
+        /// Text view of time remaining
+        /// </summary>
         public string TimeRemainingText => TimeRemaining.ToString(@"hh\:mm\:ss");
 
+        /// <summary>
+        /// Name of the current active timer
+        /// </summary>
         string _timerName = "No Timers Are Active.";
         public string TimerName
         {
@@ -32,24 +45,40 @@ namespace Talisman
             set
             {
                 _timerName = value;
+                if(_timerName == null) _timerName = "No Timers Are Active.";
                 NotifyPropertyChanged(nameof(TimerName));
             }
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// ctor
+        /// </summary>
+        // --------------------------------------------------------------------------
         public AppModel()
         {
             _tickTimer = new Timer();
-            _tickTimer.Elapsed += _tickTimer_Elapsed;
+            _tickTimer.Elapsed += TimerTick;
             _tickTimer.Interval = 200;
             _tickTimer.Start();
         }
 
-        private void _tickTimer_Elapsed(object sender, ElapsedEventArgs e)
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Do this while the timer is going
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void TimerTick(object sender, ElapsedEventArgs e)
         {
             NotifyPropertyChanged(nameof(TimeRemaining));
             NotifyPropertyChanged(nameof(TimeRemainingText));
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Start a timer for some span of time
+        /// </summary>
+        // --------------------------------------------------------------------------
         internal void StartTimer(double minutes)
         {
             _endTime = DateTime.Now.AddMinutes(minutes);
