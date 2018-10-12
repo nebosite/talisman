@@ -95,7 +95,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\shadow.png" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\Glow.png" />
     <Resource Include="Assets\MainObject.png" />
