@@ -41,6 +41,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\ScreenHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\AppModel.cs" />
     <Compile Include="Controls\SettingsForm.xaml.cs">
@@ -80,8 +83,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\NotificationWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\NotificationWidget.xaml.cs">
+      <DependentUpon>NotificationWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TimerInstance.cs" />
+    <Compile Include="Models\NotificationData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

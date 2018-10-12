@@ -1,0 +1,16 @@
+﻿<Window x:Class="Talisman.NotificationWidget"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Talisman"
+        BorderBrush="Transparent"
+        ResizeMode="NoResize"
+        AllowsTransparency="True"
+        Title="Talisman" Height="88.4" Width="218.857" WindowStyle="None" ShowInTaskbar="False" 
+        Topmost="True"
+        Background="Transparent">
+    <Grid  Background="#a0FFFFFF">
+        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" MouseDown="HandleClick" Padding="20" />
+    </Grid>
+</Window>

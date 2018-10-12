@@ -54,7 +54,36 @@ namespace Talisman
             CompositionTarget.Rendering += AnimateFrame;
             this.Loaded += MainWindow_Loaded;
             this.DataContext = _theModel;
+            _theModel.OnNotification += HandleNewNotification;
         }
+
+        List<Window> _notificationWindows = new List<Window>();
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Notification handling - make a little animation to alert the user
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void HandleNewNotification(NotificationData data)
+        {
+            Dispatcher.InvokeAsync(() =>
+            {
+                var newWidget = new NotificationWidget(data);
+                newWidget.Top = Top;
+                newWidget.Left = Left;
+                newWidget.Closing += (sender, args) =>
+                {
+                    lock(_notificationWindows)
+                    {
+                        _notificationWindows.Remove(newWidget);
+                    }
+                };
+                newWidget.Show();
+                lock(_notificationWindows)
+                {
+                    _notificationWindows.Add(newWidget);
+                }
+            });
+       }
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -75,6 +104,9 @@ namespace Talisman
                 this.Left = location.X;
                 this.Top = location.Y;
             }
+
+            var screenArea = ScreenHelper.MainScreen.WorkingArea;
+            _gravitationCenter = new Point(screenArea.Left + screenArea.Width/2, screenArea.Top + screenArea.Height/2);
         }
 
         // --------------------------------------------------------------------------
@@ -87,6 +119,11 @@ namespace Talisman
             Settings.Default.Save();
         }
 
+        DateTime _startTime = DateTime.Now;
+        Point _gravitationCenter;
+        int _frame = 0;
+        int _frameSkip = 3;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Animations Handled here
@@ -94,6 +131,32 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void AnimateFrame(object sender, EventArgs e)
         {
+            _frame++;
+            if (_frame % _frameSkip != 0) return;
+
+            var t = (DateTime.Now - _startTime).TotalSeconds;
+
+            /// Move the target center around in a big circle
+            var cx = _gravitationCenter.X + 300 * Math.Cos(t / 5);
+            var cy = _gravitationCenter.Y + 300 * Math.Sin(t / 5);
+
+            Window[] itemsToMove;
+            lock(_notificationWindows)
+            {
+                itemsToMove = _notificationWindows.ToArray();
+            }
+
+            foreach(var moveMe in itemsToMove)
+            {
+                var wx = moveMe.Left + moveMe.ActualWidth/2;
+                var wy = moveMe.Top + moveMe.ActualHeight / 2;
+                var deltaVector = new Vector(cx - wx, cy - wy);
+                if (deltaVector.Length < 5) continue;
+
+                deltaVector = (deltaVector / deltaVector.Length) * 5;
+                moveMe.Left += deltaVector.X;
+                moveMe.Top += deltaVector.Y;
+            }
         }
 
 

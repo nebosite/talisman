@@ -10,6 +10,7 @@
     <Grid>
         <StackPanel Orientation="Horizontal" Height="30">
             <Label Content="Quick Timer:" />
+            <Button Content="TEST" Tag=".005" Click="QuickTimerClick" />
             <Button Content="1 min" Tag="1" Click="QuickTimerClick" />
             <Button Content="5 min" Tag="5" Click="QuickTimerClick" />
             <Button Content="10 min" Tag="10" Click="QuickTimerClick" />

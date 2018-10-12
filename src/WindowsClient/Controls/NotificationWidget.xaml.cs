@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,46 +16,33 @@ namespace Talisman
 {
     // --------------------------------------------------------------------------
     /// <summary>
-    /// Interaction logic for SettingsForm.xaml
+    /// The Notification widget is the thing that flies around that you have
+    /// to click on to kill
     /// </summary>
     // --------------------------------------------------------------------------
-    public partial class SettingsForm : Window
+    public partial class NotificationWidget : Window
     {
-        AppModel _appModel;
+        NotificationData _data;
 
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public SettingsForm(AppModel appModel)
+        public NotificationWidget(NotificationData data)
         {
-            _appModel = appModel;
             InitializeComponent();
-            this.DataContext = appModel;
+            this.DataContext = data;
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Closing 
+        /// Click handling
         /// </summary>
         // --------------------------------------------------------------------------
-        protected override void OnClosing(CancelEventArgs e)
+        private void HandleClick(object sender, MouseButtonEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
-        }
-
-        // --------------------------------------------------------------------------
-        /// <summary>
-        /// Start a quick timer
-        /// </summary>
-        // --------------------------------------------------------------------------
-        private void QuickTimerClick(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            _appModel.StartTimer(double.Parse(button.Tag.ToString()));
-            this.Hide();
+            this.Close();
         }
     }
 }
