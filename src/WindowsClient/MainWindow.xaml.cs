@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -134,11 +135,11 @@ namespace Talisman
             _frame++;
             if (_frame % _frameSkip != 0) return;
 
+            var stepSize = 10;
+            var radius = 400;
+
             var t = (DateTime.Now - _startTime).TotalSeconds;
 
-            /// Move the target center around in a big circle
-            var cx = _gravitationCenter.X + 300 * Math.Cos(t / 5);
-            var cy = _gravitationCenter.Y + 300 * Math.Sin(t / 5);
 
             Window[] itemsToMove;
             lock(_notificationWindows)
@@ -146,16 +147,27 @@ namespace Talisman
                 itemsToMove = _notificationWindows.ToArray();
             }
 
-            foreach(var moveMe in itemsToMove)
+            var theta = 0.0;
+            var thetaDelta = itemsToMove.Length > 0 ? (Math.PI * 2) / itemsToMove.Length : 1;
+            foreach (var moveMe in itemsToMove)
             {
-                var wx = moveMe.Left + moveMe.ActualWidth/2;
+                var thisTheta = theta + t / 5;
+                /// Move the target center around in a big circle
+                var cx = (_gravitationCenter.X + radius * Math.Cos(thisTheta)) * _xCorrection;
+                var cy =( _gravitationCenter.Y + radius * Math.Sin(thisTheta)) * _yCorrection;
+
+                var wx = moveMe.Left + moveMe.ActualWidth / 2;
                 var wy = moveMe.Top + moveMe.ActualHeight / 2;
                 var deltaVector = new Vector(cx - wx, cy - wy);
-                if (deltaVector.Length < 5) continue;
 
-                deltaVector = (deltaVector / deltaVector.Length) * 5;
+
+                if (deltaVector.Length > stepSize)
+                {
+                    deltaVector = (deltaVector / deltaVector.Length) * stepSize;
+                }
                 moveMe.Left += deltaVector.X;
                 moveMe.Top += deltaVector.Y;
+                theta += thetaDelta;
             }
         }
 
