@@ -7,6 +7,8 @@ NOW
 
 
 NEW
+	[ ] Snooze button on notifications
+		- Stop making notification rotate, just move quickly to a designated spot and pulsate
 
 SOON
     [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx

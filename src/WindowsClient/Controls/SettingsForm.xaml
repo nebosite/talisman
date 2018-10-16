@@ -6,8 +6,10 @@
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
         Topmost="True"
-        Title="SettingsForm" Height="293.945" Width="482.921" WindowStyle="ToolWindow">
+        Title="Talisman Settings" Height="293.945" Width="482.921" WindowStyle="ToolWindow">
     <Grid>
+        <TabControl>
+            <TabItem Header="Active Timers" >
         <StackPanel Margin="10">
             <StackPanel Orientation="Horizontal" Margin="5">
                 <Label Width="100" HorizontalContentAlignment="Right" Content="Quick Timer:" />
@@ -31,5 +33,12 @@
             </StackPanel>
 
         </StackPanel>
+                
+            </TabItem>
+            <TabItem Header="Calendar" >
+
+            </TabItem>
+
+        </TabControl>
     </Grid>
 </Window>
