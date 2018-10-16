@@ -11,10 +11,12 @@ namespace Talisman
     /// An Instance of a timer 
     /// </summary>
     // --------------------------------------------------------------------------
-    class TimerInstance : BaseModel
+    public class TimerInstance : BaseModel
     {
         public DateTime EndsAt { get; set; }
         public string Name { get; set; }
+
+        public string EndsAtText => EndsAt.ToString(@"hh\:mm tt");
 
         // --------------------------------------------------------------------------
         /// <summary>

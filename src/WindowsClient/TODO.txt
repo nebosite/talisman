@@ -1,16 +1,14 @@
 ﻿TODO
 
-
-
-
-NEW
-	[ ] Regularly remember timers in case of crash
-
-SOON
-	[ ] In the settings window, show a list of upcoming timers
+NOW
     [ ] Calendar button to set up calendar access
         [ ] Read from outlook calendar
         [ ] Read from internet calendar
+
+
+NEW
+
+SOON
     [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
         https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
     [ ] Snipping tool
@@ -21,9 +19,12 @@ SOON
 LATER
 	[ ] When restoring location, make sure the Talisman is visible
 	[ ] Make sure the settings form is fully visible each time it shows
+	[ ] Regularly remember timers in case of crash
+		- Only resurrect them if still active for today
 
 
-DONE
+DONE  ==================================================================================================
+	[x] In the settings window, show a list of upcoming timers
     [x] Give it a shadow
     [x] Click it to set a quick timer
     [x] Always show time to next event

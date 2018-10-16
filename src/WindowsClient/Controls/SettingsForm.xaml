@@ -6,22 +6,28 @@
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
         Topmost="True"
-        Title="SettingsForm" Height="293.945" Width="433.321" WindowStyle="ToolWindow">
+        Title="SettingsForm" Height="293.945" Width="482.921" WindowStyle="ToolWindow">
     <Grid>
         <StackPanel Margin="10">
-            <StackPanel Orientation="Horizontal" Margin="10">
-                <Label Width="120" HorizontalContentAlignment="Right" Content="Timer Name:" />
-                <TextBox x:Name="TimerNameBox" MinWidth="100" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100" HorizontalContentAlignment="Right" Content="Quick Timer:" />
+                <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" />
+                <Button Width="20" Content="1" Tag="1" Click="QuickTimerClick" />
+                <Button Width="20" Content="5" Tag="5" Click="QuickTimerClick" />
+                <Button Width="20" Content="10" Tag="10" Click="QuickTimerClick" />
+                <Button Width="20" Content="15" Tag="15" Click="QuickTimerClick" />
+                <Button Width="20" Content="30" Tag="30" Click="QuickTimerClick" />
+                <Button Width="20" Content="60" Tag="60" Click="QuickTimerClick" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="10">
-                <Label Content="Quick Timer:" />
-                <!--<Button Content="TEST" Tag=".005" Click="QuickTimerClick" />-->
-                <Button Content="1 min" Tag="1" Click="QuickTimerClick" />
-                <Button Content="5 min" Tag="5" Click="QuickTimerClick" />
-                <Button Content="10 min" Tag="10" Click="QuickTimerClick" />
-                <Button Content="15 min" Tag="15" Click="QuickTimerClick" />
-                <Button Content="30 min" Tag="30" Click="QuickTimerClick" />
-                <Button Content="60 min" Tag="60" Click="QuickTimerClick" />
+            <StackPanel Margin="5">
+                <Label Content="Active Timers" />
+                <ListView ItemsSource="{Binding ActiveTimers}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <local:TimerDetailsWidget />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
 
         </StackPanel>

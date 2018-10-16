@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace Talisman
         /// <summary>
         /// Current Timer properties
         /// </summary>
-        public TimeSpan CurrentTimeRemaining=> (_activeTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - _activeTimers[0].EndsAt;
+        public TimeSpan CurrentTimeRemaining=> (ActiveTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - ActiveTimers[0].EndsAt;
         public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
-        public string CurrentTimerName => (_activeTimers.Count == 0) ? "No Timers Are Active." : _activeTimers[0].Name;
+        public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Name + $" ({ActiveTimers[0].EndsAt.ToString(@"hh\:mm tt")})";
 
 
         string _quickTimerName = "Quick Timer";
@@ -45,7 +46,7 @@ namespace Talisman
         /// <summary>
         /// All the timers
         /// </summary>
-        private List<TimerInstance> _activeTimers = new List<TimerInstance>();
+        public ObservableCollection<TimerInstance> ActiveTimers { get; set; } = new ObservableCollection<TimerInstance>();
 
 
         // --------------------------------------------------------------------------
@@ -68,13 +69,13 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void TimerTick(object sender, ElapsedEventArgs e)
         {
-            if (_activeTimers.Count == 0) return;
+            if (ActiveTimers.Count == 0) return;
 
-            var finishedTimers = _activeTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
+            var finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
             foreach(var timer in finishedTimers)
             {
                 OnNotification.Invoke(new NotificationData($"Times up!  {timer.Name}"));
-                _activeTimers.Remove(timer);
+                ActiveTimers.Remove(timer);
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
@@ -88,8 +89,18 @@ namespace Talisman
         internal void StartTimer(double minutes)
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
-            var timerName = $"{QuickTimerName} {minutes.ToString(".0")} min, ({endTime.ToString(@"hh\:mm tt")})";
-            _activeTimers.Add(new TimerInstance(endTime, timerName));
+            var timerName = $"{QuickTimerName} [{minutes.ToString(".0")} min]";
+            var newTimer = new TimerInstance(endTime, timerName);
+            for(int i = 0; i < ActiveTimers.Count; i++)
+            {
+                if(newTimer.EndsAt < ActiveTimers[i].EndsAt)
+                {
+                    ActiveTimers.Insert(i, newTimer);
+                    newTimer = null;
+                    break;
+                }
+            }
+            if(newTimer != null) ActiveTimers.Add(newTimer);
             NotifyAllPropertiesChanged();
         }
     }
