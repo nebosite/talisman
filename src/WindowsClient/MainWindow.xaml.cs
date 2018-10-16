@@ -42,7 +42,7 @@ namespace Talisman
         /// <summary>
         /// The settings window
         /// </summary>
-        Window _settingsWindow;
+        SettingsForm _settingsWindow;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -222,7 +222,7 @@ namespace Talisman
             {
                 _settingsWindow.Left = this.Left;
                 _settingsWindow.Top = this.Top;
-                _settingsWindow.Show();
+                _settingsWindow.Popup();
             }
             else if(_dragging)
             {

@@ -21,9 +21,21 @@ namespace Talisman
         /// <summary>
         /// Current Timer properties
         /// </summary>
-        public TimeSpan TimeRemaining=> (_activeTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - _activeTimers[0].EndsAt;
-        public string TimeRemainingText => TimeRemaining.ToString(@"hh\:mm\:ss\.f");
-        public string TimerName => (_activeTimers.Count == 0) ? "No Timers Are Active." : _activeTimers[0].Name;
+        public TimeSpan CurrentTimeRemaining=> (_activeTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - _activeTimers[0].EndsAt;
+        public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
+        public string CurrentTimerName => (_activeTimers.Count == 0) ? "No Timers Are Active." : _activeTimers[0].Name;
+
+
+        string _quickTimerName = "Quick Timer";
+        public string QuickTimerName
+        {
+            get => _quickTimerName;
+            set
+            {
+                _quickTimerName = value;
+                NotifyPropertyChanged(nameof(QuickTimerName));
+            }
+        }
 
         /// <summary>
         /// Timer notifications
@@ -64,8 +76,8 @@ namespace Talisman
                 OnNotification.Invoke(new NotificationData($"Times up!  {timer.Name}"));
                 _activeTimers.Remove(timer);
             }
-            NotifyPropertyChanged(nameof(TimeRemaining));
-            NotifyPropertyChanged(nameof(TimeRemainingText));
+            NotifyPropertyChanged(nameof(CurrentTimeRemaining));
+            NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
         }
 
         // --------------------------------------------------------------------------
@@ -76,8 +88,9 @@ namespace Talisman
         internal void StartTimer(double minutes)
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
-            var timerName = $"QuickTimer {minutes.ToString(".0")} min";
+            var timerName = $"{QuickTimerName} {minutes.ToString(".0")} min, ({endTime.ToString(@"hh\:mm tt")})";
             _activeTimers.Add(new TimerInstance(endTime, timerName));
+            NotifyAllPropertiesChanged();
         }
     }
 }

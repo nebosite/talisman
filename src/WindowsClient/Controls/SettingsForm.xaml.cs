@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,36 @@ namespace Talisman
             _appModel = appModel;
             InitializeComponent();
             this.DataContext = appModel;
+            this.IsVisibleChanged += SettingsForm_IsVisibleChanged;
+        }
+
+
+        bool _justActivated = false;
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// When we get shown
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void SettingsForm_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(_justActivated)
+            {
+                Debug.WriteLine("Focusing");
+                TimerNameBox.Focus();
+                TimerNameBox.SelectAll();
+                _justActivated = false;
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Bring up the form for User input 
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void Popup()
+        {
+            _justActivated = true;
+            Show();
         }
 
         // --------------------------------------------------------------------------

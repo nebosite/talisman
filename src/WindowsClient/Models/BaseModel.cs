@@ -25,5 +25,19 @@ namespace Talisman
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Quick and dirty way to refresh the model
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void NotifyAllPropertiesChanged()
+        {
+            foreach(var property in this.GetType().GetProperties())
+            {
+                NotifyPropertyChanged(property.Name);
+            }
+        }
     }
 }
