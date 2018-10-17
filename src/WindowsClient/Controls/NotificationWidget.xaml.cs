@@ -44,5 +44,22 @@ namespace Talisman
         {
             this.Close();
         }
+
+        DateTime _startTime = DateTime.Now;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Click handling
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void Animate()
+        {
+            var delta = (Math.Cos((DateTime.Now - _startTime).TotalSeconds * 5) + 1) / 2;
+            byte bigDelta = (byte)(255 * delta);
+            byte partDelta = (byte)(127 * delta);
+
+            var brush = new SolidColorBrush(Color.FromArgb(127, partDelta, bigDelta, bigDelta));
+            MyBorder.BorderBrush = brush;
+        }
     }
 }

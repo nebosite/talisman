@@ -37,7 +37,7 @@ namespace Talisman
         /// <summary>
         /// App model
         /// </summary>
-        AppModel _theModel = new AppModel();
+        AppModel _theModel;
 
         /// <summary>
         /// The settings window
@@ -51,6 +51,11 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public MainWindow()
         {
+            _theModel = new AppModel((runme) =>
+            {
+                Dispatcher.Invoke(runme);
+            });
+
             InitializeComponent();
             CompositionTarget.Rendering += AnimateFrame;
             this.Loaded += MainWindow_Loaded;
@@ -58,7 +63,7 @@ namespace Talisman
             _theModel.OnNotification += HandleNewNotification;
         }
 
-        List<Window> _notificationWindows = new List<Window>();
+        List<NotificationWidget> _notificationWindows = new List<NotificationWidget>();
         // --------------------------------------------------------------------------
         /// <summary>
         /// Notification handling - make a little animation to alert the user
@@ -135,13 +140,13 @@ namespace Talisman
             _frame++;
             if (_frame % _frameSkip != 0) return;
 
-            var stepSize = 10;
+            var stepSize = 1;
             var radius = 400;
 
             var t = (DateTime.Now - _startTime).TotalSeconds;
 
 
-            Window[] itemsToMove;
+            NotificationWidget[] itemsToMove;
             lock(_notificationWindows)
             {
                 itemsToMove = _notificationWindows.ToArray();
@@ -151,7 +156,8 @@ namespace Talisman
             var thetaDelta = itemsToMove.Length > 0 ? (Math.PI * 2) / itemsToMove.Length : 1;
             foreach (var moveMe in itemsToMove)
             {
-                var thisTheta = theta + t / 5;
+                moveMe.Animate();
+                var thisTheta = theta + t / 15;
                 /// Move the target center around in a big circle
                 var cx = (_gravitationCenter.X + radius * Math.Cos(thisTheta)) * _xCorrection;
                 var cy =( _gravitationCenter.Y + radius * Math.Sin(thisTheta)) * _yCorrection;
@@ -161,9 +167,9 @@ namespace Talisman
                 var deltaVector = new Vector(cx - wx, cy - wy);
 
 
-                if (deltaVector.Length > stepSize)
+                if (deltaVector.Length > stepSize * 50)
                 {
-                    deltaVector = (deltaVector / deltaVector.Length) * stepSize;
+                    deltaVector = (deltaVector / deltaVector.Length) * stepSize * 50;
                 }
                 moveMe.Left += deltaVector.X;
                 moveMe.Top += deltaVector.Y;

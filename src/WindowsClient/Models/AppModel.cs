@@ -48,14 +48,15 @@ namespace Talisman
         /// </summary>
         public ObservableCollection<TimerInstance> ActiveTimers { get; set; } = new ObservableCollection<TimerInstance>();
 
-
+        Action<Action> _dispatch;
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public AppModel()
+        public AppModel(Action<Action> dispatch)
         {
+            _dispatch = dispatch;
             _tickTimer = new Timer();
             _tickTimer.Elapsed += TimerTick;
             _tickTimer.Interval = 100;
@@ -75,7 +76,11 @@ namespace Talisman
             foreach(var timer in finishedTimers)
             {
                 OnNotification.Invoke(new NotificationData($"Times up!  {timer.Name}"));
-                ActiveTimers.Remove(timer);
+                _dispatch(() =>
+                {
+                    ActiveTimers.Remove(timer);
+
+                });
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));

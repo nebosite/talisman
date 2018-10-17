@@ -10,7 +10,9 @@
         Title="Talisman" Height="88.4" Width="218.857" WindowStyle="None" ShowInTaskbar="False" 
         Topmost="True"
         Background="Transparent">
-    <Grid  Background="#a0FFFFFF">
-        <TextBlock Text="{Binding Message}" TextWrapping="Wrap" MouseDown="HandleClick" Padding="20" />
+    <Grid  Background="Transparent">
+        <Border x:Name="MyBorder" BorderThickness="5" BorderBrush="Red" CornerRadius="20"  Background="#a0FFFFFF">
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" MouseDown="HandleClick" Padding="20" />
+        </Border>
     </Grid>
 </Window>
