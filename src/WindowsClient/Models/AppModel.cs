@@ -38,6 +38,17 @@ namespace Talisman
             }
         }
 
+        string _customQuickTime = "60";
+        public string CustomQuickTime
+        {
+            get => _customQuickTime;
+            set
+            {
+                _customQuickTime = value;
+                NotifyPropertyChanged(nameof(CustomQuickTime));
+            }
+        }
+
         /// <summary>
         /// Timer notifications
         /// </summary>

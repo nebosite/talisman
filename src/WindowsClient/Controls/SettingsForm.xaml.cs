@@ -86,7 +86,18 @@ namespace Talisman
         private void QuickTimerClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            _appModel.StartTimer(double.Parse(button.Tag.ToString()));
+
+            var minutes = 10.0;
+            if(button.Tag.ToString() == "Custom")
+            {
+                double.TryParse(_appModel.CustomQuickTime, out minutes);
+            }
+            else
+            {
+                double.TryParse(button.Tag.ToString(), out minutes);
+            }
+            
+            _appModel.StartTimer(minutes);
             this.Hide();
         }
     }

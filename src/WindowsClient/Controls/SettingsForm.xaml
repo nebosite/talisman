@@ -6,35 +6,36 @@
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
         Topmost="True"
-        Title="Talisman Settings" Height="293.945" Width="482.921" WindowStyle="ToolWindow">
+        Title="Talisman Settings" Height="359.545" Width="562.121" WindowStyle="ToolWindow">
     <Grid>
         <TabControl>
             <TabItem Header="Active Timers" >
-        <StackPanel Margin="10">
-            <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="100" HorizontalContentAlignment="Right" Content="Quick Timer:" />
-                <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" />
-                <Button Width="20" Content="T" Tag=".01" Click="QuickTimerClick" />
-                <Button Width="20" Content="1" Tag="1" Click="QuickTimerClick" />
-                <Button Width="20" Content="5" Tag="5" Click="QuickTimerClick" />
-                <Button Width="20" Content="10" Tag="10" Click="QuickTimerClick" />
-                <Button Width="20" Content="15" Tag="15" Click="QuickTimerClick" />
-                <Button Width="20" Content="30" Tag="30" Click="QuickTimerClick" />
-                <Button Width="20" Content="60" Tag="60" Click="QuickTimerClick" />
-            </StackPanel>
-            <StackPanel Margin="5">
-                <Label Content="Active Timers" />
-                <ListView ItemsSource="{Binding ActiveTimers}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <local:TimerDetailsWidget />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-            </StackPanel>
+                <StackPanel Margin="10">
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Label Width="100" HorizontalContentAlignment="Right" Content="Quick Timer:" />
+                        <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" />
+                        <Button Width="20" Content="T" Tag=".01" Click="QuickTimerClick" />
+                        <Button Width="20" Content="1" Tag="1" Click="QuickTimerClick" />
+                        <Button Width="20" Content="5" Tag="5" Click="QuickTimerClick" />
+                        <Button Width="20" Content="10" Tag="10" Click="QuickTimerClick" />
+                        <Button Width="20" Content="15" Tag="15" Click="QuickTimerClick" />
+                        <Button Width="20" Content="30" Tag="30" Click="QuickTimerClick" />
+                        <Button Width="20" Content="C" Tag="Custom" Click="QuickTimerClick" Margin="10,0,0,0" />
+                        <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Width="30" Text="{Binding CustomQuickTime}" />
+                    </StackPanel>
+                    <StackPanel Margin="5">
+                        <Label Content="Active Timers" />
+                        <ListView ItemsSource="{Binding ActiveTimers}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <local:TimerDetailsWidget />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
 
-        </StackPanel>
-                
+                </StackPanel>
+
             </TabItem>
             <TabItem Header="Calendar" >
 
