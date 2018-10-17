@@ -20,9 +20,38 @@ namespace Talisman
     /// </summary>
     public partial class TimerDetailsWidget : UserControl
     {
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// ctor
+        /// </summary>
+        // --------------------------------------------------------------------------
         public TimerDetailsWidget()
         {
             InitializeComponent();
+        }
+
+        TimerInstance Context => (TimerInstance)this.DataContext;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Move the time earlier by one minute
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AdjustSmallerClick(object sender, RoutedEventArgs e)
+        {
+            Context.EndsAt = Context.EndsAt.AddMinutes(-1);
+            Context.NotifyAllPropertiesChanged();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Move the time later by one minute
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AdjustLargerClick(object sender, RoutedEventArgs e)
+        {
+            Context.EndsAt = Context.EndsAt.AddMinutes(1);
+            Context.NotifyAllPropertiesChanged();
         }
     }
 }

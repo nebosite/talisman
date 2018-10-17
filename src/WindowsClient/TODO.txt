@@ -2,8 +2,8 @@
 
 NOW
 	[x] Need some contrast on the notification to get better attention
-	[ ] Custom wait time
-	[ ] Adjust timer time on the list (resort timers on exit of settings)
+	[x] Custom wait time
+	[x] Adjust timer time on the list (resort timers on exit of settings)
 	[ ] Exact time timer
 	[ ] Snooze button on notifications
 		- Stop making notification rotate, just move quickly to a designated spot and pulsate

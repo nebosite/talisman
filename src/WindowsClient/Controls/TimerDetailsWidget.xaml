@@ -8,8 +8,11 @@
              d:DesignHeight="50" d:DesignWidth="600">
     <Grid Background="LightGray">
         <StackPanel Orientation="Horizontal">
-            <Label Width="80" Content="{Binding EndsAtText}"   />
-            <Label Content="{Binding Name}"   />
+            <Label Width="70" Content="{Binding EndsAtText}" HorizontalContentAlignment="Right"  />
+            <Button Content="×" FontFamily="Wingdings" Click="AdjustSmallerClick" />
+            <Label Content="¡" FontFamily="Wingdings" VerticalContentAlignment="Center" />
+            <Button Content="Ø" FontFamily="Wingdings" Click="AdjustLargerClick" />
+            <Label Content="{Binding Name}" Margin="20,0,0,0"   />
             
         </StackPanel>
     </Grid>
