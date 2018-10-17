@@ -12,7 +12,7 @@
             <Button Content="×" FontFamily="Wingdings" Click="AdjustSmallerClick" />
             <Label Content="¡" FontFamily="Wingdings" VerticalContentAlignment="Center" />
             <Button Content="Ø" FontFamily="Wingdings" Click="AdjustLargerClick" />
-            <Label Content="{Binding Name}" Margin="20,0,0,0"   />
+            <TextBox Text="{Binding Name, Mode=TwoWay}" Margin="20,0,0,0" MinWidth="250"  />
             
         </StackPanel>
     </Grid>

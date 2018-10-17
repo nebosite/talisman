@@ -51,7 +51,15 @@ namespace Talisman
             if(_justActivated)
             {
                 Debug.WriteLine("Focusing");
-                TimerNameBox.Focus();
+                var elementWithFocus = Keyboard.FocusedElement as UIElement;
+                if(elementWithFocus != null)
+                {
+                    elementWithFocus.MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
+                }
+                else
+                {
+                    TimerNameBox.Focus();
+                }
                 TimerNameBox.SelectAll();
                 _justActivated = false;
 
