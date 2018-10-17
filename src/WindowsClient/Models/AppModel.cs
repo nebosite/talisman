@@ -106,6 +106,27 @@ namespace Talisman
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
             var timerName = $"{QuickTimerName} [{minutes.ToString(".0")} min]";
+            StartTimer(endTime, timerName);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Start a timer at some absolute time
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void StartTimer(DateTime endTime)
+        {
+            var timerName = $"{QuickTimerName} [{endTime.ToString(@"hh\:mm tt")}]";
+            StartTimer(endTime, timerName);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Start a timer at some absolute time
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void StartTimer(DateTime endTime, string timerName)
+        {
             var newTimer = new TimerInstance(endTime, timerName);
             for(int i = 0; i < ActiveTimers.Count; i++)
             {

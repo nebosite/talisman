@@ -103,6 +103,10 @@ namespace Talisman
             _yCorrection = 1.0/source.CompositionTarget.TransformToDevice.M22;
             _settingsWindow = new SettingsForm(_theModel);
 
+            // For some reason, need to do this to see the ticks on the time picker
+            _settingsWindow.Show();
+            _settingsWindow.Hide();
+
             var locationSetting = Settings.Default.Location;
             if(!string.IsNullOrEmpty(locationSetting))
             {

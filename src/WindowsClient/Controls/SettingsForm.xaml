@@ -12,7 +12,7 @@
             <TabItem Header="Active Timers" >
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="5">
-                        <Label Width="100" HorizontalContentAlignment="Right" Content="Quick Timer:" />
+                        <Label Width="80" HorizontalContentAlignment="Right" Content="Quick Timer:" />
                         <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" />
                         <Button Width="20" Content="T" Tag=".01" Click="QuickTimerClick" />
                         <Button Width="20" Content="1" Tag="1" Click="QuickTimerClick" />
@@ -23,6 +23,17 @@
                         <Button Width="20" Content="C" Tag="Custom" Click="QuickTimerClick" Margin="10,0,0,0" />
                         <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Width="30" Text="{Binding CustomQuickTime}" />
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Label Width="80" HorizontalContentAlignment="Right" Content="Time:" />
+                        <Border BorderBrush="DarkGray" BorderThickness="2" Height="25" Width="350" >
+                            <Canvas x:Name ="TimeClicker" Background="LightGreen" MouseUp="TimeClickerMouseUp" MouseMove="TimeClickerMouseMove" MouseLeave="TimeClickerMouseLeave" >
+                                <Rectangle Canvas.Left="80" Width="2" Height="8" Fill="Black" />
+                            </Canvas>
+                        </Border>
+                        <Label x:Name="TimeClickerLabel"  Margin="10,0,0,0" />
+                    </StackPanel>
+
+
                     <StackPanel Margin="5">
                         <Label Content="Active Timers" />
                         <ListView ItemsSource="{Binding ActiveTimers}">
