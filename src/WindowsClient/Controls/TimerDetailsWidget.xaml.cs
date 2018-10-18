@@ -53,5 +53,15 @@ namespace Talisman
             Context.EndsAt = Context.EndsAt.AddMinutes(1);
             Context.NotifyAllPropertiesChanged();
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Delete this timer
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void DeleteClick(object sender, RoutedEventArgs e)
+        {
+            Context.DeleteMe();
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 NOW
 	[x] Snooze button on notifications
-	[ ] Delete timers from list
+	[x] Delete timers from list
     [ ] Calendar button to set up calendar access
         [ ] Read from outlook calendar
         [ ] Read from internet calendar

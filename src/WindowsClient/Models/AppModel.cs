@@ -84,17 +84,34 @@ namespace Talisman
             if (ActiveTimers.Count == 0) return;
 
             var finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
+            RemoveTimers(finishedTimers);
             foreach(var timer in finishedTimers)
             {
                 OnNotification.Invoke(new NotificationData("Times up!", timer.Name));
-                _dispatch(() =>
-                {
-                    ActiveTimers.Remove(timer);
-
-                });
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Safely remove some timers
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void RemoveTimers(TimerInstance[] timers)
+        {
+            foreach (var timer in timers)
+            {
+                _dispatch(() =>
+                {
+                    lock (ActiveTimers)
+                    {
+                        ActiveTimers.Remove(timer);
+                    }
+
+                });
+            }
+            NotifyAllPropertiesChanged();
         }
 
         // --------------------------------------------------------------------------
@@ -120,6 +137,7 @@ namespace Talisman
             StartTimer(endTime, timerName);
         }
 
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Start a timer at some absolute time
@@ -127,17 +145,27 @@ namespace Talisman
         // --------------------------------------------------------------------------
         internal void StartTimer(DateTime endTime, string timerName)
         {
-            var newTimer = new TimerInstance(endTime, timerName);
+            var newTimer = new TimerInstance(endTime, timerName,
+                (id) => RemoveTimers(ActiveTimers.Where(t=>t.Id == id).ToArray()));
             for(int i = 0; i < ActiveTimers.Count; i++)
             {
                 if(newTimer.EndsAt < ActiveTimers[i].EndsAt)
                 {
-                    ActiveTimers.Insert(i, newTimer);
+                    lock(ActiveTimers)
+                    {
+                        ActiveTimers.Insert(i, newTimer);
+                    }
                     newTimer = null;
                     break;
                 }
             }
-            if(newTimer != null) ActiveTimers.Add(newTimer);
+            if (newTimer != null)
+            {
+                lock (ActiveTimers)
+                {
+                    ActiveTimers.Add(newTimer);
+                }
+            }
             NotifyAllPropertiesChanged();
         }
     }

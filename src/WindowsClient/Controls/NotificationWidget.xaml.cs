@@ -38,16 +38,6 @@ namespace Talisman
             this.DataContext = data;
         }
 
-        // --------------------------------------------------------------------------
-        /// <summary>
-        /// Click handling
-        /// </summary>
-        // --------------------------------------------------------------------------
-        private void HandleClick(object sender, MouseButtonEventArgs e)
-        {
-            this.Close();
-        }
-
         DateTime _startTime = DateTime.Now;
 
         // --------------------------------------------------------------------------
@@ -74,6 +64,16 @@ namespace Talisman
         {
             double.TryParse((sender as Button).Tag.ToString(), out var minutes);
             _appModel.StartTimer(minutes, "Snoozed: " + _data.TimerName);
+            this.Close();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Snooze buttons
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void DismissClick(object sender, RoutedEventArgs e)
+        {
             this.Close();
         }
     }
