@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 
 namespace Talisman
 {
@@ -73,6 +75,35 @@ namespace Talisman
             _tickTimer.Interval = 100;
             _tickTimer.Start();
         }
+
+        OutlookHelper _outlook;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Look at the outlook calendar for stuff
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void CheckCalendars()
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                if (_outlook == null) _outlook = new OutlookHelper();
+
+                foreach(var item in _outlook.GetNextTimerRelatedItems())
+                {
+                    StartTimer(item.Start, "Outlook: " + item.Title);
+                }
+
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show("Calendar error: " + e.ToString());
+            }
+            stopwatch.Stop();
+            Debug.WriteLine($"Check Calendars took {stopwatch.ElapsedMilliseconds}ms");
+        }
+
 
         // --------------------------------------------------------------------------
         /// <summary>

@@ -1,11 +1,13 @@
 ﻿TODO
 
 NOW
-	[x] Snooze button on notifications
-	[x] Delete timers from list
     [ ] Calendar button to set up calendar access
-        [ ] Read from outlook calendar
-        [ ] Read from internet calendar
+		[ ] Choose from outlook instances
+		[ ] Read from calendars should not try to check anything unless prescribed
+		[ ] Should check calendars every 5 minutes
+		[ ] See what happens when you close outlook and try to check and re-check
+
+	[ ] Read from internet calendar
     [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
         https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
 
@@ -27,6 +29,10 @@ LATER
 
 
 DONE  ==================================================================================================
+	[x] Snooze button on notifications
+	[x] Delete timers from list
+    [x] Read from outlook calendar
+
 	[x] Need some contrast on the notification to get better attention
 	[x] Custom wait time
 	[x] Adjust timer time on the list (resort timers on exit of settings)

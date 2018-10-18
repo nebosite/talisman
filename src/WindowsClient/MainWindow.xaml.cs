@@ -56,6 +56,8 @@ namespace Talisman
                 Dispatcher.Invoke(runme);
             });
 
+            _theModel.CheckCalendars();
+
             InitializeComponent();
             CompositionTarget.Rendering += AnimateFrame;
             this.Loaded += MainWindow_Loaded;

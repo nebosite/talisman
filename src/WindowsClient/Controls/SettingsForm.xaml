@@ -33,16 +33,16 @@
                     </StackPanel>
 
 
-                    <StackPanel Margin="5">
-                        <Label Content="Active Timers" />
-                        <ListView ItemsSource="{Binding ActiveTimers}">
+                    <Label Content="Active Timers" />
+                    <ScrollViewer>
+                        <ListView ItemsSource="{Binding ActiveTimers}" MaxHeight="200" >
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <local:TimerDetailsWidget />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-                    </StackPanel>
+                    </ScrollViewer>
 
                 </StackPanel>
 
