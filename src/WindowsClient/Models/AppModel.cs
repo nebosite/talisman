@@ -86,7 +86,7 @@ namespace Talisman
             var finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
             foreach(var timer in finishedTimers)
             {
-                OnNotification.Invoke(new NotificationData($"Times up!  {timer.Name}"));
+                OnNotification.Invoke(new NotificationData("Times up!", timer.Name));
                 _dispatch(() =>
                 {
                     ActiveTimers.Remove(timer);
@@ -102,10 +102,10 @@ namespace Talisman
         /// Start a timer for some span of time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(double minutes)
+        internal void StartTimer(double minutes, string name = null)
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
-            var timerName = $"{QuickTimerName} [{minutes.ToString(".0")} min]";
+            var timerName = name ?? $"{QuickTimerName} [{minutes.ToString(".0")} min]";
             StartTimer(endTime, timerName);
         }
 

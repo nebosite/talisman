@@ -7,12 +7,18 @@
         BorderBrush="Transparent"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        Title="Talisman" Height="88.4" Width="218.857" WindowStyle="None" ShowInTaskbar="False" 
+        Title="Talisman" Height="132" Width="292.857" WindowStyle="None" ShowInTaskbar="False" 
         Topmost="True"
         Background="Transparent">
     <Grid  Background="Transparent">
         <Border x:Name="MyBorder" BorderThickness="5" BorderBrush="Red" CornerRadius="20"  Background="#a0FFFFFF">
-            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" MouseDown="HandleClick" Padding="20" />
+            <Grid>
+                <TextBlock Text="{Binding NotificationText}" TextWrapping="Wrap" MouseDown="HandleClick" Padding="20" Margin="0.2,0.2,78,4.4" />
+                <Label Content="Snooze" Margin="223,10,10.2,85.6" />
+                <Button Content="5 min" Padding="0" Tag="5" Click="SnoozeClicked" Margin="225,36,16.2,65.6" />
+                <Button Content="10 min" Padding="0" Tag="10" Click="SnoozeClicked" Margin="225,61,16.2,40.6" />
+                <Button Content="20 min" Padding="0" Tag="20" Click="SnoozeClicked" Margin="225,86,16.2,15.6" />
+            </Grid>
         </Border>
     </Grid>
 </Window>

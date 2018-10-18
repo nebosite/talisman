@@ -23,15 +23,18 @@ namespace Talisman
     public partial class NotificationWidget : Window
     {
         NotificationData _data;
+        AppModel _appModel;
 
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public NotificationWidget(NotificationData data)
+        public NotificationWidget(NotificationData data, AppModel appModel)
         {
             InitializeComponent();
+            this._data = data;
+            this._appModel = appModel;
             this.DataContext = data;
         }
 
@@ -60,6 +63,18 @@ namespace Talisman
 
             var brush = new SolidColorBrush(Color.FromArgb(127, partDelta, bigDelta, bigDelta));
             MyBorder.BorderBrush = brush;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Snooze buttons
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void SnoozeClicked(object sender, RoutedEventArgs e)
+        {
+            double.TryParse((sender as Button).Tag.ToString(), out var minutes);
+            _appModel.StartTimer(minutes, "Snoozed: " + _data.TimerName);
+            this.Close();
         }
     }
 }

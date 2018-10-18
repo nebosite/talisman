@@ -73,7 +73,7 @@ namespace Talisman
         {
             Dispatcher.InvokeAsync(() =>
             {
-                var newWidget = new NotificationWidget(data);
+                var newWidget = new NotificationWidget(data, _theModel);
                 newWidget.Top = Top;
                 newWidget.Left = Left;
                 newWidget.Closing += (sender, args) =>
