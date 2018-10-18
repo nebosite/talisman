@@ -115,10 +115,13 @@ namespace Talisman
             if (ActiveTimers.Count == 0) return;
 
             var finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
-            RemoveTimers(finishedTimers);
-            foreach(var timer in finishedTimers)
+            if(finishedTimers.Length > 0)
             {
-                OnNotification.Invoke(new NotificationData("Times up!", timer.Name));
+                RemoveTimers(finishedTimers);
+                foreach(var timer in finishedTimers)
+                {
+                    OnNotification.Invoke(new NotificationData("Times up!", timer.Name));
+                }
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));

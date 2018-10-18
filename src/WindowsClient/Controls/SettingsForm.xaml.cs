@@ -50,6 +50,7 @@ namespace Talisman
         {
             if(_justActivated)
             {
+                _justActivated = false;
                 Debug.WriteLine("Focusing");
                 var elementWithFocus = Keyboard.FocusedElement as UIElement;
                 if(elementWithFocus != null)
@@ -61,7 +62,6 @@ namespace Talisman
                     TimerNameBox.Focus();
                 }
                 TimerNameBox.SelectAll();
-                _justActivated = false;
 
                 double pixelsPerMinute = TimeClicker.ActualWidth / TimeClickerWindowInHours / 60;
                 var hour = DateTime.Now.Hour;
