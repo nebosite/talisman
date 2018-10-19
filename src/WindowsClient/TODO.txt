@@ -1,11 +1,10 @@
 ﻿TODO
 
 NOW
-    [ ] Calendar button to set up calendar access
-		[ ] Choose from outlook instances
-		[ ] Read from calendars should not try to check anything unless prescribed
-		[ ] Should check calendars every 5 minutes
-		[ ] See what happens when you close outlook and try to check and re-check
+    [x] Calendar button to set up calendar access
+		[x] Read from calendars should not try to check anything unless prescribed
+		[x] Should check calendars every 5 minutes
+		[x] See what happens when you close outlook and try to check and re-check
 
 	[ ] Read from internet calendar
     [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
@@ -13,6 +12,14 @@ NOW
 
 
 NEW
+	[ ] Give it an icon
+	[ ] TODO List game:
+		- Paste a set of lines, each gets five minutes
+		- separate timer shows up on the talisman
+		- Special button to click on the talisman marks a task as done
+		- Remaining seconds are added to points, plus you get the remaining time for the next item
+		- Special graphics and sounds when you complete the list.   
+		- Make some goals and assign coin values to them.  Use the game to work toward a goal.
 
 SOON
     [ ] Snipping tool

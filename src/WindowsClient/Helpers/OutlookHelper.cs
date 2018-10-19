@@ -33,6 +33,8 @@ namespace Talisman
             }
         }
 
+
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// 
@@ -44,22 +46,32 @@ namespace Talisman
             {
                 Application application = null;
 
+                var processes = Process.GetProcessesByName("OUTLOOK");
+                var all = Process.GetProcesses();
                 // Check whether there is an Outlook process running.
                 if (Process.GetProcessesByName("OUTLOOK").Count() > 0)
                 {
-
-                    // If so, use the GetActiveObject method to obtain the process and cast it to an Application object.
-                    application = Marshal.GetActiveObject("Outlook.Application") as Application;
+                    try
+                    {
+                        // If so, use the GetActiveObject method to obtain the process and cast it to an Application object.
+                        application = Marshal.GetActiveObject("Outlook.Application") as Application;
+                        return application;
+                    }
+                    catch (COMException e)
+                    {
+                        if ((uint)e.ErrorCode != 0x800401E3)
+                        {
+                            throw new ApplicationException("Error trying to access outlook: " + e.ErrorCode + " " + e.Message, e);
+                        }
+                    }
                 }
-                else
-                {
 
-                    // If not, create a new instance of Outlook and log on to the default profile.
-                    application = new Application();
-                    NameSpace nameSpace = application.GetNamespace("MAPI");
-                    nameSpace.Logon("", "", Missing.Value, Missing.Value);
-                    nameSpace = null;
-                }
+
+                // If not, create a new instance of Outlook and log on to the default profile.
+                application = new Application();
+                NameSpace nameSpace = application.GetNamespace("MAPI");
+                nameSpace.Logon("", "", Missing.Value, Missing.Value);
+                nameSpace = null;
 
                 // Return the Outlook Application object.
                 return application;

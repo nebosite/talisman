@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using Talisman.Properties;
 
 namespace Talisman
 {
@@ -61,6 +63,12 @@ namespace Talisman
         /// </summary>
         public ObservableCollection<TimerInstance> ActiveTimers { get; set; } = new ObservableCollection<TimerInstance>();
 
+        /// <summary>
+        /// All the calendars
+        /// </summary>
+        public ObservableCollection<CalendarItem> Calendars { get; set; } = new ObservableCollection<CalendarItem>();
+
+
         Action<Action> _dispatch;
         // --------------------------------------------------------------------------
         /// <summary>
@@ -73,10 +81,20 @@ namespace Talisman
             _tickTimer = new Timer();
             _tickTimer.Elapsed += TimerTick;
             _tickTimer.Interval = 100;
+
+            if(!string.IsNullOrEmpty(Settings.Default.Calendars))
+            {
+                var endPoints = JsonConvert.DeserializeObject<string[]>(Settings.Default.Calendars);
+                foreach (var endPoint in endPoints)
+                {
+                    AddCalendar(endPoint);
+                }
+            }
             _tickTimer.Start();
         }
 
         OutlookHelper _outlook;
+        DateTime _nextCalendarCheck = DateTime.MinValue;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -86,19 +104,24 @@ namespace Talisman
         internal void CheckCalendars()
         {
             var stopwatch = Stopwatch.StartNew();
-            try
+            foreach(var calendarItem in Calendars.ToArray())
             {
-                if (_outlook == null) _outlook = new OutlookHelper();
-
-                foreach(var item in _outlook.GetNextTimerRelatedItems())
+                try
                 {
-                    StartTimer(item.Start, "Outlook: " + item.Title);
-                }
+                    if(calendarItem.EndPoint == "Outlook")
+                    {
+                        if (_outlook == null) _outlook = new OutlookHelper();
 
-            }
-            catch(Exception e)
-            {
-                MessageBox.Show("Calendar error: " + e.ToString());
+                        foreach(var item in _outlook.GetNextTimerRelatedItems())
+                        {
+                            StartTimer(item.Start, "Outlook: " + item.Title, noDuplicates: true);
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show("Calendar error: " + e.ToString());
+                }
             }
             stopwatch.Stop();
             Debug.WriteLine($"Check Calendars took {stopwatch.ElapsedMilliseconds}ms");
@@ -112,9 +135,20 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void TimerTick(object sender, ElapsedEventArgs e)
         {
+            if(DateTime.Now > _nextCalendarCheck)
+            {
+                _nextCalendarCheck = DateTime.Now.AddMinutes(10);
+                CheckCalendars();
+            }
+
             if (ActiveTimers.Count == 0) return;
 
-            var finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
+            TimerInstance[] finishedTimers;
+            lock(ActiveTimers)
+            {
+                finishedTimers = ActiveTimers.Where(t => t.EndsAt < DateTime.Now).ToArray();
+            }
+
             if(finishedTimers.Length > 0)
             {
                 RemoveTimers(finishedTimers);
@@ -153,11 +187,11 @@ namespace Talisman
         /// Start a timer for some span of time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(double minutes, string name = null)
+        internal void StartTimer(double minutes, string name = null, bool noDuplicates = false)
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
             var timerName = name ?? $"{QuickTimerName} [{minutes.ToString(".0")} min]";
-            StartTimer(endTime, timerName);
+            StartTimerInternal(endTime, timerName, noDuplicates);
         }
 
         // --------------------------------------------------------------------------
@@ -165,10 +199,10 @@ namespace Talisman
         /// Start a timer at some absolute time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(DateTime endTime)
+        internal void StartTimer(DateTime endTime, string name = null, bool noDuplicates = false)
         {
-            var timerName = $"{QuickTimerName} [{endTime.ToString(@"hh\:mm tt")}]";
-            StartTimer(endTime, timerName);
+            var timerName = name ?? $"{QuickTimerName} [{endTime.ToString(@"hh\:mm tt")}]";
+            StartTimerInternal(endTime, timerName, noDuplicates);
         }
 
 
@@ -177,30 +211,89 @@ namespace Talisman
         /// Start a timer at some absolute time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(DateTime endTime, string timerName)
+        internal void StartTimerInternal(DateTime endTime, string timerName, bool noDuplicates)
         {
-            var newTimer = new TimerInstance(endTime, timerName,
-                (id) => RemoveTimers(ActiveTimers.Where(t=>t.Id == id).ToArray()));
-            for(int i = 0; i < ActiveTimers.Count; i++)
+            if(noDuplicates)
             {
-                if(newTimer.EndsAt < ActiveTimers[i].EndsAt)
+                if(ActiveTimers.Where(t => t.Name == timerName).Any())
                 {
-                    lock(ActiveTimers)
+                    return;
+                }
+            }
+
+            _dispatch(() =>
+            {
+                var newTimer = new TimerInstance(endTime, timerName,
+                    (id) => RemoveTimers(ActiveTimers.Where(t => t.Id == id).ToArray()));
+                for (int i = 0; i < ActiveTimers.Count; i++)
+                {
+                    if (newTimer.EndsAt < ActiveTimers[i].EndsAt)
                     {
-                        ActiveTimers.Insert(i, newTimer);
+
+                        lock (ActiveTimers)
+                        {
+                            ActiveTimers.Insert(i, newTimer);
+                        }
+                        newTimer = null;
+                        break;
                     }
-                    newTimer = null;
-                    break;
                 }
-            }
-            if (newTimer != null)
-            {
-                lock (ActiveTimers)
+                if (newTimer != null)
                 {
-                    ActiveTimers.Add(newTimer);
+                    lock (ActiveTimers)
+                    {
+                        ActiveTimers.Add(newTimer);
+                    }
                 }
+                NotifyAllPropertiesChanged();
+
+            });
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Delete a calendar item
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void DeleteCalendar(string endpoint)
+        {
+            var calendarItem = Calendars.Where(c => c.EndPoint.ToLower() == endpoint.ToLower()).FirstOrDefault();
+            if (calendarItem == null) return;
+            _dispatch.Invoke(() =>
+            {
+                lock(Calendars)
+                {
+                    Calendars.Remove(calendarItem);
+                }
+
+                SaveCalendarSettings();
+            });
+
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Save off current calendar settings
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void SaveCalendarSettings()
+        {
+            Settings.Default.Calendars = JsonConvert.SerializeObject(Calendars.Select(c => c.EndPoint).ToArray());
+            Settings.Default.Save();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Add a calendar
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void AddCalendar(string calendarPointer)
+        {
+            if(!Calendars.Where(c => c.EndPoint.ToLower() == calendarPointer.ToLower()).Any())
+            {
+                Calendars.Add(new CalendarItem( calendarPointer, DeleteCalendar));
+                SaveCalendarSettings();
             }
-            NotifyAllPropertiesChanged();
         }
     }
 }

@@ -194,5 +194,33 @@ namespace Talisman
         {
             TimeClickerLabel.Content = "";
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Add an outlook calendar
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AddOutlookCalendarClick(object sender, RoutedEventArgs e)
+        {
+            _appModel.AddCalendar("Outlook");
+            _appModel.CheckCalendars();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Add an internet calendar
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AddInternetCalendarClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new AddInternetCalendarDialog();
+            dialog.Left = this.Left + 50;
+            dialog.Top = this.Top + 50;
+            if (dialog.ShowDialog() ?? false)
+            {
+                _appModel.AddCalendar(dialog.CalendarUrl);
+                _appModel.CheckCalendars();
+            }
+        }
     }
 }

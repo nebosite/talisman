@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Talisman.CalenderItemWidget"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Talisman"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="800">
+    <Grid >
+        <StackPanel Orientation="Horizontal">
+            <Label Content="{Binding EndPoint}" Margin="20,0,0,0" MinWidth="250"  />
+            <Button Content="ý" FontFamily="Wingdings" FontSize="16" Click="DeleteClick" Tag="{Binding EndPoint}" Padding="0" Height="18" VerticalAlignment="Top" Foreground="DarkRed" />
+        </StackPanel>
+    </Grid>
+
+</UserControl>

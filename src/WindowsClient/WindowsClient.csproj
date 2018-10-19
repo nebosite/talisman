@@ -77,6 +77,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\CalenderItemWidget.xaml.cs">
+      <DependentUpon>CalenderItemWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AddInternetCalendarDialog.xaml.cs">
+      <DependentUpon>AddInternetCalendarDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ScreenHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\AppModel.cs" />
@@ -87,6 +93,14 @@
       <DependentUpon>TimerDetailsWidget.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\TimeRelatedItem.cs" />
+    <Page Include="Controls\CalenderItemWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AddInternetCalendarDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -116,6 +130,7 @@
     <Compile Include="Controls\NotificationWidget.xaml.cs">
       <DependentUpon>NotificationWidget.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CalendarItem.cs" />
     <Compile Include="Models\TimerInstance.cs" />
     <Compile Include="Models\NotificationData.cs" />
     <Compile Include="Helpers\OutlookHelper.cs" />

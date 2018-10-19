@@ -48,7 +48,25 @@
 
             </TabItem>
             <TabItem Header="Calendar" >
-
+                <Grid>
+                    <StackPanel Margin="5">
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Button Content="Add Outlook Calendar" Click="AddOutlookCalendarClick" />
+                            <Button Visibility="Collapsed" Content="Add Internet Calendar" Click="AddInternetCalendarClick" Margin="20,0,0,0" />
+                        </StackPanel>
+                        <Label Content="Active Calendars" />
+                        <ScrollViewer>
+                            <ListView ItemsSource="{Binding Calendars}" MaxHeight="200" >
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <local:CalenderItemWidget />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Grid>
+                
             </TabItem>
 
         </TabControl>

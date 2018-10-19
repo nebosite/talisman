@@ -34,5 +34,17 @@ namespace Talisman.Properties {
                 this["Location"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Calendars {
+            get {
+                return ((string)(this["Calendars"]));
+            }
+            set {
+                this["Calendars"] = value;
+            }
+        }
     }
 }
