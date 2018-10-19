@@ -84,6 +84,7 @@
       <DependentUpon>AddInternetCalendarDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ScreenHelper.cs" />
+    <Compile Include="Helpers\HotKeyHelper.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\AppModel.cs" />
     <Compile Include="Controls\SettingsForm.xaml.cs">

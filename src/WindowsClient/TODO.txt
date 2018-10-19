@@ -1,18 +1,21 @@
-﻿TODO
+﻿----- TODO -------------------------------
 
 NOW
-    [x] Calendar button to set up calendar access
-		[x] Read from calendars should not try to check anything unless prescribed
-		[x] Should check calendars every 5 minutes
-		[x] See what happens when you close outlook and try to check and re-check
-
-	[ ] Read from internet calendar
-    [ ] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
-        https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
 
 
 NEW
+
+SOON
+	[ ] Hotkey option: snipping tool
+        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
+    [ ] Custom button for quick times
+	[ ] Hotkey configuration Tab
+	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
+	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
+	[ ] Hotkey option: quick timer
 	[ ] Give it an icon
+
+LATER
 	[ ] TODO List game:
 		- Paste a set of lines, each gets five minutes
 		- separate timer shows up on the talisman
@@ -20,15 +23,7 @@ NEW
 		- Remaining seconds are added to points, plus you get the remaining time for the next item
 		- Special graphics and sounds when you complete the list.   
 		- Make some goals and assign coin values to them.  Use the game to work toward a goal.
-
-SOON
-    [ ] Snipping tool
-        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
-    [ ] Kick off screen saver & lock machine
-	[ ] Quick Timer Hot Key
-    [ ] Custom button for quick times
-
-LATER
+	[ ] Read from internet calendar
 	[ ] When restoring location, make sure the Talisman is visible
 	[ ] Make sure the settings form is fully visible each time it shows
 	[ ] Regularly remember timers in case of crash
@@ -36,6 +31,14 @@ LATER
 
 
 DONE  ==================================================================================================
+    [x] Calendar button to set up calendar access
+		[x] Read from calendars should not try to check anything unless prescribed
+		[x] Should check calendars every 5 minutes
+		[x] See what happens when you close outlook and try to check and re-check
+
+    [x] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
+        https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
+
 	[x] Snooze button on notifications
 	[x] Delete timers from list
     [x] Read from outlook calendar

@@ -63,6 +63,7 @@ namespace Talisman
             _theModel.OnNotification += HandleNewNotification;
         }
 
+
         List<NotificationWidget> _notificationWindows = new List<NotificationWidget>();
         // --------------------------------------------------------------------------
         /// <summary>
@@ -89,7 +90,18 @@ namespace Talisman
                     _notificationWindows.Add(newWidget);
                 }
             });
-       }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Once we have a window handle, register for hot keys
+        /// </summary>
+        // --------------------------------------------------------------------------
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            _theModel.InitHotKeys(this);
+        }
 
         // --------------------------------------------------------------------------
         /// <summary>

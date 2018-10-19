@@ -95,6 +95,39 @@ namespace Talisman
 
         OutlookHelper _outlook;
         DateTime _nextCalendarCheck = DateTime.MinValue;
+        HotKeyHelper _hotKeys;
+        uint key_5min;
+        uint key_quickTimer;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Set up hotkey listening
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void InitHotKeys(MainWindow mainWindow)
+        {
+            _hotKeys = new HotKeyHelper(mainWindow, HandleHotKey);
+            key_5min = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.D5, HotKeyModifiers.Control);
+            key_quickTimer = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.Z, HotKeyModifiers.Control | HotKeyModifiers.Shift);
+            //hotKey2 = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.F9, HotKeyModifiers.WindowsKey | HotKeyModifiers.Shift);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Hotkey handler.  The keyId is the return value from ListenForHotKey()
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void HandleHotKey(int keyId)
+        {
+            if (keyId == key_5min)
+            {
+                this.StartTimer(5, "Hotkey Timer");
+            }
+            else if(keyId == key_quickTimer)
+            {
+                this.StartTimer(.01, "Hotkey Timer");
+            }
+        }
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -126,7 +159,6 @@ namespace Talisman
             stopwatch.Stop();
             Debug.WriteLine($"Check Calendars took {stopwatch.ElapsedMilliseconds}ms");
         }
-
 
         // --------------------------------------------------------------------------
         /// <summary>
