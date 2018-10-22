@@ -95,6 +95,8 @@ namespace Talisman
                 }
                 TimeClicker.InvalidateVisual();
                 this.UpdateLayout();
+
+                ScreenHelper.EnsureWindowIsVisible(this);
             }
         }
 

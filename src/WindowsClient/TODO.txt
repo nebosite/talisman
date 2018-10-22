@@ -1,13 +1,13 @@
 ﻿----- TODO -------------------------------
 
 NOW
-	[x] Context menu with exit
-		[x] plus an exit in the settings
 	[ ] When cancelling calendar timers, remember to ignore them until after the appointment time. 
 	[ ] Create an install
 
 
 NEW
+	[ ] Some kind of logging for errors in the field
+	[ ] Add the version somewhere
 
 SOON
 	[ ] Publish on Windows store?
@@ -37,13 +37,16 @@ LATER
 		- Special graphics and sounds when you complete the list.   
 		- Make some goals and assign coin values to them.  Use the game to work toward a goal.
 	[ ] Read from internet calendar
-	[ ] When restoring location, make sure the Talisman is visible
-	[ ] Make sure the settings form is fully visible each time it shows
 	[ ] Regularly remember timers in case of crash
 		- Only resurrect them if still active for today
 
 
 DONE  ==================================================================================================
+	[x] Context menu with exit
+		[x] plus an exit in the settings
+	[x] When restoring location, make sure the Talisman is visible
+	[x] Make sure the settings form is fully visible each time it shows
+
     [x] Calendar button to set up calendar access
 		[x] Read from calendars should not try to check anything unless prescribed
 		[x] Should check calendars every 5 minutes

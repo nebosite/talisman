@@ -129,6 +129,7 @@ namespace Talisman
 
             var screenArea = ScreenHelper.MainScreen.WorkingArea;
             _gravitationCenter = new Point(screenArea.Left + screenArea.Width/2, screenArea.Top + screenArea.Height/2);
+            ScreenHelper.EnsureWindowIsVisible(this);
         }
 
         // --------------------------------------------------------------------------
