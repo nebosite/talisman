@@ -25,6 +25,7 @@ namespace Talisman
     public partial class SettingsForm : Window
     {
         AppModel _appModel;
+        bool _hardClose = false;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -117,8 +118,11 @@ namespace Talisman
         // --------------------------------------------------------------------------
         protected override void OnClosing(CancelEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
+            if (!_hardClose)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
         }
 
         // --------------------------------------------------------------------------
@@ -221,6 +225,27 @@ namespace Talisman
                 _appModel.AddCalendar(dialog.CalendarUrl);
                 _appModel.CheckCalendars();
             }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Make sure the window actually closes
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void CloseForReal()
+        {
+            _hardClose = true;
+            this.Close();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Add an internet calendar
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ExitAppClicked(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

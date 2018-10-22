@@ -20,7 +20,13 @@
                MouseMove="HandleMouseMove"
                MouseUp="HandleMouseUp"
                ToolTip="{Binding CurrentTimerName}"
-               ></Image>
+               >
+            <Image.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Exit Talisman" Click="ExitAppClicked" />
+                </ContextMenu>                
+            </Image.ContextMenu>
+        </Image>
         <Label Content="{Binding CurrentTimeRemainingText}" Padding="0" HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
                Foreground="#80000000"
                ToolTip="{Binding CurrentTimerName}"/>

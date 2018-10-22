@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
         Topmost="True"
-        Title="Talisman Settings" Height="359.545" Width="562.121" WindowStyle="ToolWindow">
+        Title="Talisman Settings" Height="384.345" Width="537.321" WindowStyle="ToolWindow">
     <Grid>
-        <TabControl>
+        <TabControl Margin="5,20,5,5">
             <TabItem Header="Active Timers" >
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="5">
@@ -66,9 +66,10 @@
                         </ScrollViewer>
                     </StackPanel>
                 </Grid>
-                
+
             </TabItem>
 
         </TabControl>
+        <Button Content="Exit Talisman" Click="ExitAppClicked" Margin="441,10,0,0" Height="20"   HorizontalAlignment="Left" Width="84" VerticalAlignment="Top" />
     </Grid>
 </Window>

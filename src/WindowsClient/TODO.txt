@@ -1,11 +1,16 @@
 ﻿----- TODO -------------------------------
 
 NOW
+	[x] Context menu with exit
+		[x] plus an exit in the settings
+	[ ] When cancelling calendar timers, remember to ignore them until after the appointment time. 
+	[ ] Create an install
 
 
 NEW
 
 SOON
+	[ ] Publish on Windows store?
 	[ ] Hotkey option: snipping tool
         [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
     [ ] Custom button for quick times
@@ -13,9 +18,17 @@ SOON
 	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
 	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
 	[ ] Hotkey option: quick timer
+	[ ] Hotkey option: launch app/script
+	[ ] HotKey option: Restore desktop icons to snapshot
+		- Other icons are arranged by shortcuts, media, and documents
 	[ ] Give it an icon
 
 LATER
+	[ ] Hot Key option: Instant email
+	[ ] Hot key option: instant Powershell prompt
+	[ ] Hot key option: instant project open
+	[ ] Hot key option: Instant Task
+	[ ] HoKey: Kill app
 	[ ] TODO List game:
 		- Paste a set of lines, each gets five minutes
 		- separate timer shows up on the talisman

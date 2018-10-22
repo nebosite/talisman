@@ -139,6 +139,7 @@ namespace Talisman
         protected override void OnClosing(CancelEventArgs e)
         {
             Settings.Default.Save();
+            _settingsWindow.CloseForReal();
         }
 
         DateTime _startTime = DateTime.Now;
@@ -240,23 +241,34 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void HandleMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if(_dragDelta < 3)
+            if(_dragging)
             {
-                _settingsWindow.Left = this.Left;
-                _settingsWindow.Top = this.Top;
-                _settingsWindow.Popup();
+                if(_dragDelta < 3)
+                {
+                    _settingsWindow.Left = this.Left;
+                    _settingsWindow.Top = this.Top;
+                    _settingsWindow.Popup();
+                }
+                else 
+                {
+                    Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
+                    Settings.Default.Save();
+                }
+                _dragging = false;
+
             }
-            else if(_dragging)
-            {
-                Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
-                Settings.Default.Save();
-            }
-            _dragging = false;
+            
             Stone.ReleaseMouseCapture();
         }
 
-
-        
-     
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Bye bye
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ExitAppClicked(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }
