@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Talisman.Properties;
 
 namespace Talisman
 {
@@ -15,5 +16,12 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Settings.Default.Upgrade();
+            Settings.Default.Reload();
+
+            base.OnStartup(e);
+        }
     }
 }
