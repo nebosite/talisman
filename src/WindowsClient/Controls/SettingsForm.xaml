@@ -68,7 +68,15 @@
                 </Grid>
 
             </TabItem>
-
+            <TabItem Header="About Talisman">
+                <Grid Margin="5">
+                    <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right">
+                        <Label Content="Version: " />
+                        <Label Content="{Binding VersionText}" />
+                    </StackPanel>
+                    <WebBrowser x:Name="HelpText" Margin="0,28,0,0"  />
+                </Grid>
+            </TabItem>
         </TabControl>
         <Button Content="Exit Talisman" Click="ExitAppClicked" Margin="441,10,0,0" Height="20"   HorizontalAlignment="Left" Width="84" VerticalAlignment="Top" />
     </Grid>

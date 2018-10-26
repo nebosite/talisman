@@ -1,29 +1,37 @@
 ﻿----- TODO -------------------------------
 
 NOW
+	[x] Add the version somewhere
+	[x] Add some help text
+	[ ] Notifications: 
+		[ ] Should always stay in the same place on the circle
+		[ ] should just pop up in place, not run from talisman
 	[ ] When cancelling calendar timers, remember to ignore them until after the appointment time. 
+	[ ] Some kind of logging for errors in the field
+	[ ] Hotkey configuration Tab
+	[ ] Hotkey option: snipping tool
+        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
+	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
+	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
+	[ ] Give it an icon
 	[ ] Create an install
 
 
 NEW
-	[ ] Some kind of logging for errors in the field
-	[ ] Add the version somewhere
+	[ ] Set up a social media page
 
 SOON
 	[ ] Publish on Windows store?
-	[ ] Hotkey option: snipping tool
-        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
-    [ ] Custom button for quick times
-	[ ] Hotkey configuration Tab
-	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
-	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
 	[ ] Hotkey option: quick timer
 	[ ] Hotkey option: launch app/script
 	[ ] HotKey option: Restore desktop icons to snapshot
 		- Other icons are arranged by shortcuts, media, and documents
-	[ ] Give it an icon
 
 LATER
+    [ ] Custom button for quick times
+	[ ] Hotkey combo:
+		Alt-Shift-# - remember my current window
+		ctrl-# - go to the window you remembered
 	[ ] Hot Key option: Instant email
 	[ ] Hot key option: instant Powershell prompt
 	[ ] Hot key option: instant project open

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,8 +40,25 @@ namespace Talisman
             InitializeComponent();
             this.DataContext = appModel;
             this.IsVisibleChanged += SettingsForm_IsVisibleChanged;
+            this.Loaded += SettingsForm_Loaded;
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// OnLoaded
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void SettingsForm_Loaded(object sender, RoutedEventArgs e)
+        {
+            HelpText.NavigateToStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("Talisman.Assets.Help.htm"));
+            HelpText.Navigating += HelpText_Navigating;
+        }
+
+        private void HelpText_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+            e.Cancel = true;
+            System.Diagnostics.Process.Start(e.Uri.ToString());
+        }
 
         bool _justActivated = false;
         // --------------------------------------------------------------------------
