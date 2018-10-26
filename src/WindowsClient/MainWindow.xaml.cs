@@ -61,10 +61,20 @@ namespace Talisman
             this.Loaded += MainWindow_Loaded;
             this.DataContext = _theModel;
             _theModel.OnNotification += HandleNewNotification;
+
+            int maxLocations = 10;
+            var thetaSlice = (Math.PI * 2) / maxLocations;
+            for (int i = 0; i < maxLocations; i++)
+            {
+                _emptyNotificationLocations.Add(thetaSlice * i);
+            }
         }
 
+        List<double> _emptyNotificationLocations = new List<double>();
 
         List<NotificationWidget> _notificationWindows = new List<NotificationWidget>();
+        Random rand = new Random();
+        
         // --------------------------------------------------------------------------
         /// <summary>
         /// Notification handling - make a little animation to alert the user
@@ -74,14 +84,30 @@ namespace Talisman
         {
             Dispatcher.InvokeAsync(() =>
             {
-                var newWidget = new NotificationWidget(data, _theModel);
-                newWidget.Top = Top;
-                newWidget.Left = Left;
+                double theta = rand.NextDouble() * Math.PI * 2;
+                lock(_emptyNotificationLocations)
+                {
+                    if(_emptyNotificationLocations.Count > 0)
+                    {
+                        int pick = rand.Next(_emptyNotificationLocations.Count);
+                        theta = _emptyNotificationLocations[pick];
+                        _emptyNotificationLocations.RemoveAt(pick);
+                    }
+                }
+                var newWidget = new NotificationWidget(data, _theModel, theta);
+
+                newWidget.Top = ScreenHelper.MainScreen.Bounds.Bottom;
+                newWidget.Left = ScreenHelper.MainScreen.Bounds.Width / 2 + ScreenHelper.MainScreen.Bounds.Left;
                 newWidget.Closing += (sender, args) =>
                 {
                     lock(_notificationWindows)
                     {
                         _notificationWindows.Remove(newWidget);
+                    }
+
+                    lock(_emptyNotificationLocations)
+                    {
+                        _emptyNotificationLocations.Add(newWidget.LocationTheta);
                     }
                 };
                 newWidget.Show();
@@ -160,9 +186,7 @@ namespace Talisman
 
             var stepSize = 1;
             var radius = 400;
-
             var t = (DateTime.Now - _startTime).TotalSeconds;
-
 
             NotificationWidget[] itemsToMove;
             lock(_notificationWindows)
@@ -170,12 +194,10 @@ namespace Talisman
                 itemsToMove = _notificationWindows.ToArray();
             }
 
-            var theta = 0.0;
-            var thetaDelta = itemsToMove.Length > 0 ? (Math.PI * 2) / itemsToMove.Length : 1;
             foreach (var moveMe in itemsToMove)
             {
                 moveMe.Animate();
-                var thisTheta = theta + t / 15;
+                var thisTheta = moveMe.LocationTheta + t / 15;
                 /// Move the target center around in a big circle
                 var cx = (_gravitationCenter.X + radius * Math.Cos(thisTheta)) * _xCorrection;
                 var cy =( _gravitationCenter.Y + radius * Math.Sin(thisTheta)) * _yCorrection;
@@ -191,7 +213,6 @@ namespace Talisman
                 }
                 moveMe.Left += deltaVector.X;
                 moveMe.Top += deltaVector.Y;
-                theta += thetaDelta;
             }
         }
 

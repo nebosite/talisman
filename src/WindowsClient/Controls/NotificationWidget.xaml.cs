@@ -25,17 +25,20 @@ namespace Talisman
         NotificationData _data;
         AppModel _appModel;
 
+        public double LocationTheta { get; set; }
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public NotificationWidget(NotificationData data, AppModel appModel)
+        public NotificationWidget(NotificationData data, AppModel appModel, double location)
         {
             InitializeComponent();
             this._data = data;
             this._appModel = appModel;
             this.DataContext = data;
+            LocationTheta = location;
         }
 
         DateTime _startTime = DateTime.Now;
