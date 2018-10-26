@@ -6,6 +6,17 @@ using System.Threading.Tasks;
 
 namespace Talisman
 {
+    public struct UniqueInstance
+    {
+        public string Id;
+        public DateTime Date;
+        public UniqueInstance(string id, DateTime date)
+        {
+            Id = id;
+            Date = date;
+        }
+    }
+
     // --------------------------------------------------------------------------
     /// <summary>
     /// An Instance of a timer 
@@ -16,6 +27,7 @@ namespace Talisman
         public DateTime EndsAt { get; set; }
         public string Name { get; set; }
         public int Id { get; set; }
+        public UniqueInstance? InstanceInfo { get; set; }
 
         public string EndsAtText => EndsAt.ToString(@"hh\:mm tt");
         static int _idCounter = 0;

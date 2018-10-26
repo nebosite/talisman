@@ -11,7 +11,7 @@ namespace Talisman
     /// An Instance of a calendar 
     /// </summary>
     // --------------------------------------------------------------------------
-    public class CalendarItem : BaseModel
+    public class Calendar : BaseModel
     {
         public string EndPoint { get; set; }
         Action<string> DeleteMeHandler;
@@ -21,7 +21,7 @@ namespace Talisman
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public CalendarItem(string endPoint, Action<string> deleteMe)
+        public Calendar(string endPoint, Action<string> deleteMe)
         {
             EndPoint = endPoint;
             DeleteMeHandler = deleteMe;

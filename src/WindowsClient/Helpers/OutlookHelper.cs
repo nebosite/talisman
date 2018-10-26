@@ -149,6 +149,7 @@ namespace Talisman
                     newItem.Start = appointment.Start;
                     newItem.End = appointment.End;
                     newItem.Location = appointment.Location;
+                    newItem.InstanceInfo = new UniqueInstance($"{appointment.Subject} at {appointment.Start.ToString("HHmm")}", appointment.Start);
 
                     var recurrencePattern = appointment.GetRecurrencePattern();
                     if (appointment.RecurrenceState == OlRecurrenceState.olApptOccurrence &&
@@ -173,7 +174,7 @@ namespace Talisman
                 }
                 else
                 {
-                    // TODO: What about these?
+                    // TODO: What about these things that are not tasks?
                 }
             }
 

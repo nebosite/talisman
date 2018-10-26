@@ -131,7 +131,7 @@
     <Compile Include="Controls\NotificationWidget.xaml.cs">
       <DependentUpon>NotificationWidget.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\CalendarItem.cs" />
+    <Compile Include="Models\Calendar.cs" />
     <Compile Include="Models\TimerInstance.cs" />
     <Compile Include="Models\NotificationData.cs" />
     <Compile Include="Helpers\OutlookHelper.cs" />

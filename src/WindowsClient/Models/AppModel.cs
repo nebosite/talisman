@@ -68,7 +68,7 @@ namespace Talisman
         /// <summary>
         /// All the calendars
         /// </summary>
-        public ObservableCollection<CalendarItem> Calendars { get; set; } = new ObservableCollection<CalendarItem>();
+        public ObservableCollection<Calendar> Calendars { get; set; } = new ObservableCollection<Calendar>();
 
 
         Action<Action> _dispatch;
@@ -131,6 +131,8 @@ namespace Talisman
             }
         }
 
+        List<UniqueInstance> _cancelledInstances = new List<UniqueInstance>();
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Look at the outlook calendar for stuff
@@ -149,7 +151,7 @@ namespace Talisman
 
                         foreach(var item in _outlook.GetNextTimerRelatedItems())
                         {
-                            StartTimer(item.Start, "Outlook: " + item.Title, noDuplicates: true);
+                            StartTimer(item.Start, "Outlook: " + item.Title, noDuplicates: true, instanceInfo: item.InstanceInfo);
                         }
                     }
                 }
@@ -209,8 +211,11 @@ namespace Talisman
                     lock (ActiveTimers)
                     {
                         ActiveTimers.Remove(timer);
+                        if(timer.InstanceInfo != null)
+                        {
+                            _cancelledInstances.Add(timer.InstanceInfo.Value);
+                        }
                     }
-
                 });
             }
             NotifyAllPropertiesChanged();
@@ -221,11 +226,11 @@ namespace Talisman
         /// Start a timer for some span of time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(double minutes, string name = null, bool noDuplicates = false)
+        internal void StartTimer(double minutes, string name = null, bool noDuplicates = false, UniqueInstance? instanceInfo = null)
         {
             var endTime = DateTime.Now.AddMinutes(minutes);
             var timerName = name ?? $"{QuickTimerName} [{minutes.ToString(".0")} min]";
-            StartTimerInternal(endTime, timerName, noDuplicates);
+            StartTimerInternal(endTime, timerName, noDuplicates, instanceInfo);
         }
 
         // --------------------------------------------------------------------------
@@ -233,10 +238,10 @@ namespace Talisman
         /// Start a timer at some absolute time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(DateTime endTime, string name = null, bool noDuplicates = false)
+        internal void StartTimer(DateTime endTime, string name = null, bool noDuplicates = false, UniqueInstance? instanceInfo = null)
         {
             var timerName = name ?? $"{QuickTimerName} [{endTime.ToString(@"hh\:mm tt")}]";
-            StartTimerInternal(endTime, timerName, noDuplicates);
+            StartTimerInternal(endTime, timerName, noDuplicates, instanceInfo);
         }
 
 
@@ -245,8 +250,10 @@ namespace Talisman
         /// Start a timer at some absolute time
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimerInternal(DateTime endTime, string timerName, bool noDuplicates)
+        internal void StartTimerInternal(DateTime endTime, string timerName, bool noDuplicates, UniqueInstance? instanceInfo)
         {
+            // Since calendar items are added multiple times per day, we want to not add the item
+            // if it is already on the timer list
             if(noDuplicates)
             {
                 if(ActiveTimers.Where(t => t.Name == timerName).Any())
@@ -255,10 +262,31 @@ namespace Talisman
                 }
             }
 
+            // If an item has information about a unique instance, then we don't
+            // want to start the timer of the instance is already cancelled.   e.g.:  When the
+            // user does an early cancellation of a calendar item, we don't want to bring it up 
+            // again when the app re-reads the calendar looking for new appointments.
+            if(instanceInfo != null)
+            {
+                foreach (var cancelledInstance in _cancelledInstances.ToArray())
+                {
+                    // Remove old cancelled instances
+                    if (cancelledInstance.Date.Day != DateTime.Now.Day)
+                    {
+                        _cancelledInstances.Remove(cancelledInstance);
+                    }
+                    else if (instanceInfo.Value.Id == cancelledInstance.Id)
+                    {
+                        return;
+                    }
+                }
+            }
+
             _dispatch(() =>
             {
                 var newTimer = new TimerInstance(endTime, timerName,
                     (id) => RemoveTimers(ActiveTimers.Where(t => t.Id == id).ToArray()));
+                newTimer.InstanceInfo = instanceInfo;
                 for (int i = 0; i < ActiveTimers.Count; i++)
                 {
                     if (newTimer.EndsAt < ActiveTimers[i].EndsAt)
@@ -325,7 +353,7 @@ namespace Talisman
         {
             if(!Calendars.Where(c => c.EndPoint.ToLower() == calendarPointer.ToLower()).Any())
             {
-                Calendars.Add(new CalendarItem( calendarPointer, DeleteCalendar));
+                Calendars.Add(new Calendar( calendarPointer, DeleteCalendar));
                 SaveCalendarSettings();
             }
         }

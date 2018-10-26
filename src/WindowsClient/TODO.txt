@@ -6,7 +6,7 @@ NOW
 	[x] Notifications: 
 		[x] Should always stay in the same place on the circle
 		[x] should just pop up in place, not run from talisman
-	[ ] When cancelling calendar timers, remember to ignore them until after the appointment time. 
+	[x] When cancelling calendar timers, remember to ignore them until after the appointment time. 
 	[ ] Some kind of logging for errors in the field
 	[ ] Hotkey configuration Tab
 	[ ] Hotkey option: snipping tool
