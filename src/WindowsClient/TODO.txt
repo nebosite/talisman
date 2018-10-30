@@ -1,33 +1,41 @@
 ﻿----- TODO -------------------------------
 
 NOW
-	[x] Add the version somewhere
-	[x] Add some help text
-	[x] Notifications: 
-		[x] Should always stay in the same place on the circle
-		[x] should just pop up in place, not run from talisman
-	[x] When cancelling calendar timers, remember to ignore them until after the appointment time. 
-	[ ] Some kind of logging for errors in the field
 	[ ] Hotkey configuration Tab
+		[x] Alt key doesn't work right
+		[x] Look at how we actually assign hotkeys to see if we can reuse the key
+		[x] Have an error text window
+			[x] Error on key == None
+			[x] Error on no modifier
+		[ ] Assigning a hotkey should add an item to the list
+			[ ] Should not add if hotkey is already assigned
+			[ ] Should be able to delete items from the list
 	[ ] Hotkey option: snipping tool
         [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
-	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
 	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
 	[ ] Give it an icon
-	[ ] Create an install
+	[ ] Remember meetings to ignore
 
 
 NEW
-	[ ] Set up a social media page
 
 SOON
+	[ ] TODO Tab
+	[ ] Generate a pomodoro from a list of items
+
+LATER
+	[ ] Hotkey: Quick create shortcuts from running apps
+	[ ] App Drawers
+	[ ] Auto-cancel when there are too many notifications
+	[ ] Set up a social media page
+	[ ] Create an install
 	[ ] Publish on Windows store?
 	[ ] Hotkey option: quick timer
 	[ ] Hotkey option: launch app/script
 	[ ] HotKey option: Restore desktop icons to snapshot
 		- Other icons are arranged by shortcuts, media, and documents
-
-LATER
+	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
+	[ ] Some kind of logging for errors in the field
     [ ] Custom button for quick times
 	[ ] Hotkey combo:
 		Alt-Shift-# - remember my current window
@@ -50,6 +58,13 @@ LATER
 
 
 DONE  ==================================================================================================
+	[x] Add the version somewhere
+	[x] Add some help text
+	[x] Notifications: 
+		[x] Should always stay in the same place on the circle
+		[x] should just pop up in place, not run from talisman
+	[x] When cancelling calendar timers, remember to ignore them until after the appointment time. 
+
 	[x] Context menu with exit
 		[x] plus an exit in the settings
 	[x] When restoring location, make sure the Talisman is visible

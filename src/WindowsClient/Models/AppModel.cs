@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Input;
 using Talisman.Properties;
 
 namespace Talisman
@@ -23,7 +24,32 @@ namespace Talisman
     public class AppModel : BaseModel
     {
         public string VersionText => "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        Timer _tickTimer; 
+        Timer _tickTimer;
+
+        HotKeyAssignment _openHotKey = null;
+        public HotKeyAssignment OpenHotKey
+        {
+            get => _openHotKey;
+            set
+            {
+                _openHotKey = value;
+                NotifyPropertyChanged(nameof(OpenHotKey));
+                _openHotKey.NotifyAllPropertiesChanged();
+            }
+        }
+
+        public HotKeyOption[]  HotKeyOptions { get; set; }
+
+        HotKeyOption _selectedHotKeyOption;
+        public HotKeyOption SelectedHotKeyOption
+        {
+            get => _selectedHotKeyOption;
+            set
+            {
+                _selectedHotKeyOption = value;
+                NotifyPropertyChanged(nameof(SelectedHotKeyOption));
+            }
+        }
 
         /// <summary>
         /// Current Timer properties
@@ -79,6 +105,8 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public AppModel(Action<Action> dispatch)
         {
+            HotKeyOptions = JsonConvert.DeserializeObject<HotKeyOption[]>(AssemblyHelper.GetResourceText("HotKeyOptions.json"));
+            SelectedHotKeyOption = HotKeyOptions[0];
             _dispatch = dispatch;
             _tickTimer = new Timer();
             _tickTimer.Elapsed += TimerTick;
@@ -314,6 +342,18 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Assign a hotkey to the selected hotkey item
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void AssignHotKey()
+        {
+            OpenHotKey.Validate();
+
+            OpenHotKey = new HotKeyAssignment();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Delete a calendar item
         /// </summary>
         // --------------------------------------------------------------------------
@@ -327,7 +367,6 @@ namespace Talisman
                 {
                     Calendars.Remove(calendarItem);
                 }
-
                 SaveCalendarSettings();
             });
 

@@ -128,6 +128,7 @@ namespace Talisman
         {
             _justActivated = true;
             TimeClicker.Children.Clear();
+            ClearHotKey(null, null);
 
             Show();
         }
@@ -267,6 +268,52 @@ namespace Talisman
         private void ExitAppClicked(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        bool _newHotKey_Shift = false;
+        bool _newHotKey_Ctrl = false;
+        bool _newHotKey_Alt = false;
+        Key _newHotKey_Letter = Key.None;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Preview key strokes for hotkey assignment
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void PreviewHotKeyEvent(object sender, KeyEventArgs e)
+        {
+            Debug.WriteLine($"KEY: {e.Key} [{e.SystemKey}] ({e.KeyStates}) ");
+            var key = e.Key;
+            if (key == Key.System) key = e.SystemKey;
+            _appModel.OpenHotKey.AddModifier(key);
+            e.Handled = true;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Assign the designated key combination to a hotkey
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AssignHotKey(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _appModel.AssignHotKey();
+            }
+            catch(Exception err)
+            {
+                AssignmentError.Content = err.Message;
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Clear the hotkey combination
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ClearHotKey(object sender, RoutedEventArgs e)
+        {
+            _appModel.OpenHotKey = new HotKeyAssignment();
         }
     }
 }

@@ -68,6 +68,27 @@
                 </Grid>
 
             </TabItem>
+            <TabItem Header="Hotkeys" >
+                <Grid Margin="5" PreviewKeyDown="PreviewHotKeyEvent" >
+                    <StackPanel >
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Content="Press a hotkey combination:" />
+                            <Label Content="{Binding OpenHotKey.TextView}" Width="150" Background="LightBlue" />
+                            <ComboBox ItemsSource="{Binding HotKeyOptions}" SelectedValue="{Binding SelectedHotKeyOption}" DisplayMemberPath="Name" Width="150"/>
+
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" >
+                            <Button Content="Assign" Click="AssignHotKey" Margin="20,0,0,0"/>
+                            <Button Content="Clear" Click="ClearHotKey"  Margin="10,0,0,0"/>
+                            <Label x:Name="AssignmentError" Foreground="Red" Margin="10,0,0,0"/>
+                        </StackPanel>
+                        <Label Content="Current HotKey Assignments:" Margin="0,20,0,0" />
+                        <ListBox ItemsSource="{Binding HotKeySubscriptions}" DisplayMemberPath="Name" >
+                            
+                        </ListBox>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
             <TabItem Header="About Talisman">
                 <Grid Margin="5">
                     <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right">

@@ -83,8 +83,11 @@
     <Compile Include="Controls\AddInternetCalendarDialog.xaml.cs">
       <DependentUpon>AddInternetCalendarDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\AssemblyHelper.cs" />
     <Compile Include="Helpers\ScreenHelper.cs" />
     <Compile Include="Helpers\HotKeyHelper.cs" />
+    <Compile Include="Models\HotKeyAssignment.cs" />
+    <Compile Include="Models\HotKeyOption.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\AppModel.cs" />
     <Compile Include="Controls\SettingsForm.xaml.cs">
@@ -155,6 +158,7 @@
     <EmbeddedResource Include="Assets\Help.rtf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Assets\HotKeyOptions.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
