@@ -46,5 +46,17 @@ namespace Talisman.Properties {
                 this["Calendars"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NA")]
+        public string CurrentVersion {
+            get {
+                return ((string)(this["CurrentVersion"]));
+            }
+            set {
+                this["CurrentVersion"] = value;
+            }
+        }
     }
 }

@@ -8,5 +8,8 @@
     <Setting Name="Calendars" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="CurrentVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NA</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

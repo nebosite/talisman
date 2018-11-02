@@ -26,6 +26,9 @@ namespace Talisman
         AppModel _appModel;
 
         public double LocationTheta { get; set; }
+        public Point Center { get; internal set; }
+
+        DraggingLogic _draggingLogic;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -39,6 +42,11 @@ namespace Talisman
             this._appModel = appModel;
             this.DataContext = data;
             LocationTheta = location;
+            _draggingLogic = new DraggingLogic(this);
+            _draggingLogic.OnPositionChanged += (xm, ym) =>
+            {
+                Center = new Point(Center.X + xm, Center.Y + ym);
+            };
         }
 
         DateTime _startTime = DateTime.Now;

@@ -1,6 +1,8 @@
 ﻿----- TODO -------------------------------
 
 NOW
+	[x] Exiting Talisman should close all the notifications
+	[x] Dismiss windows should be draggable (moves the center of dragging)
 	[ ] Hotkey configuration Tab
 		[x] Alt key doesn't work right
 		[x] Look at how we actually assign hotkeys to see if we can reuse the key
