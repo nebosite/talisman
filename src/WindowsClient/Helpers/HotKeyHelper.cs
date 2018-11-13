@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -26,6 +21,9 @@ namespace Talisman
         WindowsKey = 8,     // MOD_WIN
     }
 
+    /// <summary>
+    /// A helpful interface for abstracting this
+    /// </summary>
     public interface IHotKeyTool : IDisposable
     {
         int ListenForHotKey(System.Windows.Input.Key key, HotKeyModifiers modifiers, Action keyAction);
@@ -45,10 +43,6 @@ namespace Talisman
         protected static extern bool RegisterHotKey(IntPtr hwnd, int id, uint fsModifiers, uint vk);
         [DllImport("user32", SetLastError = true)]
         protected static extern int UnregisterHotKey(IntPtr hwnd, int id);
-        [DllImport("kernel32", SetLastError = true)]
-        protected static extern short GlobalAddAtom(string lpString);
-        [DllImport("kernel32", SetLastError = true)]
-        protected static extern short GlobalDeleteAtom(short nAtom);
 
         protected const int WM_HOTKEY = 0x312;
 
@@ -76,7 +70,7 @@ namespace Talisman
         public HotKeyHelper(Window handlerWindow)
         {
             // Create a unique Id seed
-            _idSeed = (int)(DateTime.Now.Ticks % 1000000000 + 500000000);
+            _idSeed = (int)((DateTime.Now.Ticks % 0x60000000) + 0x10000000);
 
             // Set up the hook to listen for hot keys
             _windowHandle = new WindowInteropHelper(handlerWindow).Handle;
@@ -90,17 +84,17 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Intermediate processing of hotkeys
+        /// Listen generally for hotkeys and route to the assigned action
         /// </summary>
         // --------------------------------------------------------------------------
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_HOTKEY) 
             {
-                var id = wParam.ToInt32();
-                if (_hotKeyActions.ContainsKey(id))
+                var hotkeyId = wParam.ToInt32();
+                if (_hotKeyActions.ContainsKey(hotkeyId))
                 {
-                    _hotKeyActions[id]();
+                    _hotKeyActions[hotkeyId]();
                     handled = true;
                 }
             }
@@ -109,41 +103,41 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Tell what key you want to listen for.  Returns an id representing
-        /// this particular key combination.  Use this in your handler to 
-        /// disambiguate what key was pressed.
+        /// Assign a key to a specific action.  Returns an id to allow you to stop
+        /// listening to this key.
         /// </summary>
         // --------------------------------------------------------------------------
         public int ListenForHotKey(System.Windows.Input.Key key, HotKeyModifiers modifiers, Action doThis)
         {
             var formsKey = (Keys)KeyInterop.VirtualKeyFromKey(key);
 
-            RegisterHotKey(_windowHandle, _idSeed, (uint)modifiers, (uint)formsKey);
-            var id = _idSeed++;
-            _hotKeyActions[id] = doThis;
-            return id;
+            var hotkeyId = _idSeed++;
+            _hotKeyActions[hotkeyId] = doThis;
+            RegisterHotKey(_windowHandle, hotkeyId, (uint)modifiers, (uint)formsKey);
+            return hotkeyId;
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Stop listening for hotkeys
+        /// Stop listening for hotkeys. 
+        ///     hotkeyId      The id returned from ListenForHotKey
         /// </summary>
         // --------------------------------------------------------------------------
-        public void StopListeningForHotKey(int id)
+        public void StopListeningForHotKey(int hotkeyId)
         {
-            UnregisterHotKey(_windowHandle, id);
+            UnregisterHotKey(_windowHandle, hotkeyId);
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Dispose
+        /// Dispose - automatically clean up the hotkey assignments
         /// </summary>
         // --------------------------------------------------------------------------
         public void Dispose()
         {
-            foreach(var id in _hotKeyActions.Keys)
+            foreach(var hotkeyId in _hotKeyActions.Keys)
             {
-                StopListeningForHotKey(id);
+                StopListeningForHotKey(hotkeyId);
             }
         }
     }
