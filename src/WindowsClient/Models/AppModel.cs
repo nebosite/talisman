@@ -51,6 +51,8 @@ namespace Talisman
             }
         }
 
+        public ObservableCollection<HotKeyAssignment> HotKeyAssignments { get; set; } = new ObservableCollection<HotKeyAssignment>();
+
         /// <summary>
         /// Current Timer properties
         /// </summary>
@@ -125,38 +127,17 @@ namespace Talisman
 
         OutlookHelper _outlook;
         DateTime _nextCalendarCheck = DateTime.MinValue;
-        HotKeyHelper _hotKeys;
-        uint key_5min;
-        uint key_quickTimer;
+        IHotKeyTool _hotKeys;
 
         // --------------------------------------------------------------------------
         /// <summary>
         /// Set up hotkey listening
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void InitHotKeys(MainWindow mainWindow)
+        internal void InitHotKeys(IHotKeyTool hotKeyTool)
         {
-            _hotKeys = new HotKeyHelper(mainWindow, HandleHotKey);
-            key_5min = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.D5, HotKeyModifiers.Control);
-            key_quickTimer = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.Z, HotKeyModifiers.Control | HotKeyModifiers.Shift);
-            //hotKey2 = _hotKeys.ListenForHotKey(System.Windows.Forms.Keys.F9, HotKeyModifiers.WindowsKey | HotKeyModifiers.Shift);
-        }
-
-        // --------------------------------------------------------------------------
-        /// <summary>
-        /// Hotkey handler.  The keyId is the return value from ListenForHotKey()
-        /// </summary>
-        // --------------------------------------------------------------------------
-        void HandleHotKey(int keyId)
-        {
-            if (keyId == key_5min)
-            {
-                this.StartTimer(5, "Hotkey Timer");
-            }
-            else if(keyId == key_quickTimer)
-            {
-                this.StartTimer(.01, "Hotkey Timer");
-            }
+            _hotKeys = hotKeyTool;
+            AssignHotKey(new HotKeyAssignment() { CtrlModifier = true, Letter = Key.D5, OptionName = "QuickTimer", OptionValue = "5" });
         }
 
         List<UniqueInstance> _cancelledInstances = new List<UniqueInstance>();
@@ -345,11 +326,43 @@ namespace Talisman
         /// Assign a hotkey to the selected hotkey item
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void AssignHotKey()
+        internal void AssignHotKey(HotKeyAssignment assignment = null)
         {
-            OpenHotKey.Validate();
+            var clearOpenKey = true;
+            if (assignment == null)
+            {
+                assignment = OpenHotKey;
+                clearOpenKey = false;
+            }
+            assignment.Validate();
+            if(HotKeyAssignments.Where(hk => hk == assignment).Any())
+            {
+                throw new ApplicationException("That hotkey is already assigned.");
+            }
 
-            OpenHotKey = new HotKeyAssignment();
+            Action hotKeyAction = null;
+            switch(assignment.OptionName)
+            {
+                case "QuickTimer":
+                    var minutes = double.Parse(assignment.OptionValue);
+                    hotKeyAction = () => StartTimer(minutes, "Quick Timer");
+                    break;
+            }
+
+            HotKeyAssignments.Add(assignment);
+            Activate(assignment, hotKeyAction);
+
+            if(clearOpenKey) OpenHotKey = new HotKeyAssignment();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Engage this hotkey with the system
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void Activate(HotKeyAssignment hotKeyAssignment, Action hotKeyAction)
+        {
+            _hotKeys.ListenForHotKey(hotKeyAssignment.Letter, hotKeyAssignment.Modifiers, hotKeyAction);
         }
 
         // --------------------------------------------------------------------------

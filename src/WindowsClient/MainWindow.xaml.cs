@@ -141,7 +141,7 @@ namespace Talisman
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            _theModel.InitHotKeys(this);
+            _theModel.InitHotKeys(new HotKeyHelper(this));
         }
 
         // --------------------------------------------------------------------------

@@ -314,6 +314,7 @@ namespace Talisman
         private void ClearHotKey(object sender, RoutedEventArgs e)
         {
             _appModel.OpenHotKey = new HotKeyAssignment();
+            AssignmentError.Content = "";
         }
     }
 }

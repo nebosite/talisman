@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Interop;
 
 namespace Talisman
@@ -18,10 +19,17 @@ namespace Talisman
     [Flags]
     public enum HotKeyModifiers
     {
+        None = 0,
         Alt = 1,            // MOD_ALT
         Control = 2,        // MOD_CONTROL
         Shift = 4,          // MOD_SHIFT
         WindowsKey = 8,     // MOD_WIN
+    }
+
+    public interface IHotKeyTool : IDisposable
+    {
+        int ListenForHotKey(System.Windows.Input.Key key, HotKeyModifiers modifiers, Action keyAction);
+        void StopListeningForHotKey(int id);
     }
 
     // --------------------------------------------------------------------------
@@ -29,25 +37,25 @@ namespace Talisman
     /// A nice generic class to register multiple hotkeys for your app
     /// </summary>
     // --------------------------------------------------------------------------
-    public class HotKeyHelper : IDisposable
+    public class HotKeyHelper : IHotKeyTool
     {
         // Required interop declarations for working with hotkeys
         [DllImport("user32", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool RegisterHotKey(IntPtr hwnd, int id, uint fsModifiers, uint vk);
+        protected static extern bool RegisterHotKey(IntPtr hwnd, int id, uint fsModifiers, uint vk);
         [DllImport("user32", SetLastError = true)]
-        public static extern int UnregisterHotKey(IntPtr hwnd, int id);
+        protected static extern int UnregisterHotKey(IntPtr hwnd, int id);
         [DllImport("kernel32", SetLastError = true)]
-        public static extern short GlobalAddAtom(string lpString);
+        protected static extern short GlobalAddAtom(string lpString);
         [DllImport("kernel32", SetLastError = true)]
-        public static extern short GlobalDeleteAtom(short nAtom);
+        protected static extern short GlobalDeleteAtom(short nAtom);
 
-        public const int WM_HOTKEY = 0x312;
+        protected const int WM_HOTKEY = 0x312;
 
         /// <summary>
         /// The unique ID to receive hotkey messages
         /// </summary>
-        public short HotkeyID { get; private set; }
+        int _idSeed;
 
         /// <summary>
         /// Handle to the window listening to hotkeys
@@ -55,9 +63,9 @@ namespace Talisman
         private IntPtr _windowHandle;
 
         /// <summary>
-        /// Callback for hot keys
+        /// Remember what to do with the hot keys
         /// </summary>
-        Action<int> _onHotKeyPressed;
+        Dictionary<int, Action> _hotKeyActions = new Dictionary<int, Action>();
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -65,13 +73,10 @@ namespace Talisman
         /// </summary>
         // --------------------------------------------------------------------------
 
-        public HotKeyHelper(Window handlerWindow, Action<int> hotKeyHandler)
+        public HotKeyHelper(Window handlerWindow)
         {
-            _onHotKeyPressed = hotKeyHandler;
-
-            // Create a unique Id for this class in this instance
-            string atomName = Thread.CurrentThread.ManagedThreadId.ToString("X8") + this.GetType().FullName;
-            HotkeyID = GlobalAddAtom(atomName);
+            // Create a unique Id seed
+            _idSeed = (int)(DateTime.Now.Ticks % 1000000000 + 500000000);
 
             // Set up the hook to listen for hot keys
             _windowHandle = new WindowInteropHelper(handlerWindow).Handle;
@@ -90,10 +95,14 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == WM_HOTKEY && wParam.ToInt32() == HotkeyID)
+            if (msg == WM_HOTKEY) 
             {
-                _onHotKeyPressed?.Invoke(lParam.ToInt32());
-                handled = true;
+                var id = wParam.ToInt32();
+                if (_hotKeyActions.ContainsKey(id))
+                {
+                    _hotKeyActions[id]();
+                    handled = true;
+                }
             }
             return IntPtr.Zero;
         }
@@ -105,10 +114,14 @@ namespace Talisman
         /// disambiguate what key was pressed.
         /// </summary>
         // --------------------------------------------------------------------------
-        public uint ListenForHotKey(Keys key, HotKeyModifiers modifiers)
+        public int ListenForHotKey(System.Windows.Input.Key key, HotKeyModifiers modifiers, Action doThis)
         {
-            RegisterHotKey(_windowHandle, HotkeyID, (uint)modifiers, (uint)key);
-            return (uint)modifiers | (((uint)key) << 16);
+            var formsKey = (Keys)KeyInterop.VirtualKeyFromKey(key);
+
+            RegisterHotKey(_windowHandle, _idSeed, (uint)modifiers, (uint)formsKey);
+            var id = _idSeed++;
+            _hotKeyActions[id] = doThis;
+            return id;
         }
 
         // --------------------------------------------------------------------------
@@ -116,15 +129,9 @@ namespace Talisman
         /// Stop listening for hotkeys
         /// </summary>
         // --------------------------------------------------------------------------
-        private void StopListening()
+        public void StopListeningForHotKey(int id)
         {
-            if (this.HotkeyID != 0)
-            {
-                UnregisterHotKey(_windowHandle, HotkeyID);
-                // clean up the atom list
-                GlobalDeleteAtom(HotkeyID);
-                HotkeyID = 0;
-            }
+            UnregisterHotKey(_windowHandle, id);
         }
 
         // --------------------------------------------------------------------------
@@ -134,7 +141,10 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public void Dispose()
         {
-            StopListening();
+            foreach(var id in _hotKeyActions.Keys)
+            {
+                StopListeningForHotKey(id);
+            }
         }
     }
 }
