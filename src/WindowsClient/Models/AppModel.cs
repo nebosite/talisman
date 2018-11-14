@@ -357,12 +357,24 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Delete the specified HotKey
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void DeleteHotHey(int hotkeyId)
+        {
+            _hotKeys.StopListeningForHotKey(hotkeyId);
+            var assignment = this.HotKeyAssignments.Where(a => a.Id == hotkeyId).FirstOrDefault();
+            if (assignment != null) HotKeyAssignments.Remove(assignment);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Engage this hotkey with the system
         /// </summary>
         // --------------------------------------------------------------------------
         private void Activate(HotKeyAssignment hotKeyAssignment, Action hotKeyAction)
         {
-            _hotKeys.ListenForHotKey(hotKeyAssignment.Letter, hotKeyAssignment.Modifiers, hotKeyAction);
+            hotKeyAssignment.Id =  _hotKeys.ListenForHotKey(hotKeyAssignment.Letter, hotKeyAssignment.Modifiers, hotKeyAction);
         }
 
         // --------------------------------------------------------------------------

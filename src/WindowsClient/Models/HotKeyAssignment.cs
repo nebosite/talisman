@@ -15,6 +15,7 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class HotKeyAssignment : BaseModel
     {
+        public int Id { get; set; }
         public bool CtrlModifier { get; set; }
         public bool ShiftModifier { get; set; }
         public bool AltModifier { get; set; }
@@ -33,7 +34,6 @@ namespace Talisman
                 return output;
             }
         }
-
 
 
         public string OptionName { get; set; }

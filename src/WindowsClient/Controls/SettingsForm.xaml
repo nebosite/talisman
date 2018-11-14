@@ -90,6 +90,7 @@
                                         <Label Content="{Binding}" />
                                         <Label Content="{Binding OptionName}" />
                                         <Label Content="{Binding OptionValue}" />
+                                        <Button Content="ý" FontFamily="Wingdings" FontSize="16" Click="DeleteHotKeyClick" Tag="{Binding Id}" Padding="0" Height="18" VerticalAlignment="Top" Foreground="DarkRed" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

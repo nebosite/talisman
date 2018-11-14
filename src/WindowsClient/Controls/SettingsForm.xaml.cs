@@ -316,5 +316,16 @@ namespace Talisman
             _appModel.OpenHotKey = new HotKeyAssignment();
             AssignmentError.Content = "";
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Clear the hotkey combination
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void DeleteHotKeyClick(object sender, RoutedEventArgs e)
+        {
+            var sourceButton = sender as Button;
+            _appModel.DeleteHotHey((int)(sourceButton.Tag));
+        }
     }
 }
