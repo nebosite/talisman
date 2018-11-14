@@ -1,8 +1,10 @@
 ﻿[
   {
-    "Name": "Screen Snippet"
+    "Name": "Quick Email",
+    "DefaultArgument":   "somebody@someplace.com"
   },
   {
-    "Name":  "Launch ScreenSaver"
+    "Name": "Quick Timer",
+    "DefaultArgument": "5"
   }
 ]

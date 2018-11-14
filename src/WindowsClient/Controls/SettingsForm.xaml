@@ -69,13 +69,17 @@
 
             </TabItem>
             <TabItem Header="Hotkeys" >
-                <Grid Margin="5" PreviewKeyDown="PreviewHotKeyEvent" >
+                <Grid Margin="5" >
                     <StackPanel >
                         <StackPanel Orientation="Horizontal" >
                             <Label Content="Press a hotkey combination:" />
-                            <Label Content="{Binding OpenHotKey.TextView}" Width="150" Background="LightBlue" />
+                            <TextBox Text="{Binding OpenHotKey.TextView,Mode=OneWay}" Width="150" Background="LightBlue" PreviewKeyDown="PreviewHotKeyEvent" />
                             <ComboBox ItemsSource="{Binding HotKeyOptions}" SelectedValue="{Binding SelectedHotKeyOption}" DisplayMemberPath="Name" Width="150"/>
 
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Argument:" Margin="160,0,0,0" />
+                            <TextBox Text="{Binding HotKeyOptionValue,Mode=TwoWay}" Width="250" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" >
                             <Button Content="Assign" Click="AssignHotKey" Margin="20,0,0,0"/>

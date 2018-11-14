@@ -72,6 +72,17 @@ namespace Talisman
             }
         }
 
+        string _hotKeyOptionValue = "";
+        public string HotKeyOptionValue
+        {
+            get => _hotKeyOptionValue;
+            set
+            {
+                _hotKeyOptionValue = value;
+                NotifyPropertyChanged(nameof(HotKeyOptionValue));
+            }
+        }
+
         string _customQuickTime = "60";
         public string CustomQuickTime
         {
@@ -122,6 +133,7 @@ namespace Talisman
                     AddCalendar(endPoint);
                 }
             }
+
             _tickTimer.Start();
         }
 
@@ -137,7 +149,11 @@ namespace Talisman
         internal void InitHotKeys(IHotKeyTool hotKeyTool)
         {
             _hotKeys = hotKeyTool;
-            AssignHotKey(new HotKeyAssignment() { CtrlModifier = true, Letter = Key.D5, OptionName = "QuickTimer", OptionValue = "5" });
+            var hotKeys = JsonConvert.DeserializeObject<HotKeyAssignment[]>(Settings.Default.HotKeys);
+            foreach (var hotKey in hotKeys)
+            {
+                AssignHotKey(hotKey);
+            }
         }
 
         List<UniqueInstance> _cancelledInstances = new List<UniqueInstance>();
@@ -332,8 +348,11 @@ namespace Talisman
             if (assignment == null)
             {
                 assignment = OpenHotKey;
+                assignment.OptionName = SelectedHotKeyOption.Name;
+                assignment.OptionValue = HotKeyOptionValue;
                 clearOpenKey = false;
             }
+            
             assignment.Validate();
             if(HotKeyAssignments.Where(hk => hk == assignment).Any())
             {
@@ -343,9 +362,18 @@ namespace Talisman
             Action hotKeyAction = null;
             switch(assignment.OptionName)
             {
-                case "QuickTimer":
-                    var minutes = double.Parse(assignment.OptionValue);
-                    hotKeyAction = () => StartTimer(minutes, "Quick Timer");
+                case "Quick Timer":
+                    if(double.TryParse(assignment.OptionValue, out var minutes))
+                    {
+                        hotKeyAction = () => StartTimer(minutes, "Quick Timer");
+                    }
+                    else
+                    {
+                        hotKeyAction = () => MessageBox.Show($"Failed action {assignment.OptionName}- bad argument.");
+                    }
+                    break;
+                default:
+                    hotKeyAction = () => MessageBox.Show($"No action available for {assignment.OptionName}");
                     break;
             }
 
@@ -375,6 +403,17 @@ namespace Talisman
         private void Activate(HotKeyAssignment hotKeyAssignment, Action hotKeyAction)
         {
             hotKeyAssignment.Id =  _hotKeys.ListenForHotKey(hotKeyAssignment.Letter, hotKeyAssignment.Modifiers, hotKeyAction);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Update the remembered user settings
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void UpdateSettings()
+        {
+            Settings.Default.HotKeys = JsonConvert.SerializeObject(HotKeyAssignments.ToArray());
+            Settings.Default.Save();
         }
 
         // --------------------------------------------------------------------------

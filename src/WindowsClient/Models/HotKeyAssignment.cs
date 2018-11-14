@@ -39,7 +39,7 @@ namespace Talisman
         public string OptionName { get; set; }
         public string TextView => this.ToString();
 
-        public string OptionValue { get; internal set; }
+        public string OptionValue { get; set; }
 
         // --------------------------------------------------------------------------
         /// <summary>

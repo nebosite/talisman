@@ -299,6 +299,9 @@ namespace Talisman
             try
             {
                 _appModel.AssignHotKey();
+                _appModel.OpenHotKey = new HotKeyAssignment();
+                AssignmentError.Content = "";
+                _appModel.UpdateSettings();
             }
             catch(Exception err)
             {
@@ -326,6 +329,7 @@ namespace Talisman
         {
             var sourceButton = sender as Button;
             _appModel.DeleteHotHey((int)(sourceButton.Tag));
+            _appModel.UpdateSettings();
         }
     }
 }

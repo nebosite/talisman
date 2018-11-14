@@ -58,5 +58,17 @@ namespace Talisman.Properties {
                 this["CurrentVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("[]")]
+        public string HotKeys {
+            get {
+                return ((string)(this["HotKeys"]));
+            }
+            set {
+                this["HotKeys"] = value;
+            }
+        }
     }
 }
