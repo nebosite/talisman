@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Office.Interop.Outlook;
 
 namespace Talisman
@@ -15,7 +13,7 @@ namespace Talisman
     /// Helper class for working with outlook
     /// </summary>
     // --------------------------------------------------------------------------
-    class OutlookHelper
+    public class OutlookHelper
     {
         /// <summary>
         /// 
@@ -85,11 +83,41 @@ namespace Talisman
                         "             Close Outlook (This will bring up a dialog box)\r\n" +
                         "             Turn off UAC.");
                 }
-
                 throw;
             }
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Send an email through outlook
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void SendMail(string toAddress, string subject, string body)
+        {
+            var newMail = (MailItem)OutlookApp.CreateItem(OlItemType.olMailItem);
+
+            foreach (var recipient in toAddress.Split(new char[] { ';', ',' }))
+            {
+                newMail.Recipients.Add(recipient.Trim());
+            }
+
+            newMail.Subject = subject;
+            newMail.Body = body;
+
+            Account acc = null;
+
+            //Look for our account in the Outlook
+            foreach (Account account in OutlookApp.Session.Accounts)
+            {
+                acc = account;
+                break;
+            }
+
+            newMail.SendUsingAccount = acc;
+            newMail.Send();
+        }
+
+        int failureCount = 0;
         // --------------------------------------------------------------------------
         /// <summary>
         /// Get items from outlook that are time sensitive in some lookahead window
@@ -97,16 +125,26 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public TimeRelatedItem[] GetNextTimerRelatedItems(double hoursAhead = 8)
         {
-            var folders = OutlookApp.Session.Folders;
-            List<TimeRelatedItem> returnItems = new List<TimeRelatedItem>();
+            try
+            {
+                var folders = OutlookApp.Session.Folders;
+                List<TimeRelatedItem> returnItems = new List<TimeRelatedItem>();
 
-            var endDate = DateTime.Now.AddHours(8);
-            GetTimeRelatedTimesFromFolder(OlDefaultFolders.olFolderCalendar, endDate, returnItems);
-            GetTimeRelatedTimesFromFolder(OlDefaultFolders.olFolderTasks, endDate, returnItems);
+                var endDate = DateTime.Now.AddHours(8);
+                GetTimeRelatedTimesFromFolder(OlDefaultFolders.olFolderCalendar, endDate, returnItems);
+                GetTimeRelatedTimesFromFolder(OlDefaultFolders.olFolderTasks, endDate, returnItems);
 
-            return returnItems.ToArray();
+                failureCount = 0;
+                return returnItems.ToArray();
+            }
+            catch(System.Exception)
+            {
+                _outlookApplication = null;  // Forget the reference so that we will reconnect next time.
+                failureCount++;
+                if (failureCount > 2) throw;
+            }
+            return new TimeRelatedItem[0];
         }
-
 
         // --------------------------------------------------------------------------
         /// <summary>

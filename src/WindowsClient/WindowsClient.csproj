@@ -90,6 +90,7 @@
     <Compile Include="Helpers\AssemblyHelper.cs" />
     <Compile Include="Helpers\ScreenHelper.cs" />
     <Compile Include="Helpers\HotKeyHelper.cs" />
+    <Compile Include="Models\QuickMailItem.cs" />
     <Compile Include="Models\HotKeyAssignment.cs" />
     <Compile Include="Models\HotKeyOption.cs" />
     <Compile Include="Models\BaseModel.cs" />
@@ -101,6 +102,9 @@
       <DependentUpon>TimerDetailsWidget.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\TimeRelatedItem.cs" />
+    <Compile Include="Controls\QuickMailSender.xaml.cs">
+      <DependentUpon>QuickMailSender.xaml</DependentUpon>
+    </Compile>
     <Page Include="Controls\CalenderItemWidget.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,6 +134,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TimerDetailsWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\QuickMailSender.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

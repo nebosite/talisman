@@ -13,17 +13,19 @@ NOW
 		[x] Assigning should clear the hotkey
 		[x] Action is not getting assinged to hotkey
 		[x] Remember hot key assignments between runs
-	[ ] Hotkey: Instant email
+	[x] Reconnet to outlook on calendar error
+	[x] Hotkey: Instant email
 	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
 	[ ] Give it an icon
-	[ ] Remember meetings to ignore
-	[ ] Hotkey option: snipping tool
-        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
 
 
 NEW
 
 SOON
+	[ ] Remember Daily state between runs
+	[ ] Remember meetings to ignore
+	[ ] Hotkey option: snipping tool
+        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
 	[ ] TODO Tab
 	[ ] Generate a pomodoro from a list of items
 

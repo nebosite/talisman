@@ -1,0 +1,18 @@
+﻿<Window x:Class="Talisman.QuickMailSender"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Talisman"
+        mc:Ignorable="d"
+        Title="Send Quick Mail" Height="274.623" Width="543.731" WindowStyle="ToolWindow">
+    <Grid Background="Bisque">
+        <StackPanel AutomationProperties.HelpText="First line is subject" Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="To:" />
+                <TextBox Text="{Binding ToAddress}" Width="500" TabIndex="1" />
+            </StackPanel>
+            <TextBox x:Name="BodyTextBox" Text="{Binding Body,UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Margin="5" Height="200" TabIndex="0" PreviewKeyDown="PreviewBodyKeyDown" />
+        </StackPanel>
+    </Grid>
+</Window>

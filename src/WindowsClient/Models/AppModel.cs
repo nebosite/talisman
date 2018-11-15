@@ -363,7 +363,7 @@ namespace Talisman
             switch(assignment.OptionName)
             {
                 case "Quick Timer":
-                    if(double.TryParse(assignment.OptionValue, out var minutes))
+                    if (double.TryParse(assignment.OptionValue, out var minutes))
                     {
                         hotKeyAction = () => StartTimer(minutes, "Quick Timer");
                     }
@@ -371,6 +371,9 @@ namespace Talisman
                     {
                         hotKeyAction = () => MessageBox.Show($"Failed action {assignment.OptionName}- bad argument.");
                     }
+                    break;
+                case "Quick Email":
+                    hotKeyAction = () => new QuickMailSender(new QuickMailItem(assignment.OptionValue, _outlook)).ShowDialog();
                     break;
                 default:
                     hotKeyAction = () => MessageBox.Show($"No action available for {assignment.OptionName}");
