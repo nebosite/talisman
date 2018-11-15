@@ -15,7 +15,7 @@ NOW
 		[x] Remember hot key assignments between runs
 	[x] Reconnet to outlook on calendar error
 	[x] Hotkey: Instant email
-	[ ] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
+	[x] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
 	[ ] Give it an icon
 
 

@@ -1,7 +1,10 @@
 ﻿[
   {
     "Name": "Quick Email",
-    "DefaultArgument":   "somebody@someplace.com"
+    "DefaultArgument": "somebody@someplace.com"
+  },
+  {
+    "Name": "Lock + Screensaver"
   },
   {
     "Name": "Quick Timer",

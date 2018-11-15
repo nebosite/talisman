@@ -38,6 +38,9 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>mainicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Office.Interop.Outlook.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Outlook.dll</HintPath>
@@ -105,6 +108,7 @@
     <Compile Include="Controls\QuickMailSender.xaml.cs">
       <DependentUpon>QuickMailSender.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ScreenSaverHelper.cs" />
     <Page Include="Controls\CalenderItemWidget.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,6 +197,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Assets\Help.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mainicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
