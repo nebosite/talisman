@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
+        Topmost="True"
         Title="Send Quick Mail" Height="274.623" Width="543.731" WindowStyle="ToolWindow">
     <Grid Background="Bisque">
         <StackPanel AutomationProperties.HelpText="First line is subject" Margin="5">

@@ -1,23 +1,6 @@
 ﻿----- TODO -------------------------------
 
 NOW
-	[x] Hotkey configuration Tab
-		[x] Alt key doesn't work right
-		[x] Look at how we actually assign hotkeys to see if we can reuse the key
-		[x] Have an error text window
-			[x] Error on key == None
-			[x] Error on no modifier
-		[x] Assigning a hotkey should add an item to the list
-			[x] Should not add if hotkey is already assigned
-		[x] Should be able to delete items from the list
-		[x] Assigning should clear the hotkey
-		[x] Action is not getting assinged to hotkey
-		[x] Remember hot key assignments between runs
-	[x] Reconnet to outlook on calendar error
-	[x] Hotkey: Instant email
-	[x] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
-	[ ] Give it an icon
-
 
 NEW
 
@@ -64,6 +47,23 @@ LATER
 
 
 DONE  ==================================================================================================
+	[x] Hotkey configuration Tab
+		[x] Alt key doesn't work right
+		[x] Look at how we actually assign hotkeys to see if we can reuse the key
+		[x] Have an error text window
+			[x] Error on key == None
+			[x] Error on no modifier
+		[x] Assigning a hotkey should add an item to the list
+			[x] Should not add if hotkey is already assigned
+		[x] Should be able to delete items from the list
+		[x] Assigning should clear the hotkey
+		[x] Action is not getting assinged to hotkey
+		[x] Remember hot key assignments between runs
+	[x] Reconnet to outlook on calendar error
+	[x] Hotkey: Instant email
+	[x] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
+	[x] Give it an icon
+
 
 	[x] Exiting Talisman should close all the notifications
 	[x] Dismiss windows should be draggable (moves the center of dragging)
