@@ -23,10 +23,13 @@ namespace Talisman
         public const uint WM_SYSCOMMAND = 0x112;
         public const uint SC_SCREENSAVE = 0xF140;
 
-        public static void ActivateScreenSaver()
+        public static void ActivateScreenSaver(bool lockWorkstation)
         {
-            LockWorkStation();
-            Thread.Sleep(500);
+            if (lockWorkstation)
+            {
+                LockWorkStation();
+                Thread.Sleep(500);
+            }
             SendMessage(GetDesktopWindow(), WM_SYSCOMMAND, (IntPtr)SC_SCREENSAVE, (IntPtr)0);
         }
     }

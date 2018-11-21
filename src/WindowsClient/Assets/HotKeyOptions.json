@@ -7,6 +7,9 @@
     "Name": "Lock + Screensaver"
   },
   {
+    "Name": "Screensaver"
+  },
+  {
     "Name": "Quick Timer",
     "DefaultArgument": "5"
   }

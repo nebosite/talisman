@@ -1,15 +1,16 @@
 ﻿----- TODO -------------------------------
 
 NOW
+	[x] Screensaver only hotkey
+	[ ] Hotkey option: snipping tool
+        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
 
 NEW
 
 SOON
 	[ ] Remember Daily state between runs
 	[ ] Remember meetings to ignore
-	[ ] Hotkey option: snipping tool
-        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
-	[ ] TODO Tab
+	[ ] Pomodoro Tab
 	[ ] Generate a pomodoro from a list of items
 
 LATER

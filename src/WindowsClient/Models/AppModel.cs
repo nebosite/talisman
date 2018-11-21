@@ -376,7 +376,10 @@ namespace Talisman
                     hotKeyAction = () => new QuickMailSender(new QuickMailItem(assignment.OptionValue, _outlook)).ShowDialog();
                     break;
                 case "Lock + Screensaver":
-                    hotKeyAction = () => ScreenSaverHelper.ActivateScreenSaver();
+                    hotKeyAction = () => ScreenSaverHelper.ActivateScreenSaver(lockWorkstation: true);
+                    break;
+                case "Screensaver":
+                    hotKeyAction = () => ScreenSaverHelper.ActivateScreenSaver(lockWorkstation: false);
                     break;
                 default:
                     hotKeyAction = () => MessageBox.Show($"No action available for {assignment.OptionName}");
