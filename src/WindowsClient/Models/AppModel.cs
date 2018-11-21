@@ -381,6 +381,9 @@ namespace Talisman
                 case "Screensaver":
                     hotKeyAction = () => ScreenSaverHelper.ActivateScreenSaver(lockWorkstation: false);
                     break;
+                case "StartSnip":
+                    hotKeyAction = () => ScreenHelper.StartSnippingTool();
+                    break;
                 default:
                     hotKeyAction = () => MessageBox.Show($"No action available for {assignment.OptionName}");
                     break;

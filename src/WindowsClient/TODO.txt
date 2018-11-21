@@ -1,9 +1,6 @@
 ﻿----- TODO -------------------------------
 
 NOW
-	[x] Screensaver only hotkey
-	[ ] Hotkey option: snipping tool
-        [ ] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
 
 NEW
 
@@ -30,7 +27,6 @@ LATER
 	[ ] Hotkey combo:
 		Alt-Shift-# - remember my current window
 		ctrl-# - go to the window you remembered
-	[ ] Hot Key option: Instant email
 	[ ] Hot key option: instant Powershell prompt
 	[ ] Hot key option: instant project open
 	[ ] Hot key option: Instant Task
@@ -48,6 +44,13 @@ LATER
 
 
 DONE  ==================================================================================================
+	[x] Screensaver only hotkey
+	[x] Hotkey option: snipping tool
+        [x] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
+		%windir%\system32\SnippingTool.exe
+		file: C:\Users\erjorge\AppData\Local\Packages\Microsoft.ScreenSketch_8wekyb3d8bbwe
+		start shell:AppsFolder\Microsoft.ScreenSketch_8wekyb3d8bbwe!App
+
 	[x] Hotkey configuration Tab
 		[x] Alt key doesn't work right
 		[x] Look at how we actually assign hotkeys to see if we can reuse the key

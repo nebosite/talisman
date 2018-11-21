@@ -10,6 +10,9 @@
     "Name": "Screensaver"
   },
   {
+    "Name": "StartSnip"
+  },
+  {
     "Name": "Quick Timer",
     "DefaultArgument": "5"
   }
