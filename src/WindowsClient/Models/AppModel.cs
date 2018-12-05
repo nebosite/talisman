@@ -158,6 +158,8 @@ namespace Talisman
 
         List<UniqueInstance> _cancelledInstances = new List<UniqueInstance>();
 
+        DateTime _nextCalendarErrorOKTime = DateTime.MinValue;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Look at the outlook calendar for stuff
@@ -174,7 +176,7 @@ namespace Talisman
                     {
                         if (_outlook == null) _outlook = new OutlookHelper();
 
-                        foreach(var item in _outlook.GetNextTimerRelatedItems())
+                        foreach(var item in _outlook.GetNextTimerRelatedItems(10))
                         {
                             StartTimer(item.Start, "Outlook: " + item.Title, noDuplicates: true, instanceInfo: item.InstanceInfo);
                         }
@@ -182,7 +184,11 @@ namespace Talisman
                 }
                 catch(Exception e)
                 {
-                    MessageBox.Show("Calendar error: " + e.ToString());
+                    if(DateTime.Now > _nextCalendarErrorOKTime)
+                    {
+                        MessageBox.Show("Calendar error: " + e.ToString());
+                        _nextCalendarErrorOKTime = DateTime.Now.AddDays(1);
+                    }
                 }
             }
             stopwatch.Stop();

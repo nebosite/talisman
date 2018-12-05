@@ -182,7 +182,7 @@ namespace Talisman
             this.Hide();
         }
 
-        const double TimeClickerWindowInHours = 4;
+        const double TimeClickerWindowInHours = 10;
         // --------------------------------------------------------------------------
         /// <summary>
         /// Get the time from the mouse position
