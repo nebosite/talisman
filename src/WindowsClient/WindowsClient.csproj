@@ -176,6 +176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Assets\HotKeyOptions.json" />
     <None Include="app.manifest" />
+    <None Include="Install.nsi">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -199,7 +202,18 @@
     <EmbeddedResource Include="Assets\Help.htm" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mainicon.ico" />
+    <Content Include="mainicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Readme_HowToPublish.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>cd $(TargetDir)
+if EXIST TalismanSetup.exe del TalismanSetup.exe
+"$(ProjectDir)..\packages\NSIS.2.51\tools\makensis.exe" install.nsi
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

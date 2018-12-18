@@ -100,6 +100,7 @@ namespace Talisman
                         length = 8;
                         minute = 0;
                         hour++;
+                        if (hour >= 24) hour = 0;
                         var labelText = new DateTime(2000, 1, 1, hour, 0, 0).ToString(@"htt");
                         var timeLable = new Label() { Content = labelText, FontSize = 8, Padding = new Thickness(1), IsHitTestVisible=false };
                         Canvas.SetLeft(timeLable, x - 10);

@@ -3,6 +3,7 @@
 NOW
 
 NEW
+	[ ] Check for latest version and auto-update
 
 SOON
 	[ ] Remember Daily state between runs
