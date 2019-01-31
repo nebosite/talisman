@@ -13,7 +13,7 @@
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="5">
                         <Label Width="80" HorizontalContentAlignment="Right" Content="Quick Timer:" />
-                        <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName}" VerticalContentAlignment="Center" Focusable="True" TabIndex="0" />
+                        <TextBox x:Name="TimerNameBox" MinWidth="150" Text="{Binding QuickTimerName, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Focusable="True" TabIndex="0" />
                         <Button Width="20" Content="T" Tag=".01" Click="QuickTimerClick" />
                         <Button Width="20" Content="1" Tag="1" Click="QuickTimerClick" />
                         <Button Width="20" Content="5" Tag="5" Click="QuickTimerClick" />

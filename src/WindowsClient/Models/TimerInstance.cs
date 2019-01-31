@@ -25,7 +25,17 @@ namespace Talisman
     public class TimerInstance : BaseModel
     {
         public DateTime EndsAt { get; set; }
-        public string Name { get; set; }
+
+        string _name = "";
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged(nameof(Name));
+            }
+        }
         public int Id { get; set; }
         public UniqueInstance? InstanceInfo { get; set; }
 

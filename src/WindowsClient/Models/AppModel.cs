@@ -178,7 +178,7 @@ namespace Talisman
 
                         foreach(var item in _outlook.GetNextTimerRelatedItems(10))
                         {
-                            StartTimer(item.Start, "Outlook: " + item.Title, noDuplicates: true, instanceInfo: item.InstanceInfo);
+                            StartTimer(item.Start.AddMinutes(-3), "Outlook: " + item.Title, noDuplicates: true, instanceInfo: item.InstanceInfo);
                         }
                     }
                 }
@@ -285,9 +285,9 @@ namespace Talisman
         {
             // Since calendar items are added multiple times per day, we want to not add the item
             // if it is already on the timer list
-            if(noDuplicates)
+            if (noDuplicates)
             {
-                if(ActiveTimers.Where(t => t.Name == timerName).Any())
+                if (ActiveTimers.Where(t => t.Name == timerName).Any())
                 {
                     return;
                 }
@@ -297,7 +297,7 @@ namespace Talisman
             // want to start the timer of the instance is already cancelled.   e.g.:  When the
             // user does an early cancellation of a calendar item, we don't want to bring it up 
             // again when the app re-reads the calendar looking for new appointments.
-            if(instanceInfo != null)
+            if (instanceInfo != null)
             {
                 foreach (var cancelledInstance in _cancelledInstances.ToArray())
                 {
@@ -318,6 +318,12 @@ namespace Talisman
                 var newTimer = new TimerInstance(endTime, timerName,
                     (id) => RemoveTimers(ActiveTimers.Where(t => t.Id == id).ToArray()));
                 newTimer.InstanceInfo = instanceInfo;
+                newTimer.PropertyChanged += (sender, args) =>
+                {
+                    NotifyPropertyChanged(nameof(CurrentTimerName));
+                    NotifyPropertyChanged(nameof(CurrentTimeRemaining));
+                    NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
+                };
                 for (int i = 0; i < ActiveTimers.Count; i++)
                 {
                     if (newTimer.EndsAt < ActiveTimers[i].EndsAt)
@@ -342,6 +348,7 @@ namespace Talisman
 
             });
         }
+
 
         // --------------------------------------------------------------------------
         /// <summary>
