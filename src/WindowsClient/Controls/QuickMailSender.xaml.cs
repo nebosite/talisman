@@ -25,6 +25,12 @@ namespace Talisman
             InitializeComponent();
             DataContext = _mailItem = mailItem;
             this.Loaded += QuickMailSender_Loaded;
+            this.Activated += QuickMailSender_Activated;
+        }
+
+        private void QuickMailSender_Activated(object sender, EventArgs e)
+        {
+            BodyTextBox.Focus();
         }
 
         private void QuickMailSender_Loaded(object sender, RoutedEventArgs e)

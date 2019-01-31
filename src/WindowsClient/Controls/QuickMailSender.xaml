@@ -13,6 +13,7 @@
                 <Label Content="To:" />
                 <TextBox Text="{Binding ToAddress}" Width="500" TabIndex="1" />
             </StackPanel>
+            <Label Content="Ctrl-S to send" FontSize="8" Padding="0" FontStyle="Italic" Margin="30,0" />
             <TextBox x:Name="BodyTextBox" Text="{Binding Body,UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Margin="5" Height="200" TabIndex="0" PreviewKeyDown="PreviewBodyKeyDown" />
         </StackPanel>
     </Grid>

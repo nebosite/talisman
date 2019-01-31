@@ -41,6 +41,17 @@ namespace Talisman
             this.DataContext = appModel;
             this.IsVisibleChanged += SettingsForm_IsVisibleChanged;
             this.Loaded += SettingsForm_Loaded;
+            this.Deactivated += SettingsForm_Deactivated;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Deactivated
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void SettingsForm_Deactivated(object sender, EventArgs e)
+        {
+            this.Close();
         }
 
         // --------------------------------------------------------------------------
