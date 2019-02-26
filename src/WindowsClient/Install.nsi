@@ -1,6 +1,6 @@
 ; NSIS Install definition 
 !define PRODUCT_NAME "Talisman"
-!define PRODUCT_VERSION "0.1.0"
+!define PRODUCT_VERSION "0.3.0"
 !define PRODUCT_PUBLISHER "Eric Jorgensen"
 !define PRODUCT_WEB_SITE "http://www.ericjorgensen.com"
 !define WINDOWS_RUNKEY "Software\Microsoft\Windows\CurrentVersion\Run"
