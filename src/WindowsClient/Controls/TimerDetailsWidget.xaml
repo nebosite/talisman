@@ -8,12 +8,12 @@
              d:DesignHeight="50" d:DesignWidth="600">
     <Grid Background="LightGray">
         <StackPanel Orientation="Horizontal">
+            <Button Content="ý" FontFamily="Wingdings" FontSize="16" Click="DeleteClick" Padding="0" Height="18" VerticalAlignment="Top" Foreground="DarkRed" />
             <Label Width="70" Content="{Binding EndsAtText}" HorizontalContentAlignment="Right"  />
             <Button Content="×" FontFamily="Wingdings" Click="AdjustSmallerClick" />
             <Label Content="¡" FontFamily="Wingdings" VerticalContentAlignment="Center" />
             <Button Content="Ø" FontFamily="Wingdings" Click="AdjustLargerClick" />
             <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="20,0,0,0" MinWidth="250"  />
-            <Button Content="ý" FontFamily="Wingdings" FontSize="16" Click="DeleteClick" Padding="0" Height="18" VerticalAlignment="Top" Foreground="DarkRed" />
 
         </StackPanel>
     </Grid>

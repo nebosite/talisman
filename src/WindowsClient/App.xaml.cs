@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -19,6 +20,11 @@ namespace Talisman
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            var talismanProcesses = Process.GetProcessesByName("Talisman");
+            if(talismanProcesses.Length > 1)
+            {
+                Application.Current.Shutdown();
+            }
             var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             if(Settings.Default.CurrentVersion != assemblyVersion)
             {
