@@ -179,6 +179,7 @@ namespace Talisman
             var xCorrection = 1.0 / source.CompositionTarget.TransformToDevice.M11;
             var yCorrection = 1.0 / source.CompositionTarget.TransformToDevice.M22;
 
+            var p = window.PointFromScreen(new Point(window.Left, window.Top));
             var left = window.Left / xCorrection;
             var right = left + window.Width / xCorrection;
             var top = window.Top / yCorrection;

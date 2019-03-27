@@ -1,7 +1,11 @@
 ﻿----- TODO -------------------------------
 
 NOW
-
+    [ ] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
+    [ ] Talisman: Text gets cut off on appointment reminder
+    [ ] Talisman: show expired timers
+    [ ] Talisman: Show time of meeting in reminder
+	[ ] If the app crashes or is killed, make sure the talisman appears in the default location next time
 NEW
 	[ ] Check for latest version and auto-update
 

@@ -157,7 +157,7 @@ namespace Talisman
             _settingsWindow.Show();
             _settingsWindow.Hide();
 
-            var locationSetting = Settings.Default.Location;
+            var locationSetting = "\"500,500\""; // Settings.Default.Location;
             if(!string.IsNullOrEmpty(locationSetting))
             {
                 var location = JsonConvert.DeserializeObject<Point>(locationSetting);
@@ -167,7 +167,7 @@ namespace Talisman
 
             var screenArea = ScreenHelper.MainScreen.WorkingArea;
             _gravitationCenter = new Point(screenArea.Left + screenArea.Width/2, screenArea.Top + screenArea.Height/2);
-            ScreenHelper.EnsureWindowIsVisible(this);
+            //ScreenHelper.EnsureWindowIsVisible(this);
         }
 
         // --------------------------------------------------------------------------
