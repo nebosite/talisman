@@ -2,6 +2,8 @@
 
 NOW
     [ ] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
+		[ ] Find the screen from the mouse coordinate
+		[ ] Find the dpi correction based on the screen (PresentationSource doesn't know about the magnification change)
     [ ] Talisman: Text gets cut off on appointment reminder
     [ ] Talisman: show expired timers
     [ ] Talisman: Show time of meeting in reminder

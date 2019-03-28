@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
@@ -20,7 +17,7 @@ namespace Talisman
     /// Put this code in your window constructor:
     ///     _draggingLogic = new DraggingLogic(this);
     ///     
-    /// If you want to do special things when the window drags or when it is clicked:
+    /// If you want to do special things when the window moves or when it is clicked:
     ///     _draggingLogic.OnPositionChanged += (xm, ym) => {/* whatever you want here */};
     ///     _draggingLogic.OnClick += () => {/* whatever you want here */};
     ///
@@ -28,18 +25,17 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class DraggingLogic
     {
-        bool _dragging = false;
-        double _dragDelta = 0;
-        Point _lastMousePosition;
-
-        /// <summary>
-        /// Correction values for dealing with magnified screens
-        /// </summary>
-        public double DpiCorrectionX { get; set; }
-        public double DpiCorrectionY { get; set; }
-
         public event Action<double, double> OnPositionChanged;
         public event Action OnClick;
+
+        /// <summary>
+        /// Factor to convert Horizontal screen coordinates
+        /// </summary>
+        public double DpiCorrectionX { get; set; }
+        /// <summary>
+        /// Factor to convertVertical  screen coordinates
+        /// </summary>
+        public double DpiCorrectionY { get; set; }
 
         #region INTERROP - Mouse interaction
 
@@ -85,7 +81,11 @@ namespace Talisman
 
         #endregion
 
+        Screen _currentScreen;
         Window _dragMe;
+        bool _dragging = false;
+        double _dragDelta = 0;
+        Point _lastMousePosition;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -103,12 +103,22 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Figure out DPI measures
+        /// Dragme_Loaded - can't find DPI until the window is loaded
         /// </summary>
         // --------------------------------------------------------------------------
         private void Dragme_Loaded(object sender, RoutedEventArgs e)
         {
-            var source = PresentationSource.FromVisual((Window)sender);
+            DiscoverDpi();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Figure out DPI measures
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void DiscoverDpi()
+        {
+            var source = PresentationSource.FromVisual(_dragMe);
             DpiCorrectionX = 1.0 / source.CompositionTarget.TransformToDevice.M11;
             DpiCorrectionY = 1.0 / source.CompositionTarget.TransformToDevice.M22;
         }
@@ -127,11 +137,8 @@ namespace Talisman
                 _dragging = true;
                 _dragDelta = 0;
                 _lastMousePosition = window.PointToScreen(Mouse.GetPosition(window));
+                _currentScreen = GetScreenFromPoint(_lastMousePosition);
                 CaptureGlobalMouse();
-                //(e.Source as UIElement).CaptureMouse();
-                //var captureElement = sender as IInputElement;
-                //Mouse.Capture(captureElement);
-                //window.CaptureMouse();
                 e.Handled = true;
             }
         }
@@ -145,8 +152,6 @@ namespace Talisman
         {
             if (_dragging)
             {
-                // Ignore normal mouse events if we are dragging since
-                // we want to depend on the global events
                 e.Handled = true;
             }
         }
@@ -158,15 +163,42 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void HandleGlobalMouseMove(Point mouseLocation)
         {
-            var newPosition = mouseLocation;// _dragMe.PointToScreen(mouseLocation);
-            Debug.WriteLine($"Moving M:{mouseLocation}  New: {newPosition}" );
-            var xMove = (newPosition.X - _lastMousePosition.X) * DpiCorrectionX;
-            var yMove = (newPosition.Y - _lastMousePosition.Y) * DpiCorrectionY;
+            var newPosition = mouseLocation; // This arrives without DPI correction
+            var screen = GetScreenFromPoint(newPosition);
+
+            // We need to do some fix up when we drag to another screen because
+            // the DPI on the other screen could be different
+            if(screen != null && screen.DeviceName != _currentScreen.DeviceName)
+            {
+                DiscoverDpi();
+                _lastMousePosition = newPosition;
+                _dragMe.Left = newPosition.X * DpiCorrectionX;
+                _dragMe.Top = newPosition.Y * DpiCorrectionY;
+                _currentScreen = screen;
+            }
+
+            //Debug.WriteLine($"Moving M:{mouseLocation}  New: {newPosition}  dpi:{DpiCorrectionX},{DpiCorrectionY}" );
+            var xMove = (newPosition.X - _lastMousePosition.X)* DpiCorrectionX;
+            var yMove = (newPosition.Y - _lastMousePosition.Y)* DpiCorrectionY;
             _dragMe.Left += xMove;
             _dragMe.Top += yMove;
             _dragDelta += (_lastMousePosition - newPosition).Length;
             _lastMousePosition = newPosition;
             OnPositionChanged?.Invoke(xMove, yMove);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// GetScreenFromPoint - return the screen from a raw point (presumably mouse coordinate)
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public Screen GetScreenFromPoint(Point point)
+        {
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (screen.ContainsPoint(point.X, point.Y)) return screen;
+            }
+            return null;
         }
 
         // --------------------------------------------------------------------------
@@ -179,6 +211,7 @@ namespace Talisman
             if (_dragging)
             {
                 var window = sender as Window;
+                // if the user didn't actually drag, then we want to treat this as a click
                 if (_dragDelta < 3)
                 {
                     OnClick?.Invoke();
@@ -187,7 +220,6 @@ namespace Talisman
                 ReleaseGlobalMouse();
                 if(e != null) e.Handled = true;
             }
-
         }
 
         // --------------------------------------------------------------------------
@@ -199,14 +231,15 @@ namespace Talisman
         {
             if (nCode >= 0)
             {
-                if (wParam == WM_LBUTTONUP)
+                switch (wParam)
                 {
-                    HandleMouseUp(this, null);
-                }
-                if (wParam == WM_MOUSEMOVE)
-                {
-                    var mouseHookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
-                    HandleGlobalMouseMove( new Point(mouseHookStruct.pt.x, mouseHookStruct.pt.y));
+                    case WM_LBUTTONUP: HandleMouseUp(this, null); break;
+                    case WM_MOUSEMOVE:
+                        {
+                            var mouseHookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
+                            HandleGlobalMouseMove(new Point(mouseHookStruct.pt.x, mouseHookStruct.pt.y));
+                            break;
+                        }
                 }
             }
             return CallNextHookEx(_mouseHookHandle, nCode, wParam, lParam);
