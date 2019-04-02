@@ -5,16 +5,19 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
+
+[assembly: DisableDpiAwareness]
 
 namespace Talisman
 {
 
     // --------------------------------------------------------------------------
     /// <summary>
-    /// Enables dragging of a WPF window in a way that is DPI sensitive.
+    /// Enables dragging of a WPF window in a way that is per-monitor DPI sensitive.
     /// 
     /// HOW TO USE
-    /// Put this code in your window constructor:
+    /// Add a DraggingLogic member variable and put this code in your window constructor:
     ///     _draggingLogic = new DraggingLogic(this);
     ///     
     /// If you want to do special things when the window moves or when it is clicked:
@@ -36,6 +39,9 @@ namespace Talisman
         /// Factor to convertVertical  screen coordinates
         /// </summary>
         public double DpiCorrectionY { get; set; }
+
+        public double WpfDpiX { get; set; }
+        public double WpfDpiY { get; set; }
 
         #region INTERROP - Mouse interaction
 
@@ -81,11 +87,38 @@ namespace Talisman
 
         #endregion
 
+        #region INTERROP - DPI
+
+        [DllImport("User32.dll")]
+        private static extern IntPtr MonitorFromPoint([In]System.Drawing.Point pt, [In]uint dwFlags);
+
+        [DllImport("Shcore.dll")]
+        private static extern IntPtr GetDpiForMonitor([In]IntPtr hmonitor, [In]DpiType dpiType, [Out]out uint dpiX, [Out]out uint dpiY);
+        [DllImport("Shcore.dll")]
+        private static extern IntPtr SetProcessDpiAwareness([In]DpiAwareness dpiAwareness); 
+
+        public enum DpiType
+        {
+            Effective = 0,
+            Angular = 1,
+            Raw = 2,
+        }
+
+        public enum DpiAwareness
+        {
+            Unaware = 0,
+            System = 1,
+            PerMonitor = 2,
+        }
+
+        #endregion
+
         Screen _currentScreen;
         Window _dragMe;
         bool _dragging = false;
         double _dragDelta = 0;
         Point _lastMousePosition;
+        Point _mouseStickyPosition;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -94,6 +127,7 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public DraggingLogic(Window dragme)
         {
+            var result = SetProcessDpiAwareness(DpiAwareness.PerMonitor);
             dragme.MouseDown += HandleMouseDown;
             dragme.MouseMove += HandleMouseMove;
             dragme.MouseUp += HandleMouseUp;
@@ -108,19 +142,28 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void Dragme_Loaded(object sender, RoutedEventArgs e)
         {
-            DiscoverDpi();
+            var source = PresentationSource.FromVisual(_dragMe);
+            WpfDpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+            WpfDpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Figure out DPI measures
+        /// Figure out scaling for the DPI on a certain monitor
         /// </summary>
         // --------------------------------------------------------------------------
-        private void DiscoverDpi()
+        public void CalculateDpiScaleFactors(Screen screen, DpiType dpiType)
         {
-            var source = PresentationSource.FromVisual(_dragMe);
-            DpiCorrectionX = 1.0 / source.CompositionTarget.TransformToDevice.M11;
-            DpiCorrectionY = 1.0 / source.CompositionTarget.TransformToDevice.M22;
+            var point = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
+            var monitor = MonitorFromPoint(point, 2/*MONITOR_DEFAULTTONEAREST*/);
+            Debug.WriteLine($"Monitor: {monitor}");
+            var result = GetDpiForMonitor(monitor, dpiType, out var monitorDpiX, out var monitorDpiY);
+            if(result != IntPtr.Zero)
+            {
+                monitorDpiX = monitorDpiY = 96;
+            }
+            DpiCorrectionX = 96.0 / monitorDpiX;
+            DpiCorrectionY = 96.0 / monitorDpiY;
         }
 
         // --------------------------------------------------------------------------
@@ -134,10 +177,14 @@ namespace Talisman
             var window = sender as Window;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+
                 _dragging = true;
                 _dragDelta = 0;
+                _mouseStickyPosition = Mouse.GetPosition(window);
                 _lastMousePosition = window.PointToScreen(Mouse.GetPosition(window));
                 _currentScreen = GetScreenFromPoint(_lastMousePosition);
+                CalculateDpiScaleFactors(_currentScreen, DpiType.Effective);
+
                 CaptureGlobalMouse();
                 e.Handled = true;
             }
@@ -168,16 +215,17 @@ namespace Talisman
 
             // We need to do some fix up when we drag to another screen because
             // the DPI on the other screen could be different
-            if(screen != null && screen.DeviceName != _currentScreen.DeviceName)
+            if(screen != null &&  screen.DeviceName != _currentScreen.DeviceName)
             {
-                DiscoverDpi();
+                CalculateDpiScaleFactors(screen, DpiType.Effective);
                 _lastMousePosition = newPosition;
-                _dragMe.Left = newPosition.X * DpiCorrectionX;
-                _dragMe.Top = newPosition.Y * DpiCorrectionY;
+
+                // Move the window to match the mouse position
+                _dragMe.Left = (newPosition.X - _mouseStickyPosition.X)* DpiCorrectionX;
+                _dragMe.Top = (newPosition.Y - _mouseStickyPosition.Y)* DpiCorrectionY;
                 _currentScreen = screen;
             }
 
-            //Debug.WriteLine($"Moving M:{mouseLocation}  New: {newPosition}  dpi:{DpiCorrectionX},{DpiCorrectionY}" );
             var xMove = (newPosition.X - _lastMousePosition.X)* DpiCorrectionX;
             var yMove = (newPosition.Y - _lastMousePosition.Y)* DpiCorrectionY;
             _dragMe.Left += xMove;
