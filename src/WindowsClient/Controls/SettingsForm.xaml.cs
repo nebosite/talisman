@@ -28,6 +28,7 @@ namespace Talisman
     {
         AppModel _appModel;
         bool _hardClose = false;
+        bool _exiting = false;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -51,7 +52,7 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void SettingsForm_Deactivated(object sender, EventArgs e)
         {
-            this.Close();
+            if(!_exiting) this.Close();
         }
 
         // --------------------------------------------------------------------------
@@ -127,7 +128,7 @@ namespace Talisman
                 TimeClicker.InvalidateVisual();
                 this.UpdateLayout();
 
-                ScreenHelper.EnsureWindowIsVisible(this);
+                //ScreenHelper.EnsureWindowIsVisible(this);
             }
         }
 
@@ -279,6 +280,7 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void ExitAppClicked(object sender, RoutedEventArgs e)
         {
+            _exiting = true;
             Application.Current.Shutdown();
         }
 

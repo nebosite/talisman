@@ -183,7 +183,9 @@ namespace Talisman
                 if (appointment != null)
                 {
                     var newItem = new TimeRelatedItem();
-                    newItem.Title = appointment.Subject + " in " + appointment.Location;
+                    var locationText = string.IsNullOrWhiteSpace(appointment.Location) ? "" : $" in {appointment.Location}";
+                    newItem.Title = $"{appointment.Start.ToShortTimeString()}{locationText}: {appointment.Subject}";
+
                     newItem.Start = appointment.Start;
                     newItem.End = appointment.End;
                     newItem.Location = appointment.Location;

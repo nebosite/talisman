@@ -5,15 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Talisman"
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="600">
+             d:DesignHeight="20" d:DesignWidth="600">
     <Grid Background="LightGray">
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button Content="ý" FontFamily="Wingdings" FontSize="16" Click="DeleteClick" Padding="0" Height="18" VerticalAlignment="Top" Foreground="DarkRed" />
             <Label Width="70" Content="{Binding EndsAtText}" HorizontalContentAlignment="Right"  />
-            <Button Content="×" FontFamily="Wingdings" Click="AdjustSmallerClick" />
-            <Label Content="¡" FontFamily="Wingdings" VerticalContentAlignment="Center" />
-            <Button Content="Ø" FontFamily="Wingdings" Click="AdjustLargerClick" />
-            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="20,0,0,0" MinWidth="250"  />
+            <Button Content="×" FontFamily="Wingdings" Click="AdjustSmallerClick" Height="18" />
+            <Label Content="¡" FontFamily="Wingdings" VerticalContentAlignment="Center" Padding="0"/>
+            <Button Content="Ø" FontFamily="Wingdings" Click="AdjustLargerClick"  Height="18" />
+            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Margin="10,0,10,0" MinWidth="300" Height="18"  FontSize="10" />
 
         </StackPanel>
     </Grid>

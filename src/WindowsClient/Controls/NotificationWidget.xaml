@@ -13,12 +13,12 @@
     <Grid  Background="Transparent">
         <Border x:Name="MyBorder" BorderThickness="5" BorderBrush="Red" CornerRadius="20"  Background="#a0FFFFFF">
             <Grid>
-                <TextBlock Text="{Binding NotificationText}" TextWrapping="Wrap" Padding="20" Margin="0,0,78.2,40.6" />
-                <Label Content="Snooze" Margin="223,10,10.2,85.6" />
-                <Button Content="5 min" Padding="0" Tag="5" Click="SnoozeClicked" Margin="225,36,16.2,65.6" />
-                <Button Content="10 min" Padding="0" Tag="10" Click="SnoozeClicked" Margin="225,61,16.2,40.6" />
-                <Button Content="20 min" Padding="0" Tag="20" Click="SnoozeClicked" Margin="225,86,16.2,15.6" />
-                <Button Content="Dismiss" FontSize="15" Padding="0" Tag="20" Click="DismissClick" Margin="54,86,131.2,8.6" />
+                <TextBlock Text="{Binding NotificationText}" TextWrapping="Wrap" Padding="8" Margin="0,0,0,39" FontSize="12" />
+                <Label Content="Snooze" Margin="85,88,148,8" />
+                <Button Content="5 min" Padding="0" Tag="5" Click="SnoozeClicked" Margin="135,91,106,10" />
+                <Button Content="10 min" Padding="0" Tag="10" Click="SnoozeClicked" Margin="182,92,59,10" />
+                <Button Content="20 min" Padding="0" Tag="20" Click="SnoozeClicked" Margin="229,92,12,10" />
+                <Button Content="Dismiss" FontSize="12" Padding="0" Tag="20" Click="DismissClick" Margin="22,91,203,11" />
             </Grid>
         </Border>
     </Grid>

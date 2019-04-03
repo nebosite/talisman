@@ -13,9 +13,7 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class NotificationData : BaseModel
     {
-        public string Message { get; private set; }
-        public string TimerName { get; private set; }
-        public string NotificationText => $"{Message}\r\nTimer: {TimerName}";
+        public string NotificationText { get; private set; }
 
 
         // --------------------------------------------------------------------------
@@ -23,10 +21,9 @@ namespace Talisman
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public NotificationData(string message, string timerName)
+        public NotificationData(string text)
         {
-            Message = message;
-            TimerName = timerName;
+            NotificationText = text;
         }
     }
 }

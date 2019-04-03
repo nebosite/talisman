@@ -221,7 +221,7 @@ namespace Talisman
                 RemoveTimers(finishedTimers);
                 foreach(var timer in finishedTimers)
                 {
-                    OnNotification.Invoke(new NotificationData("Times up!", timer.Name));
+                    OnNotification.Invoke(new NotificationData(timer.Name));
                 }
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));

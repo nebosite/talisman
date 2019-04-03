@@ -3,12 +3,14 @@
 NOW
     [x] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
 		[x] Make the app DPI aware for multiple monitors
-    [ ] Talisman: Text gets cut off on appointment reminder
-    [ ] Talisman: show expired timers
-    [ ] Talisman: Show time of meeting in reminder
+    [x] Talisman: Text gets cut off on appointment reminder
+    [x] Talisman: Show time of meeting in reminder
 	[ ] If the app crashes or is killed, make sure the talisman appears in the default location next time
+    [ ] Talisman: show expired timers
+
 NEW
 	[ ] Check for latest version and auto-update
+	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
 
 SOON
 	[ ] Remember Daily state between runs

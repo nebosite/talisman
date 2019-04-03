@@ -74,7 +74,7 @@ namespace Talisman
         private void SnoozeClicked(object sender, RoutedEventArgs e)
         {
             double.TryParse((sender as Button).Tag.ToString(), out var minutes);
-            _appModel.StartTimer(minutes, "Snoozed: " + _data.TimerName);
+            _appModel.StartTimer(minutes, "Snoozed: " + _data.NotificationText);
             this.Close();
         }
 
