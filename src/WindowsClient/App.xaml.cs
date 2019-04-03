@@ -18,8 +18,14 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public partial class App : Application
     {
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// OnStartup
+        /// </summary>
+        // --------------------------------------------------------------------------
         protected override void OnStartup(StartupEventArgs e)
         {
+            DraggingLogic.SetDpiAwareness();
             var talismanProcesses = Process.GetProcessesByName("Talisman");
             if(talismanProcesses.Length > 1)
             {
@@ -35,6 +41,17 @@ namespace Talisman
             }
 
             base.OnStartup(e);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// OnExit
+        /// </summary>
+        // --------------------------------------------------------------------------
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Settings.Default.CrashedLastTime = false;
+            Settings.Default.Save();
         }
     }
 }

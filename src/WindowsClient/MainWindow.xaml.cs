@@ -74,19 +74,6 @@ namespace Talisman
             {
                 _emptyNotificationLocations.Add(thetaSlice * i);
             }
-
-            _draggingLogic = new DraggingLogic(this);
-            _draggingLogic.OnPositionChanged += (xm, ym) =>
-            {
-                Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
-                Settings.Default.Save();
-            };
-            _draggingLogic.OnClick += () =>
-            {
-                _settingsWindow.Left = this.Left;
-                _settingsWindow.Top = this.Top;
-                _settingsWindow.Popup();
-            };
         }
 
         // --------------------------------------------------------------------------
@@ -144,6 +131,27 @@ namespace Talisman
             _theModel.InitHotKeys(new HotKeyHelper(this));
         }
 
+        Point? _newLocation = null;
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// OnDpiChanged
+        /// </summary>
+        // --------------------------------------------------------------------------
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+
+            // When placing the window for the first time, it won't know about the 
+            // DPI, so we need to place it again to make sure position accounts for
+            // the correct DPI
+            if (_newLocation != null)
+            {
+                Left = _newLocation.Value.X;
+                Top = _newLocation.Value.Y;
+                _newLocation = null;
+            }
+        }
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Stuff to do when we know about the display mode
@@ -151,6 +159,20 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            _draggingLogic = new DraggingLogic(this);
+            _draggingLogic.OnPositionChanged += (xm, ym) =>
+            {
+                _newLocation = null;
+                Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
+                Settings.Default.Save();
+            };
+            _draggingLogic.OnClick += () =>
+            {
+                _settingsWindow.Left = this.Left;
+                _settingsWindow.Top = this.Top;
+                _settingsWindow.Popup();
+            };
+
             _settingsWindow = new SettingsForm(_theModel);
 
             // For some reason, need to do this to see the ticks on the time picker
@@ -158,11 +180,19 @@ namespace Talisman
             _settingsWindow.Hide();
 
             var locationSetting = "\"500,500\""; // Settings.Default.Location;
-            if(!string.IsNullOrEmpty(locationSetting))
+            if(!Settings.Default.CrashedLastTime)
             {
-                var location = JsonConvert.DeserializeObject<Point>(locationSetting);
-                this.Left = location.X;
-                this.Top = location.Y;
+                locationSetting = Settings.Default.Location;
+            }
+
+            Settings.Default.CrashedLastTime = true;
+            Settings.Default.Save();
+
+            if (!string.IsNullOrEmpty(locationSetting))
+            {
+                _newLocation = JsonConvert.DeserializeObject<Point>(locationSetting);
+                Left = _newLocation.Value.X;
+                Top = _newLocation.Value.Y;
             }
 
             var screenArea = ScreenHelper.MainScreen.WorkingArea;

@@ -122,29 +122,37 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Get resource text using a loose naming scheme
+        /// SetDpiAwareness - call this when the app starts
         /// </summary>
         // --------------------------------------------------------------------------
-        public DraggingLogic(Window dragme)
+        public static void SetDpiAwareness()
         {
             var result = SetProcessDpiAwareness(DpiAwareness.PerMonitor);
-            dragme.MouseDown += HandleMouseDown;
-            dragme.MouseMove += HandleMouseMove;
-            dragme.MouseUp += HandleMouseUp;
-            dragme.Loaded += Dragme_Loaded;
-            _dragMe = dragme;
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Dragme_Loaded - can't find DPI until the window is loaded
+        /// ctor - call after window is loaded
         /// </summary>
         // --------------------------------------------------------------------------
-        private void Dragme_Loaded(object sender, RoutedEventArgs e)
+        public DraggingLogic(Window dragme)
         {
-            var source = PresentationSource.FromVisual(_dragMe);
-            WpfDpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-            WpfDpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+            dragme.MouseDown += HandleMouseDown;
+            dragme.MouseMove += HandleMouseMove;
+            dragme.MouseUp += HandleMouseUp;
+            _dragMe = dragme;
+
+            try
+            {
+                var source = PresentationSource.FromVisual(_dragMe);
+                WpfDpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                WpfDpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+            }
+            catch(Exception e)
+            {
+                throw new ApplicationException("Make sure you construct the dragging logic after the window is loaded.  Error: " + e.ToString());
+            }
+
         }
 
         // --------------------------------------------------------------------------
@@ -156,7 +164,6 @@ namespace Talisman
         {
             var point = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
             var monitor = MonitorFromPoint(point, 2/*MONITOR_DEFAULTTONEAREST*/);
-            Debug.WriteLine($"Monitor: {monitor}");
             var result = GetDpiForMonitor(monitor, dpiType, out var monitorDpiX, out var monitorDpiY);
             if(result != IntPtr.Zero)
             {
@@ -221,8 +228,9 @@ namespace Talisman
                 _lastMousePosition = newPosition;
 
                 // Move the window to match the mouse position
-                _dragMe.Left = (newPosition.X - _mouseStickyPosition.X)* DpiCorrectionX;
-                _dragMe.Top = (newPosition.Y - _mouseStickyPosition.Y)* DpiCorrectionY;
+                _dragMe.InvalidateMeasure();
+                _dragMe.Left = (newPosition.X - _mouseStickyPosition.X) * DpiCorrectionX;
+                _dragMe.Top = (newPosition.Y - _mouseStickyPosition.Y) * DpiCorrectionY;
                 _currentScreen = screen;
             }
 

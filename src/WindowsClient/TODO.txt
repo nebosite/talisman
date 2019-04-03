@@ -5,7 +5,7 @@ NOW
 		[x] Make the app DPI aware for multiple monitors
     [x] Talisman: Text gets cut off on appointment reminder
     [x] Talisman: Show time of meeting in reminder
-	[ ] If the app crashes or is killed, make sure the talisman appears in the default location next time
+	[x] If the app crashes or is killed, make sure the talisman appears in the default location next time
     [ ] Talisman: show expired timers
 
 NEW
