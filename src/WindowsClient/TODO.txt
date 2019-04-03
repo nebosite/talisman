@@ -6,25 +6,25 @@ NOW
     [x] Talisman: Text gets cut off on appointment reminder
     [x] Talisman: Show time of meeting in reminder
 	[x] If the app crashes or is killed, make sure the talisman appears in the default location next time
+	[ ] Check for latest version and auto-update
     [ ] Talisman: show expired timers
 
 NEW
-	[ ] Check for latest version and auto-update
-	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
 
 SOON
+	[ ] Fix snipping shortcut
 	[ ] Remember Daily state between runs
 	[ ] Remember meetings to ignore
 	[ ] Pomodoro Tab
 	[ ] Generate a pomodoro from a list of items
+	[ ] Dragging is still weird on mismatched DPI monitors
+	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
 
 LATER
 	[ ] Hotkey: Quick create shortcuts from running apps
 	[ ] App Drawers
 	[ ] Auto-cancel when there are too many notifications
 	[ ] Set up a social media page
-	[ ] Create an install
-	[ ] Publish on Windows store?
 	[ ] Hotkey option: quick timer
 	[ ] Hotkey option: launch app/script
 	[ ] HotKey option: Restore desktop icons to snapshot
