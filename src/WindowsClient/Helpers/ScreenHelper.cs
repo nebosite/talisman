@@ -222,7 +222,7 @@ namespace Talisman
             if (Directory.Exists(sketchLocation))
             {
                 var handle = OpenOrStartApp("Snip & Sketch", @"shell:AppsFolder\Microsoft.ScreenSketch_8wekyb3d8bbwe!App");
-                ClickOnPoint(handle, new Point(55,55));
+                ClickOnPoint(handle, new Point(65,65));
                 return;
             }
 

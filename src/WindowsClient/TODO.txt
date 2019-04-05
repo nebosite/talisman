@@ -1,11 +1,6 @@
 ﻿----- TODO -------------------------------
 
 NOW
-    [x] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
-		[x] Make the app DPI aware for multiple monitors
-    [x] Talisman: Text gets cut off on appointment reminder
-    [x] Talisman: Show time of meeting in reminder
-	[x] If the app crashes or is killed, make sure the talisman appears in the default location next time
 	[ ] Check for latest version and auto-update
     [ ] Talisman: show expired timers
 
@@ -52,6 +47,15 @@ LATER
 
 
 DONE  ==================================================================================================
+0.4
+    [x] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
+		[x] Make the app DPI aware for multiple monitors
+    [x] Talisman: Text gets cut off on appointment reminder
+    [x] Talisman: Show time of meeting in reminder
+	[x] If the app crashes or is killed, make sure the talisman appears in the default location next time
+
+
+0.3
 	[x] Screensaver only hotkey
 	[x] Hotkey option: snipping tool
         [x] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
