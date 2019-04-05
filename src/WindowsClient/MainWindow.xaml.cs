@@ -74,6 +74,9 @@ namespace Talisman
             {
                 _emptyNotificationLocations.Add(thetaSlice * i);
             }
+
+            _draggingLogic = new DraggingLogic(this);
+
         }
 
         // --------------------------------------------------------------------------
@@ -97,9 +100,13 @@ namespace Talisman
                 }
                 var newWidget = new NotificationWidget(data, _theModel, theta);
 
-                newWidget.Top = ScreenHelper.MainScreen.Bounds.Bottom;
-                newWidget.Left = ScreenHelper.MainScreen.Bounds.Width / 2 + ScreenHelper.MainScreen.Bounds.Left;
-                newWidget.Center = _gravitationCenter;
+                var mainScreenBounds = ScreenHelper.MainScreen.Bounds;
+                newWidget.Top = mainScreenBounds.Bottom - 5;
+                newWidget.Left = mainScreenBounds.Left + 5;
+                newWidget.Center = _gravitationCenter = new Point(
+                    mainScreenBounds.Left + (mainScreenBounds.Width / 2), 
+                    mainScreenBounds.Top + (mainScreenBounds.Height / 2));
+
                 newWidget.Closing += (sender, args) =>
                 {
                     lock(_notificationWindows)
@@ -112,6 +119,7 @@ namespace Talisman
                         _emptyNotificationLocations.Add(newWidget.LocationTheta);
                     }
                 };
+                
                 newWidget.Show();
                 lock(_notificationWindows)
                 {
@@ -159,7 +167,6 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _draggingLogic = new DraggingLogic(this);
             _draggingLogic.OnPositionChanged += (xm, ym) =>
             {
                 _newLocation = null;
@@ -196,7 +203,6 @@ namespace Talisman
             }
 
             var screenArea = ScreenHelper.MainScreen.WorkingArea;
-            _gravitationCenter = new Point(screenArea.Left + screenArea.Width/2, screenArea.Top + screenArea.Height/2);
             //ScreenHelper.EnsureWindowIsVisible(this);
         }
 

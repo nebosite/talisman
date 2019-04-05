@@ -142,16 +142,19 @@ namespace Talisman
             dragme.MouseUp += HandleMouseUp;
             _dragMe = dragme;
 
-            try
+            dragme.Loaded += (s, a) =>
             {
-                var source = PresentationSource.FromVisual(_dragMe);
-                WpfDpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-                WpfDpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
-            }
-            catch(Exception e)
-            {
-                throw new ApplicationException("Make sure you construct the dragging logic after the window is loaded.  Error: " + e.ToString());
-            }
+                try
+                {
+                    var source = PresentationSource.FromVisual(_dragMe);
+                    WpfDpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                    WpfDpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+                }
+                catch (Exception e)
+                {
+                    throw new ApplicationException("Make sure you construct the dragging logic after the window is loaded.  Error: " + e.ToString());
+                }
+            };
 
         }
 
