@@ -271,5 +271,13 @@ namespace Talisman
         {
             this.Close();
         }
+
+        private void DismissFloaters(object sender, RoutedEventArgs e)
+        {
+            foreach(var floater in _notificationWindows.ToArray())
+            {
+                floater.Close();
+            }
+        }
     }
 }
