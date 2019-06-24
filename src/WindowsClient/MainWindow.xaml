@@ -21,6 +21,7 @@
             <Image.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Exit Talisman" Click="ExitAppClicked" />
+                    <MenuItem Header="Dismiss All Floaters" Click="DismissFloaters" />
                 </ContextMenu>                
             </Image.ContextMenu>
         </Image>

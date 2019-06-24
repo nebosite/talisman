@@ -42,10 +42,14 @@ namespace Talisman
             this._appModel = appModel;
             this.DataContext = data;
             LocationTheta = location;
-            _draggingLogic = new DraggingLogic(this);
-            _draggingLogic.OnPositionChanged += (xm, ym) =>
+
+            this.Loaded += (a, b) =>
             {
-                Center = new Point(Center.X + xm / _draggingLogic.DpiCorrectionX, Center.Y + ym / _draggingLogic.DpiCorrectionY);
+                _draggingLogic = new DraggingLogic(this);
+                _draggingLogic.OnPositionChanged += (xm, ym) =>
+                {
+                    Center = new Point(Center.X + xm / _draggingLogic.DpiCorrectionX, Center.Y + ym / _draggingLogic.DpiCorrectionY);
+                };
             };
         }
 
