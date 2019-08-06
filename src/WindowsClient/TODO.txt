@@ -1,10 +1,18 @@
 ﻿----- TODO -------------------------------
 
 NOW
+    [ ] Talisman, show Teams messages below the stone
+    [ ] Talisman, don't handle clicks that miss the stone
 	[ ] Check for latest version and auto-update
     [ ] Talisman: show expired timers
 
 NEW
+    [ ] Talisman - change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
+        "Click the word that is not in the title"
+    [ ] Talisman: On startup, set the run registry key to point to the current exe
+    [ ] Talisman : Crashes if it can't send mail
+        - Have an errors tab to review problems (Maybe error light too)
+    [ ] Talisman: Windows tries to interfere with auto-email
 
 SOON
 	[ ] Fix snipping shortcut
