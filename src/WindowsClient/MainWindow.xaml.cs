@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -180,7 +181,12 @@ namespace Talisman
             _settingsWindow.Hide();
 
             var locationSetting = "\"500,500\""; // Settings.Default.Location;
-            if(!Settings.Default.CrashedLastTime)
+            var resetLocation = false;
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                resetLocation = true;
+            }
+            if (!Settings.Default.CrashedLastTime && !resetLocation)
             {
                 locationSetting = Settings.Default.Location;
             }
@@ -208,7 +214,7 @@ namespace Talisman
         protected override void OnClosing(CancelEventArgs e)
         {
             Settings.Default.Save();
-            _settingsWindow.CloseForReal();
+            _settingsWindow?.CloseForReal();
             foreach(var notificationWindow in _notificationWindows.ToArray())
             {
                 notificationWindow.Close();
