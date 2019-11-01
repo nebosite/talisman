@@ -29,7 +29,22 @@ namespace Talisman
             var talismanProcesses = Process.GetProcessesByName("Talisman");
             if(talismanProcesses.Length > 1)
             {
+
+                Debug.WriteLine("Found an extra Talisman procress.");
+#if DEBUG
+                foreach(var process in talismanProcesses)
+                {
+                    Debug.WriteLine("Shutting down other Talisman ...");
+                    var currentProcessId = Process.GetCurrentProcess().Id;
+                    if (process.Id != currentProcessId)
+                    {
+                        process.Kill();
+                    }
+                }
+#else
+                Debug.WriteLine("Shutting down myself.");
                 Application.Current.Shutdown();
+#endif               
             }
             var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             if(Settings.Default.CurrentVersion != assemblyVersion)
