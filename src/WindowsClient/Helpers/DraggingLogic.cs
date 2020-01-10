@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -135,11 +136,11 @@ namespace Talisman
         /// ctor - call after window is loaded
         /// </summary>
         // --------------------------------------------------------------------------
-        public DraggingLogic(Window dragme)
+        public DraggingLogic(Window dragme, FrameworkElement mouseTarget)
         {
-            dragme.MouseDown += HandleMouseDown;
-            dragme.MouseMove += HandleMouseMove;
-            dragme.MouseUp += HandleMouseUp;
+            mouseTarget.MouseDown += HandleMouseDown;
+            mouseTarget.MouseMove += HandleMouseMove;
+            mouseTarget.MouseUp += HandleMouseUp;
             _dragMe = dragme;
 
             dragme.Loaded += (s, a) =>
@@ -184,14 +185,13 @@ namespace Talisman
 
         private void HandleMouseDown(object sender, MouseButtonEventArgs e)
         {
-            var window = sender as Window;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
 
                 _dragging = true;
                 _dragDelta = 0;
-                _mouseStickyPosition = Mouse.GetPosition(window);
-                _lastMousePosition = window.PointToScreen(Mouse.GetPosition(window));
+                _mouseStickyPosition = Mouse.GetPosition(_dragMe);
+                _lastMousePosition = _dragMe.PointToScreen(Mouse.GetPosition(_dragMe));
                 _currentScreen = GetScreenFromPoint(_lastMousePosition);
                 CalculateDpiScaleFactors(_currentScreen, DpiType.Effective);
 
@@ -269,7 +269,6 @@ namespace Talisman
         {
             if (_dragging)
             {
-                var window = sender as Window;
                 // if the user didn't actually drag, then we want to treat this as a click
                 if (_dragDelta < 3)
                 {

@@ -45,7 +45,7 @@ namespace Talisman
 
             this.Loaded += (a, b) =>
             {
-                _draggingLogic = new DraggingLogic(this);
+                _draggingLogic = new DraggingLogic(this, this);
                 _draggingLogic.OnPositionChanged += (xm, ym) =>
                 {
                     Center = new Point(Center.X + xm / _draggingLogic.DpiCorrectionX, Center.Y + ym / _draggingLogic.DpiCorrectionY);

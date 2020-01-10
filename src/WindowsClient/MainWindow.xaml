@@ -14,18 +14,23 @@
     <Grid Margin="0,0,0.6,0.2" >
         <Image x:Name="Shadow"  Source="Assets/shadow.png" Margin="26,-7,13.2,-16.6"/>
         <Image x:Name="Glow"  Source="Assets/Glow.png" Width="150" Opacity="0"></Image>
-        <Image x:Name="Stone"
-            Source="Assets/MainObject.png" Width="80" VerticalAlignment="Center"
-               ToolTip="{Binding CurrentTimerName}"
-               >
-            <Image.ContextMenu>
+        <Grid 
+            x:Name="StoneArea"
+            Width="80" 
+            VerticalAlignment="Center"
+            ToolTip="{Binding CurrentTimerName}"
+            >
+            <Grid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Exit Talisman" Click="ExitAppClicked" />
                     <MenuItem Header="Dismiss All Floaters" Click="DismissFloaters" />
-                </ContextMenu>                
-            </Image.ContextMenu>
-        </Image>
-        <Label Content="{Binding CurrentTimeRemainingText}" Padding="0" HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
+                </ContextMenu>
+            </Grid.ContextMenu>
+            <Image x:Name="Stone"  Source="Assets/MainObject.png"/>
+        </Grid>
+        <Label Content="{Binding CurrentTimeRemainingText}" 
+               Padding="0" 
+               HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
                Foreground="#80000000"
                ToolTip="{Binding CurrentTimerName}"/>
     </Grid>

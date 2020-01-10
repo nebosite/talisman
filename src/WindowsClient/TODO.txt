@@ -2,9 +2,9 @@
 Talisman TODO
 ------------------------------------
 
-	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
-    [ ] Talisman, don't handle clicks that miss the stone
-    [ ] Move the exit link further away from the (X) on the settings page
+	[x] Fix the settings window location when it appears to be fully visible in the talisman screen
+    [x] Move the exit link further away from the (X) on the settings page
+    [x] Talisman, don't handle clicks that miss the stone
 	[ ] Hot Key - Center Talisman on the next screen
     [ ] Make the dismiss non-trivial
 		change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
@@ -34,11 +34,6 @@ LATER
     [ ] Talisman: Windows tries to interfere with auto-email
 	[ ] Check for latest version and auto-update
     [ ] Bug:  it is possible to lose the talisman off screen when multi-screen
-
-
-
-
-
 
 
 	[ ] Hotkey: Quick create shortcuts from running apps

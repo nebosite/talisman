@@ -160,7 +160,7 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _draggingLogic = new DraggingLogic(this);
+            _draggingLogic = new DraggingLogic(this, StoneArea);
             _draggingLogic.OnPositionChanged += (xm, ym) =>
             {
                 _newLocation = null;
