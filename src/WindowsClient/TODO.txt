@@ -2,31 +2,45 @@
 Talisman TODO
 ------------------------------------
 
+	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
+    [ ] Talisman, don't handle clicks that miss the stone
+    [ ] Move the exit link further away from the (X) on the settings page
+	[ ] Hot Key - Center Talisman on the next screen
+    [ ] Make the dismiss non-trivial
+		change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
+			"Click the word that is not in the title"
+    [ ] Provide buttons to click on links in the meeting (eg: open bluejeans)
+    [ ] Talisman, show Teams/Slack messages below the stone
+    [ ] Stopwatch
+    [ ] Clock style countdown peeking from behind the stone
 
 NEW
-    [ ] Bug:  it is possible to lose the talisman off screen
-    [ ] Move the exit link further away from the (X) on the settings page
-    [ ] Talisman, show Teams messages below the stone
-    [ ] Talisman, don't handle clicks that miss the stone
-	[ ] Check for latest version and auto-update
-    [ ] Talisman: show expired timers
-    [ ] Talisman - change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
-        "Click the word that is not in the title"
-    [ ] Talisman: On startup, set the run registry key to point to the current exe
-    [ ] Talisman : Crashes if it can't send mail
-        - Have an errors tab to review problems (Maybe error light too)
-    [ ] Talisman: Windows tries to interfere with auto-email
 
 SOON
-	[ ] Fix snipping shortcut
-	[ ] Remember Daily state between runs
+	[ ] Pomodoro buttons
 	[ ] Remember meetings to ignore
-	[ ] Pomodoro Tab
-	[ ] Generate a pomodoro from a list of items
-	[ ] Dragging is still weird on mismatched DPI monitors
-	[ ] Fix the settings window location when it appears to be fully visible in the talisman screen
+	[ ] Remember Daily state between runs
+    [ ] Talisman : Crashes if it can't send mail
+        - Have an errors tab to review problems (Maybe error light too)
+    [ ] Talisman: On startup, set the run registry key to point to the current exe
+    [ ] Talisman: show expired timers
+    [ ] when snipper is minimized, the hotkey does not work
+	[ ] Pop-out icons for running apps 
+		- easily create these from the process view
 
 LATER
+	[ ] Dragging is still weird on mismatched DPI monitors
+	[ ] Generate a pomodoro from a list of items
+    [ ] Talisman: Windows tries to interfere with auto-email
+	[ ] Check for latest version and auto-update
+    [ ] Bug:  it is possible to lose the talisman off screen when multi-screen
+
+
+
+
+
+
+
 	[ ] Hotkey: Quick create shortcuts from running apps
 	[ ] App Drawers
 	[ ] Auto-cancel when there are too many notifications

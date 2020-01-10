@@ -116,6 +116,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="Exit Talisman" Click="ExitAppClicked" Margin="441,10,0,0" Height="20"   HorizontalAlignment="Left" Width="84" VerticalAlignment="Top" />
+        <Button Content="Quit!" Click="ExitAppClicked" Margin="414,10,0,0" Height="20"   HorizontalAlignment="Left" Width="36" VerticalAlignment="Top" />
     </Grid>
 </Window>

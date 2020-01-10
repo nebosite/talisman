@@ -169,8 +169,17 @@ namespace Talisman
             };
             _draggingLogic.OnClick += () =>
             {
+                // Try to position the settngs window well inside the main screen
                 _settingsWindow.Left = this.Left;
                 _settingsWindow.Top = this.Top;
+                if (this.Left > ScreenHelper.MainScreen.WorkingArea.Left + ScreenHelper.MainScreen.WorkingArea.Width / 2)
+                {
+                    _settingsWindow.Left = this.Left + this.Width - _settingsWindow.Width;
+                }
+                if (this.Top > ScreenHelper.MainScreen.WorkingArea.Top + ScreenHelper.MainScreen.WorkingArea.Height / 2)
+                {
+                    _settingsWindow.Top = this.Top + this.Height - _settingsWindow.Height;
+                }
                 _settingsWindow.Popup();
             };
 
