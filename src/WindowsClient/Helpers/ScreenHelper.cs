@@ -173,6 +173,21 @@ namespace Talisman
         /// If any part of the window is off screen, move it into the screen all the way
         /// </summary>
         // --------------------------------------------------------------------------
+        public static void CenterWindowOnMainScreen(Window window)
+        {
+            var source = PresentationSource.FromVisual(window);
+            var xCorrection = 1.0 / source.CompositionTarget.TransformToDevice.M11;
+            var yCorrection = 1.0 / source.CompositionTarget.TransformToDevice.M22;
+            var bounds = MainScreen.Bounds;
+            window.Left = bounds.Left + bounds.Width * xCorrection / 2;
+            window.Top = bounds.Top + bounds.Height * yCorrection / 2;
+
+        }
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// If any part of the window is off screen, move it into the screen all the way
+        /// </summary>
+        // --------------------------------------------------------------------------
         public static void EnsureWindowIsVisible(Window window)
         {
             var source = PresentationSource.FromVisual(window);

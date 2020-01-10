@@ -1,19 +1,22 @@
 ﻿[
-  {
-    "Name": "Quick Email",
-    "DefaultArgument": "somebody@someplace.com"
-  },
-  {
-    "Name": "Lock + Screensaver"
-  },
-  {
-    "Name": "Screensaver"
-  },
-  {
-    "Name": "StartSnip"
-  },
-  {
-    "Name": "Quick Timer",
-    "DefaultArgument": "5"
-  }
+	{
+		"Name": "Quick Email",
+		"DefaultArgument": "somebody@someplace.com"
+	},
+	{
+		"Name": "Lock + Screensaver"
+	},
+	{
+		"Name": "Screensaver"
+	},
+	{
+		"Name": "StartSnip"
+	},
+	{
+		"Name": "Quick Timer",
+		"DefaultArgument": "5"
+	},
+	{
+		"Name": "Recenter Talisman"
+	}
 ]

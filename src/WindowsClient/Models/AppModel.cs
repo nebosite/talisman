@@ -53,6 +53,8 @@ namespace Talisman
 
         public ObservableCollection<HotKeyAssignment> HotKeyAssignments { get; set; } = new ObservableCollection<HotKeyAssignment>();
 
+        public event Action OnCenter;
+
         /// <summary>
         /// Current Timer properties
         /// </summary>
@@ -396,6 +398,9 @@ namespace Talisman
                     break;
                 case "StartSnip":
                     hotKeyAction = () => ScreenHelper.StartSnippingTool();
+                    break;
+                case "Recenter Talisman":
+                    hotKeyAction = () => OnCenter?.Invoke();
                     break;
                 default:
                     hotKeyAction = () => MessageBox.Show($"No action available for {assignment.OptionName}");

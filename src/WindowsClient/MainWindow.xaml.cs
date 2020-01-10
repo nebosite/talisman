@@ -62,6 +62,7 @@ namespace Talisman
             {
                 Dispatcher.Invoke(runme);
             });
+            _theModel.OnCenter += HandleOnCenter;
 
             InitializeComponent();
             CompositionTarget.Rendering += AnimateFrame;
@@ -75,6 +76,16 @@ namespace Talisman
             {
                 _emptyNotificationLocations.Add(thetaSlice * i);
             }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Center the talisman
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void HandleOnCenter()
+        {
+            ScreenHelper.CenterWindowOnMainScreen(this);
         }
 
         // --------------------------------------------------------------------------
