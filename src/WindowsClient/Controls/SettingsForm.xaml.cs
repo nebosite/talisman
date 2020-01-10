@@ -284,11 +284,6 @@ namespace Talisman
             Application.Current.Shutdown();
         }
 
-        bool _newHotKey_Shift = false;
-        bool _newHotKey_Ctrl = false;
-        bool _newHotKey_Alt = false;
-        Key _newHotKey_Letter = Key.None;
-
         // --------------------------------------------------------------------------
         /// <summary>
         /// Preview key strokes for hotkey assignment

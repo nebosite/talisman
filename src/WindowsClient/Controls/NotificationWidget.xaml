@@ -7,18 +7,34 @@
         BorderBrush="Transparent"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        Title="Talisman" Height="132" Width="292.857" WindowStyle="None" ShowInTaskbar="False" 
+        Title="Talisman" 
+        Height="165" Width="300" 
+        WindowStyle="None" ShowInTaskbar="False" 
         Topmost="True"
         Background="Transparent">
     <Grid  Background="Transparent">
         <Border x:Name="MyBorder" BorderThickness="5" BorderBrush="Red" CornerRadius="20"  Background="#a0FFFFFF">
             <Grid>
-                <TextBlock Text="{Binding NotificationText}" TextWrapping="Wrap" Padding="8" Margin="0,0,0,39" FontSize="12" />
-                <Label Content="Snooze" Margin="85,88,148,8" />
-                <Button Content="5 min" Padding="0" Tag="5" Click="SnoozeClicked" Margin="135,91,106,10" />
-                <Button Content="10 min" Padding="0" Tag="10" Click="SnoozeClicked" Margin="182,92,59,10" />
-                <Button Content="20 min" Padding="0" Tag="20" Click="SnoozeClicked" Margin="229,92,12,10" />
-                <Button Content="Dismiss" FontSize="12" Padding="0" Tag="20" Click="DismissClick" Margin="22,91,203,11" />
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="{Binding NotificationText}" TextWrapping="Wrap" Padding="8" FontSize="12" />
+                <StackPanel Grid.Row="1">
+                    <StackPanel Orientation="Horizontal" Margin="5">
+                        <Label Content="Snooze (min):" Height="15" Padding="0" />
+                        <Button Content="5" Width="20" Padding="0" Tag="5" Click="SnoozeClicked"   Margin="5,0,0,0"  />
+                        <Button Content="10" Width="20" Padding="0" Tag="10" Click="SnoozeClicked" Margin="5,0,0,0"/>
+                        <Button Content="20" Width="20" Padding="0" Tag="20" Click="SnoozeClicked" Margin="5,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel x:Name="DismissButtons" Orientation="Horizontal" Margin="5">
+                        <Label Content="Dismiss:" Height="15" Padding="0" />
+                        <Button Content="{Binding Word1}" Click="DismissClicked" Margin="5,0,0,0"/>
+                        <Button Content="{Binding Word2}" Click="DismissClicked" Margin="5,0,0,0"/>
+                        <Button Content="{Binding Word3}" Click="DismissClicked" Margin="5,0,0,0"/>
+                    </StackPanel>
+
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>
