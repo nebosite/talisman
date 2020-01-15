@@ -83,6 +83,7 @@ namespace Talisman
             "bent",
             "trace",
             "stormy" };
+        string[] IgnoreThese = { "min" };
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -100,10 +101,15 @@ namespace Talisman
             this.Loaded += (a, b) =>
             {
                 var lowerText = _data.NotificationText.ToLower();
-                Regex.Split(lowerText, @"[ .,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+");
-                var words = Regex.Split(_data.NotificationText.ToLower(), @"[ .,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+")
-                    .Where(w => w.Length > 0).ToList();
-                if (words.Count == 0) words.Add("hobartium");
+                var words = Regex.Split(_data.NotificationText.ToLower(), @"[ 0123456789.,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+")
+                    .Where(w => w.Length > 2 && !IgnoreThese.Contains(w)).ToList();
+                while (words.Count < 3)
+                {
+                    var anotherWord = SomeWords[Rand.Next(SomeWords.Length)];
+                    words.Add(anotherWord);
+                    this._data.NotificationText += $" {anotherWord}";
+                }
+                this._data.NotifyAllPropertiesChanged();
 
                 string randomWord() => words[Rand.Next(words.Count)];
 

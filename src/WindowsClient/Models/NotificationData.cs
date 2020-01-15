@@ -13,7 +13,7 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class NotificationData : BaseModel
     {
-        public string NotificationText { get; private set; }
+        public string NotificationText { get;  set; }
 
 
         // --------------------------------------------------------------------------

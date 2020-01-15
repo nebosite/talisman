@@ -2,13 +2,6 @@
 Talisman TODO
 ------------------------------------
 
-	[x] Fix the settings window location when it appears to be fully visible in the talisman screen
-    [x] Move the exit link further away from the (X) on the settings page
-    [x] Talisman, don't handle clicks that miss the stone
-	[x] Hot Key - Center Talisman on the next screen
-    [x] Make the dismiss non-trivial
-		change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
-			"Click the word that is not in the title"
     [ ] Provide buttons to click on links in the meeting (eg: open bluejeans)
     [ ] Talisman, show Teams/Slack messages below the stone
     [ ] Stopwatch
@@ -67,6 +60,15 @@ LATER
 
 
 DONE  ==================================================================================================
+
+	[x] Fix the settings window location when it appears to be fully visible in the talisman screen
+    [x] Move the exit link further away from the (X) on the settings page
+    [x] Talisman, don't handle clicks that miss the stone
+	[x] Hot Key - Center Talisman on the next screen
+    [x] Make the dismiss non-trivial
+		change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
+			"Click the word that is not in the title"
+
 0.4
     [x] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
 		[x] Make the app DPI aware for multiple monitors
