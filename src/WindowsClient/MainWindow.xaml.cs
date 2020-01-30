@@ -93,7 +93,7 @@ namespace Talisman
         /// Notification handling - make a little animation to alert the user
         /// </summary>
         // --------------------------------------------------------------------------
-        private void HandleNewNotification(NotificationData data)
+        private void HandleNewNotification(TimerInstance data)
         {
             Dispatcher.InvokeAsync(() =>
             {

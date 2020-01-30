@@ -19,7 +19,8 @@
                     <RowDefinition Height="100"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="{Binding NotificationText}" TextWrapping="Wrap" Padding="8" FontSize="12" />
+                <local:ReminderSummary Grid.Row="0"   />
+
                 <StackPanel Grid.Row="1">
                     <StackPanel Orientation="Horizontal" Margin="5">
                         <Label Content="Snooze (min):" Height="15" Padding="0" />

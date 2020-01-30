@@ -2,12 +2,12 @@
 Talisman TODO
 ------------------------------------
 
-    [ ] Provide buttons to click on links in the meeting (eg: open bluejeans)
-    [ ] Talisman, show Teams/Slack messages below the stone
     [ ] Stopwatch
     [ ] Clock style countdown peeking from behind the stone
+    [ ] Talisman, show Teams/Slack messages below the stone
 
 NEW
+
 
 SOON
 	[ ] Pomodoro buttons
@@ -60,6 +60,12 @@ LATER
 
 
 DONE  ==================================================================================================
+
+
+    [x] Talisman condense links (probably into a special control)
+        [x] show condensed appointment with clickable link in the reminder
+        [x] In the future items summary
+        [x] Reduce long locations with multiple rooms
 
 	[x] Fix the settings window location when it appears to be fully visible in the talisman screen
     [x] Move the exit link further away from the (X) on the settings page

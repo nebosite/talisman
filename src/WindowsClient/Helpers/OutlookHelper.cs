@@ -184,12 +184,11 @@ namespace Talisman
                 {
                     var newItem = new TimeRelatedItem();
                     var locationText = string.IsNullOrWhiteSpace(appointment.Location) ? "" : $" in {appointment.Location}";
-                    newItem.Title = $"{appointment.Start.ToShortTimeString()}{locationText}: {appointment.Subject}";
+                    newItem.Title = appointment.Subject;
 
                     newItem.Start = appointment.Start;
                     newItem.End = appointment.End;
                     newItem.Location = appointment.Location;
-                    newItem.InstanceInfo = new UniqueInstance($"{appointment.Subject} at {appointment.Start.ToString("HHmm")}", appointment.Start);
 
                     var recurrencePattern = appointment.GetRecurrencePattern();
                     if (appointment.RecurrenceState == OlRecurrenceState.olApptOccurrence &&

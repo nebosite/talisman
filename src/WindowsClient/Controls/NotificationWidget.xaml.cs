@@ -24,7 +24,7 @@ namespace Talisman
     public partial class NotificationWidget : Window
     {
         static Random Rand = new Random();
-        NotificationData _data;
+        TimerInstance _data;
         AppModel _appModel;
 
         public double LocationTheta { get; set; }
@@ -83,14 +83,14 @@ namespace Talisman
             "bent",
             "trace",
             "stormy" };
-        string[] IgnoreThese = { "min" };
+        string[] IgnoreThese = { "min", "outlook", "bluejeans", "http", "https", "com" };
 
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public NotificationWidget(NotificationData data, AppModel appModel, double location)
+        public NotificationWidget(TimerInstance data, AppModel appModel, double location)
         {
             InitializeComponent();
             this._data = data;
@@ -100,14 +100,14 @@ namespace Talisman
 
             this.Loaded += (a, b) =>
             {
-                var lowerText = _data.NotificationText.ToLower();
-                var words = Regex.Split(_data.NotificationText.ToLower(), @"[ 0123456789.,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+")
+                var lowerText = _data.Description.ToLower();
+                var words = Regex.Split(lowerText, @"[ 0123456789.,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+")
                     .Where(w => w.Length > 2 && !IgnoreThese.Contains(w)).ToList();
                 while (words.Count < 3)
                 {
                     var anotherWord = SomeWords[Rand.Next(SomeWords.Length)];
                     words.Add(anotherWord);
-                    this._data.NotificationText += $" {anotherWord}";
+                    this._data.Description += $" {anotherWord}";
                 }
                 this._data.NotifyAllPropertiesChanged();
 
@@ -155,9 +155,15 @@ namespace Talisman
             MyBorder.BorderBrush = brush;
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Snooze the current timer
+        /// </summary>
+        // --------------------------------------------------------------------------
         void Snooze(double minutes)
         {
-            _appModel.StartTimer(minutes, _data.NotificationText);
+            _data.EndsAt = _data.EndsAt.AddMinutes(minutes);
+            _appModel.StartTimer(_data);
             this.Close();
         }
 
@@ -180,7 +186,7 @@ namespace Talisman
         private void DismissClicked(object sender, RoutedEventArgs e)
         {
             var clickText = (sender as Button).Content.ToString().ToLower();
-            if (_data.NotificationText.ToLower().Contains(clickText)) Snooze(.01);
+            if (_data.Description.ToLower().Contains(clickText)) Snooze(.01);
             else Close();
         }
     }

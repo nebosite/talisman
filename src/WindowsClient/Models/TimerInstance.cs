@@ -3,20 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Talisman
 {
-    public struct UniqueInstance
-    {
-        public string Id;
-        public DateTime Date;
-        public UniqueInstance(string id, DateTime date)
-        {
-            Id = id;
-            Date = date;
-        }
-    }
-
     // --------------------------------------------------------------------------
     /// <summary>
     /// An Instance of a timer 
@@ -24,46 +14,62 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class TimerInstance : BaseModel
     {
+        public int Id { get; set; }
+        public string UniqueId { get; set; }
         public DateTime EndsAt { get; set; }
-
-        string _name = "";
-        public string Name
+        string _description = "";
+        public string Description
         {
-            get => _name;
+            get => _description;
             set
             {
-                _name = value;
-                NotifyPropertyChanged(nameof(Name));
+                _description = value;
+                NotifyPropertyChanged(nameof(Description));
             }
         }
-        public int Id { get; set; }
-        public UniqueInstance? InstanceInfo { get; set; }
 
-        public string EndsAtText => EndsAt.ToString(@"hh\:mm tt");
+        public class LinkDetails
+        {
+            public string Uri { get; set; }
+            public string Text { get; set; }
+        }
+
+        public string Location { get; set; }
+        public List<LinkDetails> Links { get; set; } = new List<LinkDetails>();
+        public Visibility LinkVisibility => Links.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+
+
+        public string TimeText => EndsAt.ToString(@"h\:mm tt");
         static int _idCounter = 0;
-        Action<int> DeleteMeHandler;
+        public Action OnDeleted = ()=> { };
 
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public TimerInstance(DateTime endTime, string timerName, Action<int> deleteMe)
+        public TimerInstance(DateTime endTime, string location, string description, LinkDetails[] links)
         {
             EndsAt = endTime;
-            Name = timerName;
+            Location = location;
+            Description = description;
+            UniqueId = $"{endTime}|{location}|{description}";
             Id = _idCounter++;
-            DeleteMeHandler = deleteMe;
+            if (links != null)
+            {
+                links.ToList().ForEach(i => Links.Add(i));
+            }
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// ctor
+        /// DeleteMe
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void DeleteMe()
+        public void DeleteMe()
         {
-            DeleteMeHandler?.Invoke(Id);
+            OnDeleted();
         }
     }
 }

@@ -108,6 +108,9 @@
     <Compile Include="Controls\QuickMailSender.xaml.cs">
       <DependentUpon>QuickMailSender.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ReminderSummary.xaml.cs">
+      <DependentUpon>ReminderSummary.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScreenSaverHelper.cs" />
     <Page Include="Controls\CalenderItemWidget.xaml">
       <SubType>Designer</SubType>
@@ -145,6 +148,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\ReminderSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\NotificationWidget.xaml.cs">
@@ -152,7 +159,6 @@
     </Compile>
     <Compile Include="Models\Calendar.cs" />
     <Compile Include="Models\TimerInstance.cs" />
-    <Compile Include="Models\NotificationData.cs" />
     <Compile Include="Helpers\OutlookHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

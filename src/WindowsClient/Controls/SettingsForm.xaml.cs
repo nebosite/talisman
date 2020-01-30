@@ -179,7 +179,7 @@ namespace Talisman
                 double.TryParse(button.Tag.ToString(), out minutes);
             }
             
-            _appModel.StartTimer(minutes);
+            _appModel.StartQuickTimer(minutes);
             this.Hide();
         }
 
@@ -191,7 +191,7 @@ namespace Talisman
         private void TimeClickerMouseUp(object sender, MouseButtonEventArgs e)
         {
             var clickTime = GetTimeClickerSelectedTime(sender as Canvas, e);
-            _appModel.StartTimer(clickTime);
+            _appModel.StartQuickTimer(clickTime);
             this.Hide();
         }
 

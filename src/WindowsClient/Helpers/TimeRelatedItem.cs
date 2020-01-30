@@ -18,7 +18,6 @@ namespace Talisman
         public DateTime End { get; internal set; }
         public string Location { get; internal set; }
         public bool Recurring { get; internal set; }
-        public UniqueInstance InstanceInfo { get; internal set; }
     }
 
 

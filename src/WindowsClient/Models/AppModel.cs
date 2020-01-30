@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -14,7 +15,7 @@ using Talisman.Properties;
 
 namespace Talisman
 {
-    public delegate void NotificationHandler(NotificationData data);
+    public delegate void NotificationHandler(TimerInstance data);
 
     // --------------------------------------------------------------------------
     /// <summary>
@@ -60,7 +61,7 @@ namespace Talisman
         /// </summary>
         public TimeSpan CurrentTimeRemaining=> (ActiveTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - ActiveTimers[0].EndsAt;
         public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
-        public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Name + $" ({ActiveTimers[0].EndsAt.ToString(@"hh\:mm tt")})";
+        public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Description + $" ({ActiveTimers[0].EndsAt.ToString(@"hh\:mm tt")})";
 
 
         string _quickTimerName = "Quick Timer";
@@ -158,7 +159,7 @@ namespace Talisman
             }
         }
 
-        List<UniqueInstance> _cancelledInstances = new List<UniqueInstance>();
+        List<TimerInstance> _cancelledInstances = new List<TimerInstance>();
 
         DateTime _nextCalendarErrorOKTime = DateTime.MinValue;
 
@@ -178,10 +179,8 @@ namespace Talisman
                     {
                         if (_outlook == null) _outlook = new OutlookHelper();
 
-                        foreach(var item in _outlook.GetNextTimerRelatedItems(10))
-                        {
-                            StartTimer(item.Start.AddMinutes(-3), "Outlook: " + item.Title, noDuplicates: true, instanceInfo: item.InstanceInfo);
-                        }
+                        foreach (var item in _outlook.GetNextTimerRelatedItems(10))
+                            StartOutlookTimer(item);
                     }
                 }
                 catch(Exception e)
@@ -195,6 +194,49 @@ namespace Talisman
             }
             stopwatch.Stop();
             Debug.WriteLine($"Check Calendars took {stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// StartOutlookTimer
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void StartOutlookTimer(TimeRelatedItem item)
+        {
+            if (item.Location == null) item.Location = "";
+            var locationParts = item.Location.Split(';');
+            var locationText = "";
+            var links = new List<TimerInstance.LinkDetails>();
+            foreach(var untrimmedPart in locationParts)
+            {
+                var part = untrimmedPart.Trim();
+                if (part == "") continue;
+                // pull out bluejeans links
+                if (part.ToLowerInvariant().Contains("http"))
+                {
+                    links.Add(new TimerInstance.LinkDetails()
+                    {
+                        Uri = part,
+                        Text = Regex.Replace(part, "^ht.*//", "")
+                    });
+                }
+                // Just seattle conference rooms
+                else if(part.ToLowerInvariant().Contains("cr sea "))
+                {
+                    var match = Regex.Match(part, "CR SEA (.*) ");
+                    if (match.Success) locationText += $"[{match.Groups[1].Value}]";
+                    else locationText += $"[{part}]";
+                }
+            }
+            var newInstance = new TimerInstance(
+                item.Start.AddMinutes(-3),
+                locationText,
+                item.Title,
+                links.ToArray());
+            if (!this.TimerExists(newInstance))
+            {
+                StartTimer(newInstance);
+            }
         }
 
         // --------------------------------------------------------------------------
@@ -223,7 +265,7 @@ namespace Talisman
                 RemoveTimers(finishedTimers);
                 foreach(var timer in finishedTimers)
                 {
-                    OnNotification.Invoke(new NotificationData(timer.Name));
+                    OnNotification.Invoke(timer);
                 }
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
@@ -244,10 +286,7 @@ namespace Talisman
                     lock (ActiveTimers)
                     {
                         ActiveTimers.Remove(timer);
-                        if(timer.InstanceInfo != null)
-                        {
-                            _cancelledInstances.Add(timer.InstanceInfo.Value);
-                        }
+                        _cancelledInstances.Add(timer);
                     }
                 });
             }
@@ -256,94 +295,75 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Start a timer for some span of time
+        /// Have we already seen this timer at some point in time?
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(double minutes, string name = null, bool noDuplicates = false, UniqueInstance? instanceInfo = null)
+        bool TimerExists(TimerInstance instance)
         {
-            var endTime = DateTime.Now.AddMinutes(minutes);
-            var timerName = name ?? $"{QuickTimerName} [{minutes.ToString(".0")} min]";
-            StartTimerInternal(endTime, timerName, noDuplicates, instanceInfo);
+            return ActiveTimers.ToArray().Where(t => t.UniqueId == instance.UniqueId).Any()
+                && _cancelledInstances.ToArray().Where(t => t.UniqueId == instance.UniqueId).Any();
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Start a timer at some absolute time
+        /// Quick timer
         /// </summary>
         // --------------------------------------------------------------------------
-        internal void StartTimer(DateTime endTime, string name = null, bool noDuplicates = false, UniqueInstance? instanceInfo = null)
-        {
-            var timerName = name ?? $"{QuickTimerName} [{endTime.ToString(@"hh\:mm tt")}]";
-            StartTimerInternal(endTime, timerName, noDuplicates, instanceInfo);
-        }
+        internal void StartQuickTimer(double minutes, string message = null)=>
+            StartQuickTimer(DateTime.Now.AddMinutes(minutes), message);
 
-
-        // --------------------------------------------------------------------------
-        /// <summary>
-        /// Start a timer at some absolute time
-        /// </summary>
-        // --------------------------------------------------------------------------
-        internal void StartTimerInternal(DateTime endTime, string timerName, bool noDuplicates, UniqueInstance? instanceInfo)
+        internal void StartQuickTimer(DateTime time, string message = null)
         {
-            // Since calendar items are added multiple times per day, we want to not add the item
-            // if it is already on the timer list
-            if (noDuplicates)
+            if (message == null)
             {
-                if (ActiveTimers.Where(t => t.Name == timerName).Any())
-                {
-                    return;
-                }
+                message = this.QuickTimerName;
             }
+            var newInstance = new TimerInstance(time, "", message, null);
+            StartTimer(newInstance);
+        }
 
-            // If an item has information about a unique instance, then we don't
-            // want to start the timer of the instance is already cancelled.   e.g.:  When the
-            // user does an early cancellation of a calendar item, we don't want to bring it up 
-            // again when the app re-reads the calendar looking for new appointments.
-            if (instanceInfo != null)
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Start a timer at some absolute time
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void StartTimer(TimerInstance instance)
+        {
+            if (_cancelledInstances.ToArray().Where(t => t.Id == instance.Id).Any()
+                || ActiveTimers.ToArray().Where(t => t.Id == instance.Id).Any())
             {
-                foreach (var cancelledInstance in _cancelledInstances.ToArray())
-                {
-                    // Remove old cancelled instances
-                    if (cancelledInstance.Date.Day != DateTime.Now.Day)
-                    {
-                        _cancelledInstances.Remove(cancelledInstance);
-                    }
-                    else if (instanceInfo.Value.Id == cancelledInstance.Id)
-                    {
-                        return;
-                    }
-                }
+                throw new ApplicationException("Timer with the same id was already added");
             }
 
             _dispatch(() =>
             {
-                var newTimer = new TimerInstance(endTime, timerName,
-                    (id) => RemoveTimers(ActiveTimers.Where(t => t.Id == id).ToArray()));
-                newTimer.InstanceInfo = instanceInfo;
-                newTimer.PropertyChanged += (sender, args) =>
+                instance.OnDeleted = () => RemoveTimers(ActiveTimers.Where(t => t.Id == instance.Id).ToArray());
+                instance.PropertyChanged += (sender, args) =>
                 {
                     NotifyPropertyChanged(nameof(CurrentTimerName));
                     NotifyPropertyChanged(nameof(CurrentTimeRemaining));
                     NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
                 };
+
+                var added = false;
                 for (int i = 0; i < ActiveTimers.Count; i++)
                 {
-                    if (newTimer.EndsAt < ActiveTimers[i].EndsAt)
+                    if (instance.EndsAt < ActiveTimers[i].EndsAt)
                     {
 
                         lock (ActiveTimers)
                         {
-                            ActiveTimers.Insert(i, newTimer);
+                            ActiveTimers.Insert(i, instance);
                         }
-                        newTimer = null;
+                        added = true;
                         break;
                     }
                 }
-                if (newTimer != null)
+                if (!added)
                 {
                     lock (ActiveTimers)
                     {
-                        ActiveTimers.Add(newTimer);
+                        ActiveTimers.Add(instance);
                     }
                 }
                 NotifyAllPropertiesChanged();
@@ -380,7 +400,7 @@ namespace Talisman
                 case "Quick Timer":
                     if (double.TryParse(assignment.OptionValue, out var minutes))
                     {
-                        hotKeyAction = () => StartTimer(minutes, "Quick Timer");
+                        hotKeyAction = () => StartQuickTimer(minutes, "Quick Timer");
                     }
                     else
                     {
