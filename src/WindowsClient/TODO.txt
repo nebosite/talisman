@@ -61,8 +61,9 @@ LATER
 
 DONE  ==================================================================================================
 
-
-    [x] Talisman condense links (probably into a special control)
+0.5
+    [x] Make the outlooks links better
+		[x] Make Urls in the location clickable
         [x] show condensed appointment with clickable link in the reminder
         [x] In the future items summary
         [x] Reduce long locations with multiple rooms
