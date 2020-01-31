@@ -100,16 +100,17 @@ namespace Talisman
 
             this.Loaded += (a, b) =>
             {
-                var lowerText = _data.Description.ToLower();
+                var lowerText = _data.DecoratedDescription.ToLower();
                 var words = Regex.Split(lowerText, @"[ 0123456789.,/\-?!@#$%^&*()\[\]="":|{ }<> +_]+")
                     .Where(w => w.Length > 2 && !IgnoreThese.Contains(w)).ToList();
                 while (words.Count < 3)
                 {
                     var anotherWord = SomeWords[Rand.Next(SomeWords.Length)];
                     words.Add(anotherWord);
-                    this._data.Description += $" {anotherWord}";
+                    this._data.DescriptionDecoration += $" {anotherWord}";
                 }
                 this._data.NotifyAllPropertiesChanged();
+                lowerText = _data.DecoratedDescription.ToLower();
 
                 string randomWord() => words[Rand.Next(words.Count)];
 
@@ -186,7 +187,7 @@ namespace Talisman
         private void DismissClicked(object sender, RoutedEventArgs e)
         {
             var clickText = (sender as Button).Content.ToString().ToLower();
-            if (_data.Description.ToLower().Contains(clickText)) Snooze(.01);
+            if (_data.DecoratedDescription.ToLower().Contains(clickText)) Snooze(.01);
             else Close();
         }
     }

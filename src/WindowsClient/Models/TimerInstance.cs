@@ -25,8 +25,23 @@ namespace Talisman
             {
                 _description = value;
                 NotifyPropertyChanged(nameof(Description));
+                NotifyPropertyChanged(nameof(DecoratedDescription));
             }
         }
+
+        string _descriptionDecoration = "";
+        public string DescriptionDecoration
+        {
+            get => _descriptionDecoration;
+            set
+            {
+                _descriptionDecoration = value;
+                NotifyPropertyChanged(nameof(DescriptionDecoration));
+                NotifyPropertyChanged(nameof(DecoratedDescription));
+            }
+        }
+
+        public string DecoratedDescription => Description + " " + DescriptionDecoration;
 
         public class LinkDetails
         {

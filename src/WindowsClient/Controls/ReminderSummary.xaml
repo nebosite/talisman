@@ -12,7 +12,7 @@
                 <Label Content="{Binding TimeText}" />
                 <Label Content="{Binding Location}" />
             </StackPanel>
-            <Label Content="{Binding Description}" FontWeight="Bold" Padding="0" Margin="5,0,0,0" />
+            <Label Content="{Binding DecoratedDescription}" FontWeight="Bold" Padding="0" Margin="5,0,0,0" />
             <ListView Visibility="{Binding LinkVisibility}"
                       ItemsSource="{Binding Links}" 
                       Background="Transparent">
