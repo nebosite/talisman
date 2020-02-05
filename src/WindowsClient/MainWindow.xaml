@@ -8,7 +8,7 @@
         BorderBrush="Transparent"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        Title="Talisman" Height="177.355" Width="156.457" WindowStyle="None" ShowInTaskbar="False" 
+        Title="{Binding Title}" Height="177.355" Width="156.457" WindowStyle="None" ShowInTaskbar="False" 
         Topmost="True"
         Background="Transparent">
     <Grid Margin="0,0,0.6,0.2" >

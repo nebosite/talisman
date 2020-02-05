@@ -189,6 +189,7 @@ namespace Talisman
                     newItem.Start = appointment.Start;
                     newItem.End = appointment.End;
                     newItem.Location = appointment.Location;
+                    newItem.Contents = appointment.Body;
 
                     var recurrencePattern = appointment.GetRecurrencePattern();
                     if (appointment.RecurrenceState == OlRecurrenceState.olApptOccurrence &&

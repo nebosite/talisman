@@ -24,6 +24,7 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public class AppModel : BaseModel
     {
+        public string Title => "Talisman " + VersionText;
         public string VersionText => "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
         Timer _tickTimer;
 
@@ -207,6 +208,8 @@ namespace Talisman
             var locationParts = item.Location.Split(';');
             var locationText = "";
             var links = new List<TimerInstance.LinkDetails>();
+
+            // Shrink the location and pull out any links
             foreach(var untrimmedPart in locationParts)
             {
                 var part = untrimmedPart.Trim();
@@ -228,6 +231,28 @@ namespace Talisman
                     else locationText += $"[{part}]";
                 }
             }
+
+            // If 1 or 0 links in location, looks for links in the body
+            if (links.Count < 2 && !string.IsNullOrEmpty(item.Contents))
+            {
+                var previousLinkText = "ZZZ *** not set ***";
+                if (links.Count > 0) previousLinkText = links[0].Text.ToLowerInvariant();
+                var urlMatch = Regex.Match(item.Contents, @"(?<links>(http.*?://[^\s]+)+)");
+                for(int i = 0; i < urlMatch.Captures.Count; i++)
+                {
+                    var url = urlMatch.Captures[i].Value;
+                    if(!url.ToLowerInvariant().Contains(previousLinkText))
+                    {
+                        links.Add(new TimerInstance.LinkDetails()
+                        {
+                            Uri = url,
+                            Text = Regex.Replace(url, "^ht.*?//", "")
+                        });
+                        if (links.Count > 4) break;
+                    }
+                }
+            }
+
             var newInstance = new TimerInstance(
                 item.Start.AddMinutes(-3),
                 locationText,
@@ -301,7 +326,7 @@ namespace Talisman
         bool TimerExists(TimerInstance instance)
         {
             return ActiveTimers.ToArray().Where(t => t.UniqueId == instance.UniqueId).Any()
-                && _cancelledInstances.ToArray().Where(t => t.UniqueId == instance.UniqueId).Any();
+                || _cancelledInstances.ToArray().Where(t => t.UniqueId == instance.UniqueId).Any();
         }
 
         // --------------------------------------------------------------------------
