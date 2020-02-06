@@ -233,14 +233,14 @@ namespace Talisman
             }
 
             // If 1 or 0 links in location, looks for links in the body
-            if (links.Count < 2 && !string.IsNullOrEmpty(item.Contents))
+            if (links.Count < 4 && !string.IsNullOrEmpty(item.Contents))
             {
                 var previousLinkText = "ZZZ *** not set ***";
                 if (links.Count > 0) previousLinkText = links[0].Text.ToLowerInvariant();
-                var urlMatch = Regex.Match(item.Contents, @"(?<links>(http.*?://[^\s]+)+)");
-                for(int i = 0; i < urlMatch.Captures.Count; i++)
+                var urlMatches = Regex.Matches(item.Contents, @"(?<links>(http.*?://[^\s]+)+)");
+                foreach(Match urlMatch in urlMatches)
                 {
-                    var url = urlMatch.Captures[i].Value;
+                    var url = urlMatch.Groups[1].Value;
                     if(!url.ToLowerInvariant().Contains(previousLinkText))
                     {
                         links.Add(new TimerInstance.LinkDetails()
@@ -248,8 +248,9 @@ namespace Talisman
                             Uri = url,
                             Text = Regex.Replace(url, "^ht.*?//", "")
                         });
-                        if (links.Count > 4) break;
+                        if (links.Count >= 4) break;
                     }
+
                 }
             }
 
