@@ -79,6 +79,7 @@ namespace Talisman
         void Snooze(double minutes)
         {
             _data.EndsAt = _data.EndsAt.AddMinutes(minutes);
+            _appModel.RemoveTimer(_data);
             _appModel.StartTimer(_data);
             this.Close();
         }

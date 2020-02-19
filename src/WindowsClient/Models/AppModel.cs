@@ -88,6 +88,7 @@ namespace Talisman
         }
 
         string _customQuickTime = "60";
+
         public string CustomQuickTime
         {
             get => _customQuickTime;
@@ -346,6 +347,17 @@ namespace Talisman
             }
             var newInstance = new TimerInstance(time, "", message, null);
             StartTimer(newInstance);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Remove a timer from our lists
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void RemoveTimer(TimerInstance timerItem)
+        {
+            _cancelledInstances.Remove(timerItem);
+            ActiveTimers.Remove(timerItem);
         }
 
         // --------------------------------------------------------------------------

@@ -62,20 +62,20 @@ namespace Talisman
 
         string[] SomeWords = {
             "scientific","cellar","suffer","return",
-            "structure","flight","food","majestic","rest","hall","overconfident","experience","plough","shy","include",
+            "structure","flight","food","majestic","rest","hall","experience","plough","shy","include",
             "satisfying","blink","poison","jumbled","learn","bit","grubby","spicy","hunt","boy","weak","twig","drain",
             "jam","fearless","downtown","doubtful","sad","decision","hysterical","follow","right","miniature",
             "humor","pot","wire","horses","probable","alleged","door","obeisant","long","bent","trace","stormy",
             "didactic","whip","cheerful","flock","weight","capable",
-            "plastic","company","nasty","injure","fall","lying","defiant","unpack","adorable",
+            "plastic","company","joyful","injure","fall","lying","defiant","unpack","adorable",
             "abandoned","plantation","wobble","elegant","complete","team","mellow","acrid","massive",
-            "mailbox","fragile","parallel","used","futuristic","equal","wash","overconfident","finger",
-            "last","wealth","abiding","hook","credit","rely","incompetent","twig","helpless",
+            "mailbox","fragile","parallel","used","futuristic","equal","wash","humorous","finger",
+            "last","wealth","abiding","hook","credit","rely","twig",
             "shivering","gather","makeshift","anxious","overflow","exist","trees","violent","box","base",
-            "important","eyes","elated","boy","gentle","juggle","long","male","hydrant","meaty",
+            "important","eyes","elated","handsome","gentle","juggle","long","beautiful","hydrant","meaty",
             "lamentable","toy","helpful","lackadaisical","float","flag","sparkle","allow","eggnog",
-            "history","furniture","hellish","lunchroom","teeny","hard-to-find","spotted","nondescript","act",
-            "challenge","size","agreeable","pizzas","cough","shelter","modern","trucks","month","three",
+            "history","furniture","heavenly","lunchroom","teeny","hard-to-find","spotted","nondescript","act",
+            "challenge","size","agreeable","pizzas","sneeze","shelter","modern","trucks","month","three",
             "miniature","hushed","late","bulb","little","letters","crawl","wholesale","snails","tray",
         };
         string[] IgnoreThese = { "min", "outlook", "bluejeans", "http", "https", "com" };
