@@ -62,7 +62,7 @@ namespace Talisman
         /// </summary>
         public TimeSpan CurrentTimeRemaining=> (ActiveTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - ActiveTimers[0].EndsAt;
         public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
-        public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Description + $" ({ActiveTimers[0].EndsAt.ToString(@"hh\:mm tt")})";
+        public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Description + $" ({ActiveTimers[0].VisibleTime.ToString(@"hh\:mm tt")})";
 
 
         string _quickTimerName = "Quick Timer";
@@ -257,6 +257,7 @@ namespace Talisman
 
             var newInstance = new TimerInstance(
                 item.Start.AddMinutes(-3),
+                item.Start,
                 locationText,
                 item.Title,
                 links.ToArray());
@@ -345,7 +346,7 @@ namespace Talisman
             {
                 message = this.QuickTimerName;
             }
-            var newInstance = new TimerInstance(time, "", message, null);
+            var newInstance = new TimerInstance(time, time, "", message, null);
             StartTimer(newInstance);
         }
 

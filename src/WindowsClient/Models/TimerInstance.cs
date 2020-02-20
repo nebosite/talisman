@@ -18,6 +18,7 @@ namespace Talisman
         public int Id { get; set; }
         public string UniqueId { get; set; }
         public DateTime EndsAt { get; set; }
+        public DateTime VisibleTime { get; set; }
         string _description = "";
         public string Description
         {
@@ -56,7 +57,7 @@ namespace Talisman
 
 
 
-        public string TimeText => EndsAt.ToString(@"h\:mm tt");
+        public string TimeText => VisibleTime.ToString(@"h\:mm tt");
         static int _idCounter = 0;
         public Action OnDeleted = ()=> { };
 
@@ -88,9 +89,10 @@ namespace Talisman
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public TimerInstance(DateTime endTime, string location, string description, LinkDetails[] links)
+        public TimerInstance(DateTime endTime, DateTime visibleTime, string location, string description, LinkDetails[] links)
         {
             EndsAt = endTime;
+            VisibleTime = visibleTime;
             Location = location;
             Description = description;
             UniqueId = $"{endTime}|{location}|{description}";
