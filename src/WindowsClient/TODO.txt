@@ -1,12 +1,20 @@
 ﻿------------------------------------
 Talisman TODO
 ------------------------------------
-	[ ] Look for bluejeans link inside the appointment if there aren't any meeting places
+	[x] Look for bluejeans link inside the appointment if there aren't any meeting places
+	[x] Link in meetng starts with "BJ: " and messes up the click
+	[x] Appointment list should show the actual alert time
+
     [ ] Stopwatch
     [ ] Clock style countdown peeking from behind the stone
     [ ] Talisman, show Teams/Slack messages below the stone
 
 NEW
+    [ ] Talisman - a better outlook calendar view
+        - Make better use of space - overlap Items
+        - Filters to auto-exclude, auto-color meetings (this can be dynamic - eg: highlight new meetings)
+        - inline response to meetings
+        - cutstom vertical scale
 
 
 SOON

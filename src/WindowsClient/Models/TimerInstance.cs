@@ -58,6 +58,7 @@ namespace Talisman
 
 
         public string TimeText => VisibleTime.ToString(@"h\:mm tt");
+        public string NotificationTimeText => EndsAt.ToString(@"h\:mm tt");
         static int _idCounter = 0;
         public Action OnDeleted = ()=> { };
 

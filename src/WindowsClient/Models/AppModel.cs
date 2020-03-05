@@ -210,48 +210,36 @@ namespace Talisman
             var locationText = "";
             var links = new List<TimerInstance.LinkDetails>();
 
-            // Shrink the location and pull out any links
-            foreach(var untrimmedPart in locationParts)
+            // Extract links
+            var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;]+)+)");
+            var previousLinkText = "ZZZ *** not set ***";
+            foreach (Match urlMatch in urlMatches)
             {
-                var part = untrimmedPart.Trim();
-                if (part == "") continue;
-                // pull out bluejeans links
-                if (part.ToLowerInvariant().Contains("http"))
+                var url = urlMatch.Groups[1].Value;
+                if (links.Count > 0) previousLinkText = links[0].Text.ToLowerInvariant();
+                if (!url.ToLowerInvariant().Contains(previousLinkText))
                 {
                     links.Add(new TimerInstance.LinkDetails()
                     {
-                        Uri = part,
-                        Text = Regex.Replace(part, "^ht.*//", "")
+                        Uri = url,
+                        Text = Regex.Replace(url, "^ht.*?//", "")
                     });
+
+                    if (links.Count >= 4) break;
                 }
-                // Just seattle conference rooms
-                else if(part.ToLowerInvariant().Contains("cr sea "))
+
+            }
+
+            // Shrink the location and pull out any links
+            foreach (var untrimmedPart in locationParts)
+            {
+                var part = untrimmedPart.Trim();
+                if (part == "") continue;
+                if(part.ToLowerInvariant().Contains("cr sea "))
                 {
                     var match = Regex.Match(part, "CR SEA (.*) ");
                     if (match.Success) locationText += $"[{match.Groups[1].Value}]";
                     else locationText += $"[{part}]";
-                }
-            }
-
-            // If 1 or 0 links in location, looks for links in the body
-            if (links.Count < 4 && !string.IsNullOrEmpty(item.Contents))
-            {
-                var previousLinkText = "ZZZ *** not set ***";
-                if (links.Count > 0) previousLinkText = links[0].Text.ToLowerInvariant();
-                var urlMatches = Regex.Matches(item.Contents, @"(?<links>(http.*?://[^\s]+)+)");
-                foreach(Match urlMatch in urlMatches)
-                {
-                    var url = urlMatch.Groups[1].Value;
-                    if(!url.ToLowerInvariant().Contains(previousLinkText))
-                    {
-                        links.Add(new TimerInstance.LinkDetails()
-                        {
-                            Uri = url,
-                            Text = Regex.Replace(url, "^ht.*?//", "")
-                        });
-                        if (links.Count >= 4) break;
-                    }
-
                 }
             }
 
