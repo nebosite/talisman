@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Talisman.Properties;
 
 namespace Talisman
@@ -64,6 +65,12 @@ namespace Talisman
         public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
         public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Description + $" ({ActiveTimers[0].VisibleTime.ToString(@"hh\:mm tt")})";
 
+        /// <summary>
+        /// Stopwatch properties
+        /// </summary>
+        private Stopwatch _stopwatch = new Stopwatch();
+        public string StopwatchText => _stopwatch.Elapsed.ToString(@"h\:mm\:ss\.ff");
+        public Brush StopwatchColor => new SolidColorBrush(Color.FromArgb(_stopwatch.IsRunning || _stopwatch.ElapsedMilliseconds > 0 ? (byte)180 : (byte)50, 0,0,0));
 
         string _quickTimerName = "Quick Timer";
         public string QuickTimerName
@@ -128,7 +135,7 @@ namespace Talisman
             _dispatch = dispatch;
             _tickTimer = new Timer();
             _tickTimer.Elapsed += TimerTick;
-            _tickTimer.Interval = 100;
+            _tickTimer.Interval = 30;
 
             if(!string.IsNullOrEmpty(Settings.Default.Calendars))
             {
@@ -286,6 +293,7 @@ namespace Talisman
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
+            NotifyPropertyChanged(nameof(StopwatchText));
         }
 
         // --------------------------------------------------------------------------
@@ -308,6 +316,31 @@ namespace Talisman
             }
             NotifyAllPropertiesChanged();
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Clear the stopwatch
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void ClearStopWatch()
+        {
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+            NotifyPropertyChanged(nameof(StopwatchColor));
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Start/Stop stopwatch
+        /// </summary>
+        // --------------------------------------------------------------------------
+        internal void ToggleStopWatch()
+        {
+            if (_stopwatch.IsRunning) _stopwatch.Stop();
+            else _stopwatch.Start();
+            NotifyPropertyChanged(nameof(StopwatchColor));
+        }
+
 
         // --------------------------------------------------------------------------
         /// <summary>

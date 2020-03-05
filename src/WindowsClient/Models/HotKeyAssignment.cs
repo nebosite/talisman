@@ -113,5 +113,20 @@ namespace Talisman
             return !(obj1 == obj2);
         }
 
+        public override bool Equals(object obj)
+        {
+            var otherAssignment = obj as HotKeyAssignment;
+            if (otherAssignment == null) return false;
+            return this == otherAssignment;
+        }
+
+        public override int GetHashCode()
+        {
+            return (ShiftModifier ? 0x01 : 0x00)
+                + (CtrlModifier ? 0x02 : 0x00)
+                + (AltModifier ? 0x04 : 0x00)
+                + (WinModifier ? 0x08 : 0x00)
+                + Letter.GetHashCode();
+        }
     }
 }

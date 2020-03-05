@@ -298,12 +298,37 @@ namespace Talisman
             this.Close();
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// kill all the reminder windows in one shot
+        /// </summary>
+        // --------------------------------------------------------------------------
         private void DismissFloaters(object sender, RoutedEventArgs e)
         {
             foreach(var floater in _notificationWindows.ToArray())
             {
                 floater.Close();
             }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Clear the stopwatch
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void StopwatchDoubleClicked(object sender, MouseButtonEventArgs e)
+        {
+            _theModel.ClearStopWatch();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Toggle the stopwatch
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void StopwatchClicked(object sender, MouseButtonEventArgs e)
+        {
+            _theModel.ToggleStopWatch();
         }
     }
 }

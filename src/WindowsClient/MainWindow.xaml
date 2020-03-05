@@ -31,7 +31,13 @@
         <Label Content="{Binding CurrentTimeRemainingText}" 
                Padding="0" 
                HorizontalContentAlignment="Center" Margin="50,62,50.2,98.4"
-               Foreground="#80000000"
+               Foreground="#90000000"
                ToolTip="{Binding CurrentTimerName}"/>
+        <Label Content="{Binding StopwatchText}" 
+               Padding="0" 
+               HorizontalContentAlignment="Center" Margin="50,79,50.2,81.4"
+               Foreground="{Binding StopwatchColor}"
+               PreviewMouseDown="StopwatchClicked"
+               MouseDoubleClick="StopwatchDoubleClicked"/>
     </Grid>
 </Window>

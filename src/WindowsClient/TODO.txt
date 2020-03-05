@@ -5,7 +5,7 @@ Talisman TODO
 	[x] Link in meetng starts with "BJ: " and messes up the click
 	[x] Appointment list should show the actual alert time
 
-    [ ] Stopwatch
+    [x] Stopwatch
     [ ] Clock style countdown peeking from behind the stone
     [ ] Talisman, show Teams/Slack messages below the stone
 
