@@ -111,7 +111,9 @@ namespace Talisman
 
                 newWidget.Top = ScreenHelper.MainScreen.Bounds.Bottom;
                 newWidget.Left = ScreenHelper.MainScreen.Bounds.Width / 2 + ScreenHelper.MainScreen.Bounds.Left;
-                newWidget.Center = _gravitationCenter;
+                var screenArea = ScreenHelper.MainScreen.WorkingArea;
+                newWidget.Center = new Point(screenArea.Left + screenArea.Width / 2, screenArea.Top + screenArea.Height / 2);
+
                 newWidget.Closing += (sender, args) =>
                 {
                     lock(_notificationWindows)
@@ -221,8 +223,6 @@ namespace Talisman
                 Top = _newLocation.Value.Y;
             }
 
-            var screenArea = ScreenHelper.MainScreen.WorkingArea;
-            _gravitationCenter = new Point(screenArea.Left + screenArea.Width/2, screenArea.Top + screenArea.Height/2);
             //ScreenHelper.EnsureWindowIsVisible(this);
         }
 
@@ -242,7 +242,6 @@ namespace Talisman
         }
 
         DateTime _startTime = DateTime.Now;
-        Point _gravitationCenter;
         int _frame = 0;
         int _frameSkip = 3;
 
