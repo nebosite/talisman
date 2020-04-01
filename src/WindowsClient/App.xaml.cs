@@ -38,7 +38,15 @@ namespace Talisman
                     var currentProcessId = Process.GetCurrentProcess().Id;
                     if (process.Id != currentProcessId)
                     {
-                        process.Kill();
+                        try
+                        {
+
+                            process.Kill();
+                        }
+                        catch(Exception err)
+                        {
+                            Debug.WriteLine($"Could not end other talisman process: {err.Message}");
+                        }
                     }
                 }
 #else

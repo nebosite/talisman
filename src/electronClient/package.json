@@ -1,0 +1,31 @@
+{
+  "name": "talisman",
+  "version": "0.01.00",
+  "description": "Stack pull requests on git",
+  "repository": "https://github.com/nebosite/talisman",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./dist/main.js"
+  },
+  "author": "Eric Jorgensen",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^8.2.0",
+    "tape": "^4.13.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {},
+  "bin": {
+    "ss": "./package/talisman.js",
+    "talisman": "./package/talisman.js"
+  },
+  "keywords": [
+    "Electron",
+    "desktop",
+    "helper",
+    "productivity",
+    "typescript"
+  ]
+}
