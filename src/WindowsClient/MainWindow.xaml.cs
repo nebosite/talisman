@@ -113,6 +113,12 @@ namespace Talisman
                 newWidget.Left = ScreenHelper.MainScreen.Bounds.Width / 2 + ScreenHelper.MainScreen.Bounds.Left;
                 var screenArea = ScreenHelper.MainScreen.WorkingArea;
                 newWidget.Center = new Point(screenArea.Left + screenArea.Width / 2, screenArea.Top + screenArea.Height / 2);
+                //Debug.WriteLine($"New widget at {newWidget.Center.X}, {newWidget.Center.Y}");
+
+                if(newWidget.Center.X == 0)
+                {
+                    newWidget.Center = new Point(1200,800);
+                }
 
                 newWidget.Closing += (sender, args) =>
                 {
@@ -197,6 +203,9 @@ namespace Talisman
             };
 
             _settingsWindow = new SettingsForm(_theModel);
+            _settingsWindow.Left = this.Left;
+            _settingsWindow.Top = this.Top;
+
 
             // For some reason, need to do this to see the ticks on the time picker
             _settingsWindow.Show();

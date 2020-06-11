@@ -9,6 +9,8 @@ TODO
     [ ] Keep window transparency on resize
 
 NEW
+    [ ] Get email calendar items:   https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/office-365-rest-apis-for-mail-calendars-and-contacts
+
 
 
 SOON
