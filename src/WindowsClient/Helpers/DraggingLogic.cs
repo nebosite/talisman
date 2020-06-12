@@ -156,7 +156,8 @@ namespace Talisman
                     throw new ApplicationException("Make sure you construct the dragging logic after the window is loaded.  Error: " + e.ToString());
                 }
             };
-
+            _currentScreen = GetScreenFromPoint(new Point(0, 0));
+            CalculateDpiScaleFactors(_currentScreen, DpiType.Effective);
         }
 
         // --------------------------------------------------------------------------

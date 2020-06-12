@@ -61,6 +61,7 @@ namespace Talisman
                 Settings.Default.Reload();
                 Settings.Default.CurrentVersion = assemblyVersion;
                 Settings.Default.Save();
+                Debug.WriteLine("Upgraded Settings: " + Settings.Default.Location);
             }
 
             base.OnStartup(e);
@@ -75,6 +76,8 @@ namespace Talisman
         {
             Settings.Default.CrashedLastTime = false;
             Settings.Default.Save();
+            Debug.WriteLine("Exit Settings: " + Settings.Default.Location);
+
         }
     }
 }

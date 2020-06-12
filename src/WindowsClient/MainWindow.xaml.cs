@@ -109,11 +109,8 @@ namespace Talisman
                 }
                 var newWidget = new NotificationWidget(data, _theModel, theta);
 
-                newWidget.Top = ScreenHelper.MainScreen.Bounds.Bottom;
-                newWidget.Left = ScreenHelper.MainScreen.Bounds.Width / 2 + ScreenHelper.MainScreen.Bounds.Left;
                 var screenArea = ScreenHelper.MainScreen.WorkingArea;
                 newWidget.Center = new Point(screenArea.Left + screenArea.Width / 2, screenArea.Top + screenArea.Height / 2);
-                //Debug.WriteLine($"New widget at {newWidget.Center.X}, {newWidget.Center.Y}");
 
                 if(newWidget.Center.X == 0)
                 {
@@ -180,10 +177,12 @@ namespace Talisman
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             _draggingLogic = new DraggingLogic(this, StoneArea);
+            Debug.WriteLine("MainWindowLoaded Settings: Entry: " + Settings.Default.Location);
+
             _draggingLogic.OnPositionChanged += (xm, ym) =>
             {
                 _newLocation = null;
-                Settings.Default.Location = JsonConvert.SerializeObject(new Point(Left, Top));
+                Settings.Default.Location = JsonConvert.SerializeObject(new Point((int)Left, (int)Top));
                 Settings.Default.Save();
             };
             _draggingLogic.OnClick += () =>
@@ -211,26 +210,32 @@ namespace Talisman
             _settingsWindow.Show();
             _settingsWindow.Hide();
 
-            var locationSetting = "\"500,500\""; // Settings.Default.Location;
+            var locationSetting = "\"1000,800\""; // Settings.Default.Location;
             var resetLocation = false;
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
+                Debug.WriteLine("Resetting Location");
+                // Hold down cntrl key on enter to reset location of new notifications
                 resetLocation = true;
             }
             if (!Settings.Default.CrashedLastTime && !resetLocation)
             {
-                locationSetting = Settings.Default.Location;
+                if(!string.IsNullOrEmpty(Settings.Default.Location))
+                {
+                   Debug.WriteLine("Reading Location");
+                   locationSetting = Settings.Default.Location;
+                }
             }
+
+            Debug.WriteLine("Location: " + locationSetting);
 
             Settings.Default.CrashedLastTime = true;
             Settings.Default.Save();
+            Debug.WriteLine("MainWindow_Loaded Exit Settings: " + Settings.Default.Location);
 
-            if (!string.IsNullOrEmpty(locationSetting))
-            {
-                _newLocation = JsonConvert.DeserializeObject<Point>(locationSetting);
-                Left = _newLocation.Value.X;
-                Top = _newLocation.Value.Y;
-            }
+            _newLocation = JsonConvert.DeserializeObject<Point>(locationSetting);
+            Left = _newLocation.Value.X;
+            Top = _newLocation.Value.Y;
 
             //ScreenHelper.EnsureWindowIsVisible(this);
         }
@@ -243,6 +248,8 @@ namespace Talisman
         protected override void OnClosing(CancelEventArgs e)
         {
             Settings.Default.Save();
+            Debug.WriteLine("Closing Settings: " + Settings.Default.Location);
+
             _settingsWindow?.CloseForReal();
             foreach(var notificationWindow in _notificationWindows.ToArray())
             {
