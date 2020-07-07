@@ -12,7 +12,7 @@
   "author": "Eric Jorgensen",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^8.2.0",
+    "electron": "^8.2.4",
     "tape": "^4.13.0",
     "typescript": "^3.8.3"
   },
