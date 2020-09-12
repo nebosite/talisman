@@ -275,6 +275,7 @@ namespace Talisman
                 CheckCalendars();
             }
 
+            if(_stopwatch.IsRunning) NotifyPropertyChanged(nameof(StopwatchText));
             if (ActiveTimers.Count == 0) return;
 
             TimerInstance[] finishedTimers;
@@ -293,7 +294,6 @@ namespace Talisman
             }
             NotifyPropertyChanged(nameof(CurrentTimeRemaining));
             NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
-            NotifyPropertyChanged(nameof(StopwatchText));
         }
 
         // --------------------------------------------------------------------------
