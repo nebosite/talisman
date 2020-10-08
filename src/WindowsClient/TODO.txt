@@ -13,6 +13,7 @@ Talisman TODO
 
 
 NEW
+    [ ] Talisman: Focus assist: https://stackoverflow.com/questions/55477041/toggling-focus-assist-mode-in-win-10-programmatically/55490319
 
 
 SOON
