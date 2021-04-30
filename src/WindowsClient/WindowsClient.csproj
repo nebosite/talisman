@@ -202,9 +202,6 @@
     <Resource Include="Assets\MainObject.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Assets\Help.htm" />
   </ItemGroup>
   <ItemGroup>
