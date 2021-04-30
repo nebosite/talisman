@@ -1,0 +1,185 @@
+﻿------------------------------------
+Talisman TODO
+------------------------------------
+
+
+NEW
+    [ ] Talisman: Watch for active processes.
+        Help kill processes
+        Remember recently killed ones
+        ignore unintersting processes
+
+    [ ] Talisman: random quotes for encouragement, self-wisdom
+
+    [ ] Talisman: hot key to close all windows and bring up an app (notepad++)
+    [ ] Talisman - periodically hide all the apps except the one that is focused
+        GetActiveWindow will return the top-level window that is associated with the input focus. GetFocus will return the handle of the window that has the input focus.
+        https://stackoverflow.com/questions/466354/how-can-i-tell-if-a-window-has-focus-win32-api
+    [ ] Bug: quick message should put focus in the editor
+    [ ] A hotkey way to launch an app
+    [ ] If the timer is active, make it a big overlay just below the stone
+    [ ] Show random word combinations once per day
+        - Maybe the inpirobot AI https://inspirobot.me/api?generate=true  (returns a jpg to download)
+    [ ] Talisman: Focus assist: https://stackoverflow.com/questions/55477041/toggling-focus-assist-mode-in-win-10-programmatically/55490319
+
+
+SOON
+    [ ] Talisman: show expired timers
+    [ ] Talisman: On startup, set the run registry key to point to the current exe
+    [ ] when snipper is minimized, the hotkey does not work
+    [ ] Talisman, show Teams/Slack messages below the stone
+    [ ] Talisman - a better outlook calendar view
+        - Make better use of space - overlap Items
+        - Filters to auto-exclude, auto-color meetings (this can be dynamic - eg: highlight new meetings)
+        - inline response to meetings
+        - cutstom vertical scale
+        
+LATER
+    [ ] Clock style countdown peeking from behind the stone
+
+
+	[ ] Pomodoro buttons
+	[ ] Remember meetings to ignore
+	[ ] Remember Daily state between runs
+    [ ] Talisman : Crashes if it can't send mail
+        - Have an errors tab to review problems (Maybe error light too)
+	[ ] Pop-out icons for running apps 
+		- easily create these from the process view
+
+
+	[ ] Dragging is still weird on mismatched DPI monitors
+	[ ] Generate a pomodoro from a list of items
+    [ ] Talisman: Windows tries to interfere with auto-email
+	[ ] Check for latest version and auto-update
+    [ ] Bug:  it is possible to lose the talisman off screen when multi-screen
+
+
+	[ ] Hotkey: Quick create shortcuts from running apps
+	[ ] App Drawers
+	[ ] Auto-cancel when there are too many notifications
+	[ ] Set up a social media page
+	[ ] Hotkey option: quick timer
+	[ ] Hotkey option: launch app/script
+	[ ] HotKey option: Restore desktop icons to snapshot
+		- Other icons are arranged by shortcuts, media, and documents
+	[ ] Hotkey option: Lock  https://social.msdn.microsoft.com/Forums/vstudio/en-US/7aab9893-430a-4aed-8d51-b8368a61860e/how-to-lock-pc-using-c?forum=csharpgeneral
+	[ ] Some kind of logging for errors in the field
+    [ ] Custom button for quick times
+	[ ] Hotkey combo:
+		Alt-Shift-# - remember my current window
+		ctrl-# - go to the window you remembered
+	[ ] Hot key option: instant Powershell prompt
+	[ ] Hot key option: instant project open
+	[ ] Hot key option: Instant Task
+	[ ] HoKey: Kill app
+	[ ] TODO List game:
+		- Paste a set of lines, each gets five minutes
+		- separate timer shows up on the talisman
+		- Special button to click on the talisman marks a task as done
+		- Remaining seconds are added to points, plus you get the remaining time for the next item
+		- Special graphics and sounds when you complete the list.   
+		- Make some goals and assign coin values to them.  Use the game to work toward a goal.
+	[ ] Read from internet calendar
+	[ ] Regularly remember timers in case of crash
+		- Only resurrect them if still active for today
+
+
+DONE  ==================================================================================================
+
+0.6
+	[x] Look for bluejeans link inside the appointment if there aren't any meeting places
+	[x] Link in meetng starts with "BJ: " and messes up the click
+	[x] Appointment list should show the actual alert time
+    [x] Stopwatch
+
+0.5
+    [x] Make the outlooks links better
+		[x] Make Urls in the location clickable
+        [x] show condensed appointment with clickable link in the reminder
+        [x] In the future items summary
+        [x] Reduce long locations with multiple rooms
+
+	[x] Fix the settings window location when it appears to be fully visible in the talisman screen
+    [x] Move the exit link further away from the (X) on the settings page
+    [x] Talisman, don't handle clicks that miss the stone
+	[x] Hot Key - Center Talisman on the next screen
+    [x] Make the dismiss non-trivial
+		change dismiss to make it go away for just a minute.  Do something more complicated to make it go away forever.
+			"Click the word that is not in the title"
+
+0.4
+    [x] Talisman:  MouseMove is not working.  See C:\temp\WPfApp1 for some code that works using interrop code
+		[x] Make the app DPI aware for multiple monitors
+    [x] Talisman: Text gets cut off on appointment reminder
+    [x] Talisman: Show time of meeting in reminder
+	[x] If the app crashes or is killed, make sure the talisman appears in the default location next time
+
+
+0.3
+	[x] Screensaver only hotkey
+	[x] Hotkey option: snipping tool
+        [x] Opens the snip window and repositions it if already opened.  Maybe even clicks the snip button.
+		%windir%\system32\SnippingTool.exe
+		file: C:\Users\erjorge\AppData\Local\Packages\Microsoft.ScreenSketch_8wekyb3d8bbwe
+		start shell:AppsFolder\Microsoft.ScreenSketch_8wekyb3d8bbwe!App
+
+	[x] Hotkey configuration Tab
+		[x] Alt key doesn't work right
+		[x] Look at how we actually assign hotkeys to see if we can reuse the key
+		[x] Have an error text window
+			[x] Error on key == None
+			[x] Error on no modifier
+		[x] Assigning a hotkey should add an item to the list
+			[x] Should not add if hotkey is already assigned
+		[x] Should be able to delete items from the list
+		[x] Assigning should clear the hotkey
+		[x] Action is not getting assinged to hotkey
+		[x] Remember hot key assignments between runs
+	[x] Reconnet to outlook on calendar error
+	[x] Hotkey: Instant email
+	[x] Hotkey option: ScreenSaver: https://stackoverflow.com/questions/927843/how-to-invoke-the-screen-saver-in-windows-in-c
+	[x] Give it an icon
+
+
+	[x] Exiting Talisman should close all the notifications
+	[x] Dismiss windows should be draggable (moves the center of dragging)
+
+	[x] Add the version somewhere
+	[x] Add some help text
+	[x] Notifications: 
+		[x] Should always stay in the same place on the circle
+		[x] should just pop up in place, not run from talisman
+	[x] When cancelling calendar timers, remember to ignore them until after the appointment time. 
+
+	[x] Context menu with exit
+		[x] plus an exit in the settings
+	[x] When restoring location, make sure the Talisman is visible
+	[x] Make sure the settings form is fully visible each time it shows
+
+    [x] Calendar button to set up calendar access
+		[x] Read from calendars should not try to check anything unless prescribed
+		[x] Should check calendars every 5 minutes
+		[x] See what happens when you close outlook and try to check and re-check
+
+    [x] Hot Keys? https://social.technet.microsoft.com/wiki/contents/articles/30568.wpf-implementing-global-hot-keys.aspx
+        https://social.msdn.microsoft.com/Forums/vstudio/en-US/cf884a91-c135-447d-b16b-214d2d9e9972/capture-all-keyboard-input-regardless-of-what-control-has-focus?forum=wpf
+
+	[x] Snooze button on notifications
+	[x] Delete timers from list
+    [x] Read from outlook calendar
+
+	[x] Need some contrast on the notification to get better attention
+	[x] Custom wait time
+	[x] Adjust timer time on the list (resort timers on exit of settings)
+	[x] Exact time timer
+	[x] Edit timer names in list
+
+	[x] In the settings window, show a list of upcoming timers
+    [x] Give it a shadow
+    [x] Click it to set a quick timer
+    [x] Always show time to next event
+    [x] Hover over time to see text for next event
+	[x] Remember where we left it
+    [x] Animated notification when timer goes off
+	[x] Each notification should be at a different spot ont he circle
+	[x] Quick time naming
