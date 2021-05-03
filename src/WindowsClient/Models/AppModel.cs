@@ -106,6 +106,17 @@ namespace Talisman
             }
         }
 
+        public bool CheckForNewVersion
+        {
+            get => Settings.Default.CheckForNewVersions == "Yes";
+            set
+            {
+                Settings.Default.CheckForNewVersions = value ? "Yes" : "No";
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(CheckForNewVersion));
+            }
+        }
+
         /// <summary>
         /// Timer notifications
         /// </summary>

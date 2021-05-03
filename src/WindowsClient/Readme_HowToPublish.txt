@@ -16,6 +16,7 @@ Steps to publish a new version:
 	- Update app version
 		- Edit assembly version in Project Properties / Application / Assembly Information
 		- Edit install.nsi to have the correct version
+        - Edit currentVersion.txt to have the correct version
 	- Build
 	- Upload install exe to share locations
 

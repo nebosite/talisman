@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,6 +20,8 @@ namespace Talisman
     // --------------------------------------------------------------------------
     public partial class App : Application
     {
+        Task newVersionCheck;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// OnStartup
@@ -64,7 +68,66 @@ namespace Talisman
                 Debug.WriteLine("Upgraded Settings: " + Settings.Default.Location);
             }
 
+            if(String.IsNullOrEmpty(Settings.Default.CheckForNewVersions))
+            {
+                var result = MessageBox.Show("Check for new versions of Talisman?", "Talisman", MessageBoxButton.YesNo);
+                Settings.Default.CheckForNewVersions = result.ToString();
+                Settings.Default.Save();
+            }
+            
+            if(Settings.Default.CheckForNewVersions == "Yes")
+            {
+                this.newVersionCheck = Task.Run(CheckForNewVersion);
+            }
+
+
             base.OnStartup(e);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Check github to see if there is a recent install
+        /// </summary>
+        // --------------------------------------------------------------------------
+        async void CheckForNewVersion()
+        {
+            Debug.WriteLine("Checking for a newer version");
+
+            try
+            {
+                var versionUrl = "https://raw.githubusercontent.com/nebosite/talisman/master/installs/currentVersion.txt";
+
+                var request = HttpWebRequest.Create(versionUrl);
+                var response = request.GetResponse();
+
+                string responseText = new StreamReader(response.GetResponseStream()).ReadToEnd().Trim();
+
+                var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                var localVersionParts = assemblyVersion.Split('.');
+                var currentVersionParts = responseText.Split('.');
+
+                for(int i = 0; i < localVersionParts.Length && i < currentVersionParts.Length; i++)
+                {
+                    var localPart = int.Parse(localVersionParts[i]);
+                    var currentPart = int.Parse(currentVersionParts[i]);
+                    if(currentPart > localPart)
+                    {
+                        var result = MessageBox.Show($"There is a newer version of Talisman available ({responseText}).  Would you like to download it?",
+                            "Talisman Version Check", MessageBoxButton.YesNo);
+                        if(result == MessageBoxResult.Yes)
+                        {
+                            Process.Start("https://github.com/nebosite/talisman/tree/master/installs");
+                        }
+                        break;
+                    }
+                }
+
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine("Error trying to check version: " + e.ToString());
+            }
+            
         }
 
         // --------------------------------------------------------------------------
