@@ -12,6 +12,7 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Talisman.Properties;
 
 namespace Talisman
@@ -27,7 +28,7 @@ namespace Talisman
     {
         public string Title => "Talisman " + VersionText;
         public string VersionText => "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        Timer _tickTimer;
+        DispatcherTimer _tickTimer;
 
         HotKeyAssignment _openHotKey = null;
         public HotKeyAssignment OpenHotKey
@@ -41,7 +42,7 @@ namespace Talisman
             }
         }
 
-        public HotKeyOption[]  HotKeyOptions { get; set; }
+        public HotKeyOption[] HotKeyOptions { get; set; }
 
         HotKeyOption _selectedHotKeyOption;
         public HotKeyOption SelectedHotKeyOption
@@ -61,7 +62,7 @@ namespace Talisman
         /// <summary>
         /// Current Timer properties
         /// </summary>
-        public TimeSpan CurrentTimeRemaining=> (ActiveTimers.Count == 0) ? TimeSpan.Zero: DateTime.Now - ActiveTimers[0].EndsAt;
+        public TimeSpan CurrentTimeRemaining => (ActiveTimers.Count == 0) ? TimeSpan.Zero : DateTime.Now - ActiveTimers[0].EndsAt;
         public string CurrentTimeRemainingText => CurrentTimeRemaining.ToString(@"hh\:mm\:ss\.f");
         public string CurrentTimerName => (ActiveTimers.Count == 0) ? "No Timers Are Active." : ActiveTimers[0].Description + $" ({ActiveTimers[0].VisibleTime.ToString(@"hh\:mm tt")})";
 
@@ -70,7 +71,7 @@ namespace Talisman
         /// </summary>
         private Stopwatch _stopwatch = new Stopwatch();
         public string StopwatchText => _stopwatch.Elapsed.ToString(@"h\:mm\:ss\.ff");
-        public Brush StopwatchColor => new SolidColorBrush(Color.FromArgb(_stopwatch.IsRunning || _stopwatch.ElapsedMilliseconds > 0 ? (byte)180 : (byte)50, 0,0,0));
+        public Brush StopwatchColor => new SolidColorBrush(Color.FromArgb(_stopwatch.IsRunning || _stopwatch.ElapsedMilliseconds > 0 ? (byte)180 : (byte)50, 0, 0, 0));
 
         string _quickTimerName = "Quick Timer";
         public string QuickTimerName
@@ -117,6 +118,44 @@ namespace Talisman
             }
         }
 
+        public string[] LinkIgnorePatterns
+        {
+            get {
+                var json = Settings.Default.LinkIgnorePatterns;
+                if (string.IsNullOrEmpty(json)) return new string[0];
+                return JsonConvert.DeserializeObject<string[]>(json);
+            }
+            set
+            {
+                Settings.Default.LinkIgnorePatterns = JsonConvert.SerializeObject(value);
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(LinkIgnorePatterns));
+            }
+        }
+
+        public class LinkRename
+        {
+            public string pattern;
+            public string newName;
+        }
+
+        public LinkRename[] LinkRenamePatterns
+        {
+            get
+            {
+                var json = Settings.Default.LinkRenamePatterns;
+                if (string.IsNullOrEmpty(json)) return new LinkRename[0];
+                return JsonConvert.DeserializeObject<LinkRename[]>(json);
+            }
+            set
+            {
+                Settings.Default.LinkRenamePatterns = JsonConvert.SerializeObject(value);
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(LinkRenamePatterns));
+            }
+        }
+
+
         /// <summary>
         /// Timer notifications
         /// </summary>
@@ -144,9 +183,9 @@ namespace Talisman
             HotKeyOptions = JsonConvert.DeserializeObject<HotKeyOption[]>(AssemblyHelper.GetResourceText("HotKeyOptions.json"));
             SelectedHotKeyOption = HotKeyOptions[0];
             _dispatch = dispatch;
-            _tickTimer = new Timer();
-            _tickTimer.Elapsed += TimerTick;
-            _tickTimer.Interval = 30;
+            _tickTimer = new DispatcherTimer();
+            _tickTimer.Tick += TimerTick;
+            _tickTimer.Interval = TimeSpan.FromSeconds(.017);
 
             if(!string.IsNullOrEmpty(Settings.Default.Calendars))
             {
@@ -229,18 +268,48 @@ namespace Talisman
             var links = new List<TimerInstance.LinkDetails>();
 
             // Extract links
-            var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;]+)+)");
+            var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;^\>]+)+)");
             var previousLinkText = "ZZZ *** not set ***";
             foreach (Match urlMatch in urlMatches)
             {
-                var url = urlMatch.Groups[1].Value;
-                if (links.Count > 0) previousLinkText = links[0].Text.ToLowerInvariant();
+                var url = urlMatch.Groups[1].Value.TrimEnd('>');
+             
+                Debug.WriteLine("Found link match: " + urlMatch.Groups[1].Value);
+
+                // ignore links with user-specified keywords (eg:  "dialin", "mysettings")
+                var ignore = false;
+                foreach(var pattern in this.LinkIgnorePatterns)
+                {
+                    if(Regex.IsMatch(url, pattern, RegexOptions.IgnoreCase))
+                    {
+                        Debug.WriteLine("    Ingnoring because " + pattern);
+                        ignore = true;
+                        break;
+                    }
+                }
+                if (ignore) continue;
+
+                // TODO: Apply names to links with user-specified matches + keywords (eg:  meetup-join => "Join Teams Meeting"
+
+                if (links.Count > 0) previousLinkText = links[links.Count-1].Text.ToLowerInvariant();
                 if (!url.ToLowerInvariant().Contains(previousLinkText))
                 {
+                    var Text = Regex.Replace(url, "^ht.*?//", "");
+
+                    foreach (var pattern in this.LinkRenamePatterns)
+                    {
+                        if (Regex.IsMatch(url, pattern.pattern, RegexOptions.IgnoreCase))
+                        {
+                            Text = pattern.newName;
+                            Debug.WriteLine("    Renaming to " + Text);
+                            break;
+                        }
+                    }
+
                     links.Add(new TimerInstance.LinkDetails()
                     {
                         Uri = url,
-                        Text = Regex.Replace(url, "^ht.*?//", "")
+                        Text = Text
                     });
 
                     if (links.Count >= 4) break;
@@ -251,6 +320,7 @@ namespace Talisman
             // Shrink the location and pull out any links
             foreach (var untrimmedPart in locationParts)
             {
+                Debug.WriteLine("Location parts: " + untrimmedPart);
                 var part = untrimmedPart.Trim();
                 if (part == "") continue;
                 if(part.ToLowerInvariant().Contains("cr sea "))
@@ -273,20 +343,25 @@ namespace Talisman
             }
         }
 
+        int _frame = 0;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Do this while the timer is going
         /// </summary>
         // --------------------------------------------------------------------------
-        private void TimerTick(object sender, ElapsedEventArgs e)
+        private void TimerTick(object sender, EventArgs e)
         {
+            var shouldUpdate = (_frame % 1) == 0;
+            _frame++;
+
             if(DateTime.Now > _nextCalendarCheck)
             {
                 _nextCalendarCheck = DateTime.Now.AddMinutes(10);
                 CheckCalendars();
             }
 
-            if(_stopwatch.IsRunning) NotifyPropertyChanged(nameof(StopwatchText));
+            if(_stopwatch.IsRunning && shouldUpdate) NotifyPropertyChanged(nameof(StopwatchText));
             if (ActiveTimers.Count == 0) return;
 
             TimerInstance[] finishedTimers;
@@ -303,8 +378,11 @@ namespace Talisman
                     OnNotification.Invoke(timer);
                 }
             }
-            NotifyPropertyChanged(nameof(CurrentTimeRemaining));
-            NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
+            if (shouldUpdate || ActiveTimers.Count == 0)
+            {
+                NotifyPropertyChanged(nameof(CurrentTimeRemaining));
+                NotifyPropertyChanged(nameof(CurrentTimeRemainingText));
+            }
         }
 
         // --------------------------------------------------------------------------

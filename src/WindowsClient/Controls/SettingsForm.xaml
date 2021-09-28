@@ -113,9 +113,9 @@
                                   VerticalAlignment="Bottom"/>
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1" Width="65">
+                    <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1" Width="150">
                         <Label Content="Version: " />
-                        <Label Content="{Binding VersionText}" />
+                        <Label Content="{Binding VersionText}"/>
                     </StackPanel>
                     <WebBrowser x:Name="HelpText" Margin="0,28,0,1" Grid.ColumnSpan="2"  />
                 </Grid>

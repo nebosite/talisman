@@ -94,5 +94,29 @@ namespace Talisman.Properties {
                 this["CheckForNewVersions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LinkIgnorePatterns {
+            get {
+                return ((string)(this["LinkIgnorePatterns"]));
+            }
+            set {
+                this["LinkIgnorePatterns"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LinkRenamePatterns {
+            get {
+                return ((string)(this["LinkRenamePatterns"]));
+            }
+            set {
+                this["LinkRenamePatterns"] = value;
+            }
+        }
     }
 }

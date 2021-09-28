@@ -4,6 +4,10 @@ Talisman TODO
 
 
 NEW
+    [ ] Talisman: hotkey for a knowledge search (Quick google search)
+
+    [x] Talisman: Teams link doesn't work
+    [ ] quiz function to Learn names and details of people 
     [ ] Talisman: Watch for active processes.
         Help kill processes
         Remember recently killed ones
