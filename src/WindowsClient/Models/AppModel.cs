@@ -266,6 +266,7 @@ namespace Talisman
             var locationParts = item.Location.Split(';');
             var locationText = "";
             var links = new List<TimerInstance.LinkDetails>();
+            var seenUrls = new HashSet<string>();
 
             // Extract links
             var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;^\>]+)+)");
@@ -291,9 +292,10 @@ namespace Talisman
 
                 // TODO: Apply names to links with user-specified matches + keywords (eg:  meetup-join => "Join Teams Meeting"
 
-                if (links.Count > 0) previousLinkText = links[links.Count-1].Text.ToLowerInvariant();
-                if (!url.ToLowerInvariant().Contains(previousLinkText))
+
+                if (!seenUrls.Contains(url.ToLowerInvariant()))
                 {
+                    seenUrls.Add(url.ToLowerInvariant());
                     var Text = Regex.Replace(url, "^ht.*?//", "");
 
                     foreach (var pattern in this.LinkRenamePatterns)

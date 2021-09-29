@@ -12,7 +12,7 @@ namespace Talisman.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.7.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.10.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -97,7 +97,8 @@ namespace Talisman.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("[\"dialin\\\\.\",\"mysettings\\\\.\",\"\\\\.png$\", \"meetingOptions\\\\/\", \"JoinTeamsMeeting$\"]" +
+            "")]
         public string LinkIgnorePatterns {
             get {
                 return ((string)(this["LinkIgnorePatterns"]));
@@ -109,7 +110,8 @@ namespace Talisman.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("[{\"pattern\": \"meetup-join\", \"newName\": \"Join Teams Meeting\"},{\"pattern\": \"bluejea" +
+            "ns\", \"newName\": \"Join Bluejeans meeting\"}]")]
         public string LinkRenamePatterns {
             get {
                 return ((string)(this["LinkRenamePatterns"]));

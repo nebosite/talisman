@@ -21,10 +21,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="LinkIgnorePatterns" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">["dialin\\.","mysettings\\.","\\.png$", "meetingOptions\\/", "JoinTeamsMeeting$"]</Value>
     </Setting>
     <Setting Name="LinkRenamePatterns" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">[{"pattern": "meetup-join", "newName": "Join Teams Meeting"},{"pattern": "bluejeans", "newName": "Join Bluejeans meeting"}]</Value>
     </Setting>
   </Settings>
 </SettingsFile>
