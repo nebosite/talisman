@@ -43,6 +43,7 @@ namespace Talisman
             this._appModel = appModel;
             this.DataContext = data;
             LocationTheta = location;
+            data.OnDismiss += () => this.Close();
 
             this.Loaded += (a, b) =>
             {

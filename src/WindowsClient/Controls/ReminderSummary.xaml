@@ -19,7 +19,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Padding="0" Margin="0,-5,0,0" >           
-                            <Hyperlink NavigateUri="{Binding Uri}"  RequestNavigate="Hyperlink_RequestNavigate" >
+                            <Hyperlink NavigateUri="{Binding Uri}"  RequestNavigate="Hyperlink_RequestNavigate" Click="Hyperlink_Click" >
                                 <TextBlock Text="{Binding Text}" />
                             </Hyperlink>
                         </TextBlock>

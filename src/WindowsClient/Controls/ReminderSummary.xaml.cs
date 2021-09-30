@@ -30,5 +30,10 @@ namespace Talisman
         {
             Process.Start(e.Uri.ToString());
         }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            (this.DataContext as TimerInstance)?.Dismiss();
+        }
     }
 }

@@ -113,6 +113,9 @@ namespace Talisman
         public object AttentionWords { get; set; }
         static Random Rand = new Random();
 
+
+        public event Action OnDismiss;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
@@ -130,9 +133,17 @@ namespace Talisman
             {
                 links.ToList().ForEach(i => Links.Add(i));
             }
+            Links.Add(new LinkDetails() { Text = "TEST", Uri = "http://www.ericjorgensen.com" });
 
             SetAttentionWords();
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Dismiss this timer
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void Dismiss() { OnDismiss?.Invoke();  }
 
         // --------------------------------------------------------------------------
         /// <summary>
