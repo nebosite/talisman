@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -60,7 +61,8 @@ namespace Talisman
         public string TimeText => VisibleTime.ToString(@"h\:mm tt");
         public string NotificationTimeText => EndsAt.ToString(@"h\:mm tt");
         static int _idCounter = 0;
-        public Action OnDeleted = ()=> { };
+        public Action OnDeleted = () => { };
+        public Action OnPromote = () => { };
 
         string[] SomeWords = {
             "scientific","cellar","suffer","return",
@@ -121,7 +123,7 @@ namespace Talisman
         /// ctor
         /// </summary>
         // --------------------------------------------------------------------------
-        public TimerInstance(DateTime endTime, DateTime visibleTime, string location, string description, LinkDetails[] links)
+        public TimerInstance(DateTime endTime, DateTime visibleTime, string location, string description, LinkDetails[] links = null)
         {
             EndsAt = endTime;
             VisibleTime = visibleTime;
@@ -133,7 +135,6 @@ namespace Talisman
             {
                 links.ToList().ForEach(i => Links.Add(i));
             }
-            Links.Add(new LinkDetails() { Text = "TEST", Uri = "http://www.ericjorgensen.com" });
 
             SetAttentionWords();
         }
@@ -143,7 +144,10 @@ namespace Talisman
         /// Dismiss this timer
         /// </summary>
         // --------------------------------------------------------------------------
-        public void Dismiss() { OnDismiss?.Invoke();  }
+        public void Dismiss() {
+            Debug.WriteLine($"Dismissing {this.Description}");
+            OnDismiss?.Invoke();  
+        }
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -211,5 +215,16 @@ namespace Talisman
         {
             OnDeleted();
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// PromoteMe
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void PromoteMe()
+        {
+            OnPromote();
+        }
+
     }
 }

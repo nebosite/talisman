@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -18,6 +19,15 @@ using Talisman.Properties;
 namespace Talisman
 {
     public delegate void NotificationHandler(TimerInstance data);
+
+    class RecentTimerData { 
+        public string EndsAt;
+        public string visibleTime;
+        public string location;
+        public string Description;
+        public TimerInstance.LinkDetails[] links;
+    }
+
 
     // --------------------------------------------------------------------------
     /// <summary>
@@ -167,6 +177,11 @@ namespace Talisman
         public ObservableCollection<TimerInstance> ActiveTimers { get; set; } = new ObservableCollection<TimerInstance>();
 
         /// <summary>
+        /// All the timers
+        /// </summary>
+        public ObservableCollection<TimerInstance> RecentTimers { get; set; } = new ObservableCollection<TimerInstance>();
+
+        /// <summary>
         /// All the calendars
         /// </summary>
         public ObservableCollection<Calendar> Calendars { get; set; } = new ObservableCollection<Calendar>();
@@ -182,10 +197,12 @@ namespace Talisman
         {
             HotKeyOptions = JsonConvert.DeserializeObject<HotKeyOption[]>(AssemblyHelper.GetResourceText("HotKeyOptions.json"));
             SelectedHotKeyOption = HotKeyOptions[0];
+
             _dispatch = dispatch;
             _tickTimer = new DispatcherTimer();
             _tickTimer.Tick += TimerTick;
             _tickTimer.Interval = TimeSpan.FromSeconds(.017);
+            Task.Delay(50).ContinueWith((t) => ReadTimersFromSettings());
 
             if(!string.IsNullOrEmpty(Settings.Default.Calendars))
             {
@@ -197,6 +214,124 @@ namespace Talisman
             }
 
             _tickTimer.Start();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Load up remembered timers
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ReadTimersFromSettings()
+        {
+            var currentTimersSetting = Settings.Default.CurrentTimers;
+            if (currentTimersSetting != null && currentTimersSetting.Trim() != "")
+            {
+                try
+                {
+                    var timers = JsonConvert.DeserializeObject<RecentTimerData[]>(currentTimersSetting);
+                    foreach (var timer in timers)
+                    {
+                        try
+                        {
+                            var timerDate = DateTime.Parse(timer.EndsAt);
+                            var newInstance = new TimerInstance(
+                                DateTime.Parse(timer.EndsAt),
+                                DateTime.Parse(timer.visibleTime),
+                                timer.location,
+                                timer.Description,
+                                timer.links);
+                            StartTimer(newInstance);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine($"Failed on one of the timer settings. ({e.Message}) reading : " + currentTimersSetting);
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Major failure ({e.Message}) reading the recent timers setting: " + currentTimersSetting);
+                }
+            }
+
+            var recentTimersSetting = Settings.Default.RecentTimers;
+            if (recentTimersSetting != null && recentTimersSetting.Trim() != "")
+            {
+                try
+                {
+                    var recents = JsonConvert.DeserializeObject<RecentTimerData[]>(recentTimersSetting);
+                    foreach (var timer in recents)
+                    {
+                        try
+                        {
+                            var timerDate = DateTime.Parse(timer.EndsAt);
+                            var newInstance = new TimerInstance(timerDate, timerDate, "recent", timer.Description);
+                            AddToRecents(newInstance, true);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine($"Failed on one of the timer settings. ({e.Message}) reading : " + recentTimersSetting);
+                        }
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Major failure ({e.Message}) reading the recent timers setting: " + recentTimersSetting);
+                }
+            }
+
+            RecentTimers.CollectionChanged += RecentTimers_CollectionChanged;
+            ActiveTimers.CollectionChanged += ActiveTimers_CollectionChanged;
+        }
+        private void RecentTimers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Settings.Default.RecentTimers = JsonConvert.SerializeObject(this.RecentTimers.Select(t => new { 
+                EndsAt = t.EndsAt, 
+                Description = t.Description }));
+        }
+
+        private void ActiveTimers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Settings.Default.CurrentTimers = JsonConvert.SerializeObject(this.ActiveTimers.Select(t => new { 
+                EndsAt = t.EndsAt, 
+                visibleTime = t.VisibleTime,
+                location = t.Location,
+                links = t.Links.ToArray(),
+                Description = t.Description 
+            }));
+            Debug.WriteLine("ACTIVE TIMERS CHANGED: " + Settings.Default.CurrentTimers);
+        }
+
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// PromoteRecentTimer
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void PromoteRecentTimer(TimerInstance instance)
+        {
+            Debug.Write($"Promoting {instance.Description}");
+            var now = DateTime.Now;
+            var endTime = new DateTime(now.Year, now.Month, now.Day, instance.EndsAt.Hour, instance.EndsAt.Minute, instance.EndsAt.Second);
+            if (DateTime.Now > endTime) endTime = DateTime.Now.AddHours(1);
+            var visibleTime = endTime.AddMinutes(-3);
+            var newInstance = new TimerInstance(endTime, visibleTime, instance.Location, instance.Description, instance.Links?.ToArray());
+            newInstance.OnDeleted = () => RemoveTimers(ActiveTimers, new int[] { newInstance.Id });
+            StartTimer(newInstance);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// AddToRecents
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AddToRecents(TimerInstance instance, Boolean addToEnd = false)
+        {
+            instance.OnPromote = () => PromoteRecentTimer(instance);
+            instance.OnDeleted = () => RemoveTimers(RecentTimers,new int[] { instance.Id }, false);
+            this.RecentTimers.Insert(addToEnd ? this.RecentTimers.Count : 0, instance);
         }
 
         OutlookHelper _outlook;
@@ -270,7 +405,6 @@ namespace Talisman
 
             // Extract links
             var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;^\>]+)+)");
-            var previousLinkText = "ZZZ *** not set ***";
             foreach (Match urlMatch in urlMatches)
             {
                 var url = urlMatch.Groups[1].Value.TrimEnd('>');
@@ -339,11 +473,15 @@ namespace Talisman
                 locationText,
                 item.Title,
                 links.ToArray());
+            newInstance.OnDismiss += () => { AddToRecents(newInstance); };
+          
             if (!this.TimerExists(newInstance))
             {
                 StartTimer(newInstance);
             }
         }
+
+  
 
         int _frame = 0;
 
@@ -374,7 +512,7 @@ namespace Talisman
 
             if(finishedTimers.Length > 0)
             {
-                RemoveTimers(finishedTimers);
+                RemoveTimers(ActiveTimers, finishedTimers.Select(t => t.Id).ToArray());
                 foreach(var timer in finishedTimers)
                 {
                     OnNotification.Invoke(timer);
@@ -392,16 +530,17 @@ namespace Talisman
         /// Safely remove some timers
         /// </summary>
         // --------------------------------------------------------------------------
-        private void RemoveTimers(TimerInstance[] timers)
+        private void RemoveTimers(ObservableCollection<TimerInstance> timerCollection, int[] timerIds, bool cancel = true)
         {
+            var timers = timerCollection.Where(t => timerIds.Contains(t.Id)).ToArray();
             foreach (var timer in timers)
             {
                 _dispatch(() =>
                 {
-                    lock (ActiveTimers)
+                    lock (timerCollection)
                     {
-                        ActiveTimers.Remove(timer);
-                        _cancelledInstances.Add(timer);
+                        timerCollection.Remove(timer);
+                        if(cancel) _cancelledInstances.Add(timer);
                     }
                 });
             }
@@ -459,6 +598,8 @@ namespace Talisman
                 message = this.QuickTimerName;
             }
             var newInstance = new TimerInstance(time, time, "", message, null);
+            newInstance.OnDismiss += () => { AddToRecents(newInstance); };
+
             StartTimer(newInstance);
         }
 
@@ -488,7 +629,7 @@ namespace Talisman
 
             _dispatch(() =>
             {
-                instance.OnDeleted = () => RemoveTimers(ActiveTimers.Where(t => t.Id == instance.Id).ToArray());
+                instance.OnDeleted = () => RemoveTimers(ActiveTimers, new int[] { instance.Id });
                 instance.PropertyChanged += (sender, args) =>
                 {
                     NotifyPropertyChanged(nameof(CurrentTimerName));
