@@ -120,5 +120,29 @@ namespace Talisman.Properties {
                 this["LinkRenamePatterns"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentTimers {
+            get {
+                return ((string)(this["RecentTimers"]));
+            }
+            set {
+                this["RecentTimers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CurrentTimers {
+            get {
+                return ((string)(this["CurrentTimers"]));
+            }
+            set {
+                this["CurrentTimers"] = value;
+            }
+        }
     }
 }

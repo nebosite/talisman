@@ -26,5 +26,11 @@
     <Setting Name="LinkRenamePatterns" Type="System.String" Scope="User">
       <Value Profile="(Default)">[{"pattern": "meetup-join", "newName": "Join Teams Meeting"},{"pattern": "bluejeans", "newName": "Join Bluejeans meeting"}]</Value>
     </Setting>
+    <Setting Name="RecentTimers" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="CurrentTimers" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

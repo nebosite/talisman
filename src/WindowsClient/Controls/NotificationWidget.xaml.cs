@@ -105,7 +105,11 @@ namespace Talisman
         {
             var clickText = (sender as Button).Content.ToString().ToLower();
             if (_data.DecoratedDescription.ToLower().Contains(clickText)) Snooze(.01);
-            else Close();
+            else
+            {
+                var context = this.DataContext as TimerInstance;
+                context.Dismiss();
+            }
         }
     }
 }

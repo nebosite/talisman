@@ -85,7 +85,9 @@ namespace Talisman
             base.OnStartup(e);
         }
 
-
+        /// <summary>
+        /// Prototype code to check exchange over the web
+        /// </summary>
         async void TestEws()
         {
             await System.Threading.Tasks.Task.Run(() =>

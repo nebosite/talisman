@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Talisman"
         mc:Ignorable="d"
         Topmost="True"
-        Title="Talisman Settings" Height="384.345" Width="537.321" WindowStyle="ToolWindow">
+        Title="Talisman Settings" Height="500" Width="537.321" WindowStyle="ToolWindow">
     <Grid>
         <TabControl Margin="5,20,5,5">
             <TabItem Header="Active Timers" >
@@ -43,6 +43,18 @@
                             </ListView.ItemTemplate>
                         </ListView>
                     </ScrollViewer>
+                    
+                    <Label Content="Recent Timers" />
+                    <ScrollViewer>
+                        <ListView ItemsSource="{Binding RecentTimers}" MaxHeight="200" Padding="0" >
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <local:RecentTimerWidget HorizontalAlignment="Stretch" Margin="-2" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </ScrollViewer>
+
 
                 </StackPanel>
 
