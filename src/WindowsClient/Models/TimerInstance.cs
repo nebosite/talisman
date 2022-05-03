@@ -133,7 +133,6 @@ namespace Talisman
             {
                 links.ToList().ForEach(i => Links.Add(i));
             }
-            Links.Add(new LinkDetails() { Text = "TEST", Uri = "http://www.ericjorgensen.com" });
 
             SetAttentionWords();
         }

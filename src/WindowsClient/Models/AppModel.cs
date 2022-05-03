@@ -270,7 +270,6 @@ namespace Talisman
 
             // Extract links
             var urlMatches = Regex.Matches(item.Location + " " + item.Contents, @"(?<links>(http.*?://[^\s^;^\>]+)+)");
-            var previousLinkText = "ZZZ *** not set ***";
             foreach (Match urlMatch in urlMatches)
             {
                 var url = urlMatch.Groups[1].Value.TrimEnd('>');
