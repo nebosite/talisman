@@ -9,6 +9,8 @@ Talisman TODO
 
 
 NEW
+    [ ] Talisman: Add time buttons should add from the current time, not the meeting time
+
     [ ] Use MS Graph API to look at outlook calendar from adobe
         (see the app on your desktop)
         Details here: https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Quickstart/quickStartType//sourceType/Microsoft_AAD_IAM/appId/cb8e2594-2e1b-4a41-af93-21fbb3f4e70f/objectId/f8ba881d-3824-4fb5-8cdc-8ef57de65b0b/isMSAApp//defaultBlade/Overview/appSignInAudience/AzureADandPersonalMicrosoftAccount/servicePrincipalCreated/true
