@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -125,6 +126,35 @@ namespace Talisman
                 Settings.Default.CheckForNewVersions = value ? "Yes" : "No";
                 Settings.Default.Save();
                 NotifyPropertyChanged(nameof(CheckForNewVersion));
+            }
+        }
+
+        public bool RunAtStartup
+        {
+            get {
+                var runKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+                return runKey.GetValue("Talisman") != null;
+            }
+            set
+            {
+                var runKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run");
+                if (value)
+                {
+                    try
+                    {
+                        runKey.SetValue("Talisman", Assembly.GetEntryAssembly().Location);
+                    }
+                    catch(Exception)
+                    {
+                        MessageBox.Show("Talisman must be run as administrator to set this value.");
+                    }
+                }
+                else
+                {
+                    runKey.DeleteValue("Talisman");
+                }
+
+                NotifyPropertyChanged(nameof(RunAtStartup));
             }
         }
 

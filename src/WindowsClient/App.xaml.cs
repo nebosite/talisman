@@ -92,7 +92,6 @@ namespace Talisman
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
-
                 //ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
                 //service.Credentials = new WebCredentials("ejorgens@adobe.com", "lord i have been given much");
                 //service.UseDefaultCredentials = false;

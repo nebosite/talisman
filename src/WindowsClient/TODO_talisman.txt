@@ -6,6 +6,7 @@
 ------------------------------------
 Talisman TODO
 ------------------------------------
+    [ ] Talisman:  Settings option to run On startup, set the run registry key to point to the current exe
 
 
 NEW
@@ -40,8 +41,7 @@ NEW
 
 SOON
     [ ] Talisman: show expired timers
-    [ ] Talisman: On startup, set the run registry key to point to the current exe
-    [ ] when snipper is minimized, the hotkey does not work
+    [x] when snipper is minimized, the hotkey does not work
     [ ] Talisman, show Teams/Slack messages below the stone
     [ ] Talisman - a better outlook calendar view
         - Make better use of space - overlap Items
