@@ -10,6 +10,12 @@ Talisman TODO
 
 
 NEW
+    [ ] Talisman - minute buttons should be minutes from NOW
+    [ ] Talisman: auto-minimize windows that have been unfocused for more than 15 minutes.
+
+    [ ] Talisman:  Hot key to arrange windows
+        - Auto-close some kinds of windows
+        - Specific geometry for specific windows
     [ ] Talisman: Add time buttons should add from the current time, not the meeting time
 
     [ ] Use MS Graph API to look at outlook calendar from adobe
@@ -40,7 +46,7 @@ NEW
 
 
 SOON
-    [ ] Talisman: show expired timers
+    [x] Talisman: show expired timers
     [x] when snipper is minimized, the hotkey does not work
     [ ] Talisman, show Teams/Slack messages below the stone
     [ ] Talisman - a better outlook calendar view
