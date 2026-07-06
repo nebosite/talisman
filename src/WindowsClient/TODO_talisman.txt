@@ -16,6 +16,11 @@ NEW
     [ ] Talisman:  Hot key to arrange windows
         - Auto-close some kinds of windows
         - Specific geometry for specific windows
+    [ ] Talisman: Keep the recents list short
+    [ ] Task anchor - stay focused on a task when you are going into high distraction territory
+        - Keep pinging you about the task every 60 seconds until you do it
+        - Quick add several tasks in one go for a pomodoro timer-like experience
+    [ ] Talisman hot key: Shell command
     [ ] Talisman: Add time buttons should add from the current time, not the meeting time
 
     [ ] Use MS Graph API to look at outlook calendar from adobe
