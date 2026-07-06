@@ -129,6 +129,28 @@ namespace Talisman
             }
         }
 
+        public bool AutoRestartOnCrash
+        {
+            get => Settings.Default.AutoRestartOnCrash;
+            set
+            {
+                Settings.Default.AutoRestartOnCrash = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(AutoRestartOnCrash));
+            }
+        }
+
+        public string CrashReportEmail
+        {
+            get => Settings.Default.CrashReportEmail;
+            set
+            {
+                Settings.Default.CrashReportEmail = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(CrashReportEmail));
+            }
+        }
+
         public bool RunAtStartup
         {
             get {
@@ -232,7 +254,10 @@ namespace Talisman
             _tickTimer = new DispatcherTimer();
             _tickTimer.Tick += TimerTick;
             _tickTimer.Interval = TimeSpan.FromSeconds(.017);
-            Task.Delay(50).ContinueWith((t) => ReadTimersFromSettings());
+            // Marshal the load onto the UI thread: it populates ObservableCollections
+            // (ActiveTimers/RecentTimers) that are bound to the UI, and WPF forbids
+            // mutating a bound collection from a non-Dispatcher thread.
+            Task.Delay(50).ContinueWith((t) => _dispatch(ReadTimersFromSettings));
 
             if(!string.IsNullOrEmpty(Settings.Default.Calendars))
             {
@@ -274,6 +299,7 @@ namespace Talisman
                         }
                         catch (Exception e)
                         {
+                            Log.Warn("Failed to restore one active timer from settings. Reading: " + currentTimersSetting, e);
                             Debug.WriteLine($"Failed on one of the timer settings. ({e.Message}) reading : " + currentTimersSetting);
                         }
 
@@ -281,6 +307,7 @@ namespace Talisman
                 }
                 catch (Exception e)
                 {
+                    Log.Error("Major failure reading the current timers setting: " + currentTimersSetting, e);
                     Debug.WriteLine($"Major failure ({e.Message}) reading the recent timers setting: " + currentTimersSetting);
                 }
             }
@@ -301,6 +328,7 @@ namespace Talisman
                         }
                         catch (Exception e)
                         {
+                            Log.Warn("Failed to restore one recent timer from settings. Reading: " + recentTimersSetting, e);
                             Debug.WriteLine($"Failed on one of the timer settings. ({e.Message}) reading : " + recentTimersSetting);
                         }
 
@@ -308,6 +336,7 @@ namespace Talisman
                 }
                 catch (Exception e)
                 {
+                    Log.Error("Major failure reading the recent timers setting: " + recentTimersSetting, e);
                     Debug.WriteLine($"Major failure ({e.Message}) reading the recent timers setting: " + recentTimersSetting);
                 }
             }
@@ -359,9 +388,15 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void AddToRecents(TimerInstance instance, Boolean addToEnd = false)
         {
-            instance.OnPromote = () => PromoteRecentTimer(instance);
-            instance.OnDeleted = () => RemoveTimers(RecentTimers,new int[] { instance.Id }, false);
-            this.RecentTimers.Insert(addToEnd ? this.RecentTimers.Count : 0, instance);
+            // RecentTimers is bound to the UI, so mutate it on the Dispatcher thread.
+            // This is called from settings-load and timer-dismiss handlers whose
+            // thread is not guaranteed to be the UI thread.
+            _dispatch(() =>
+            {
+                instance.OnPromote = () => PromoteRecentTimer(instance);
+                instance.OnDeleted = () => RemoveTimers(RecentTimers, new int[] { instance.Id }, false);
+                this.RecentTimers.Insert(addToEnd ? this.RecentTimers.Count : 0, instance);
+            });
         }
 
         OutlookHelper _outlook;

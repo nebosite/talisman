@@ -24,6 +24,7 @@
                 <ContextMenu>
                     <MenuItem Header="Exit Talisman" Click="ExitAppClicked" />
                     <MenuItem Header="Dismiss All Floaters" Click="DismissFloaters" />
+                    <MenuItem Header="Open Log Folder" Click="OpenLogFolderClicked" />
                 </ContextMenu>
             </Grid.ContextMenu>
             <Image x:Name="Stone"  Source="Assets/MainObject.png"/>

@@ -328,6 +328,17 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Open the folder where diagnostic logs are written, so the user can find
+        /// (and send us) the log after something goes wrong.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void OpenLogFolderClicked(object sender, RoutedEventArgs e)
+        {
+            (Application.Current as App)?.OpenLogFolder();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Clear the stopwatch
         /// </summary>
         // --------------------------------------------------------------------------

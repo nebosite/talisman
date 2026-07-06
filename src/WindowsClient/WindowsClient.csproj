@@ -100,6 +100,13 @@
     </Compile>
     <Compile Include="Helpers\DraggingLogic.cs" />
     <Compile Include="Helpers\AssemblyHelper.cs" />
+    <Compile Include="Helpers\RestartPolicy.cs" />
+    <Compile Include="Helpers\Logging\LogLevel.cs" />
+    <Compile Include="Helpers\Logging\ILogger.cs" />
+    <Compile Include="Helpers\Logging\NullLogger.cs" />
+    <Compile Include="Helpers\Logging\Log.cs" />
+    <Compile Include="Helpers\Logging\FileLogger.cs" />
+    <Compile Include="Helpers\Logging\LoggerTraceListener.cs" />
     <Compile Include="Helpers\ScreenHelper.cs" />
     <Compile Include="Helpers\HotKeyHelper.cs" />
     <Compile Include="Models\QuickMailItem.cs" />

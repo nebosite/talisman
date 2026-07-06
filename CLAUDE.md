@@ -55,6 +55,49 @@ src/
 installs/  misc/                — installer output & scratch
 ```
 
+## Diagnostics & logging
+
+Talisman logs to `%LOCALAPPDATA%\Talisman\logs\talisman-<date>.log` (daily
+rolling, 14-day retention). The logging code lives in
+[Helpers/Logging/](src/WindowsClient/Helpers/Logging/).
+
+- **Log through the ambient `Log` static** — `Log.Info/Warn/Error/Fatal(...)`.
+  It is backed by `FileLogger` (thread-safe) and initialized first thing in
+  `App.OnStartup` via `InitializeDiagnostics()`.
+- **Global crash handlers** are wired in `App`: `DispatcherUnhandledException`
+  (UI thread — logged, then kept alive), `AppDomain.UnhandledException`
+  (background — logged Fatal), and `TaskScheduler.UnobservedTaskException`.
+  Any new background thread/`Task` is covered by these, but prefer a local
+  try/catch that logs context.
+- `Debug.WriteLine`/`Trace.WriteLine` are bridged into the log by
+  `LoggerTraceListener`. **Caveat:** `Debug.WriteLine` is compiled out of Release
+  builds, so anything that must be visible in production must call `Log.*`
+  directly, not `Debug.WriteLine`.
+- **Don't silently swallow exceptions** — log before swallowing (see the pattern
+  in [OutlookHelper.cs](src/WindowsClient/Helpers/OutlookHelper.cs)).
+- The `CrashedLastTime` setting flags an unclean exit; `App` surfaces it on the
+  next launch and offers "Open Log Folder" (also on the tray icon's context
+  menu). Keep archived Release `.pdb`s per version so logged stack traces
+  symbolicate.
+
+### Crash recovery
+
+- **Auto-restart** (`AutoRestartOnCrash` setting, default on): on a fatal
+  (terminating) unhandled exception, `App` relaunches itself with the
+  `--auto-restart` arg. `RestartPolicy` is a circuit breaker — it allows up to
+  3 restarts within a 5-minute window, then stays down to avoid a crash loop.
+  The successor waits for the dying process to exit before its single-instance
+  check. `RestartPolicy` is pure logic and unit-tested.
+- **Crash-report email** (`CrashReportEmail` setting, blank = off): after an
+  unclean exit, the next launch offers to email the recent log to that address
+  via `OutlookHelper`. On a seamless auto-restart it sends silently instead of
+  prompting. Both settings are editable on the Settings → About tab.
+- **UI-bound collections** (`ActiveTimers`/`RecentTimers`/etc. in `AppModel`)
+  must only be mutated on the Dispatcher thread — use the `_dispatch(...)`
+  action. Mutating them from a background thread throws the WPF "CollectionView
+  does not support changes ... from a different thread" exception (the original
+  wild crash). Any new background work that touches these must marshal first.
+
 ## Code conventions
 
 - **One class per file**, file named for the class. Favor an OO structure that

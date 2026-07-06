@@ -144,5 +144,41 @@ namespace Talisman.Properties {
                 this["CurrentTimers"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoRestartOnCrash {
+            get {
+                return ((bool)(this["AutoRestartOnCrash"]));
+            }
+            set {
+                this["AutoRestartOnCrash"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CrashReportEmail {
+            get {
+                return ((string)(this["CrashReportEmail"]));
+            }
+            set {
+                this["CrashReportEmail"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentCrashTimes {
+            get {
+                return ((string)(this["RecentCrashTimes"]));
+            }
+            set {
+                this["RecentCrashTimes"] = value;
+            }
+        }
     }
 }

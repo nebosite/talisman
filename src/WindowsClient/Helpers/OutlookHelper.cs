@@ -137,10 +137,11 @@ namespace Talisman
                 failureCount = 0;
                 return returnItems.ToArray();
             }
-            catch(System.Exception)
+            catch(System.Exception ex)
             {
                 _outlookApplication = null;  // Forget the reference so that we will reconnect next time.
                 failureCount++;
+                Log.Warn($"Failed to read Outlook calendar/tasks (failure #{failureCount}). Will reconnect next time.", ex);
                 if (failureCount > 2) throw;
             }
             return new TimeRelatedItem[0];
