@@ -180,5 +180,17 @@ namespace Talisman.Properties {
                 this["RecentCrashTimes"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PomodoroConfig {
+            get {
+                return ((string)(this["PomodoroConfig"]));
+            }
+            set {
+                this["PomodoroConfig"] = value;
+            }
+        }
     }
 }

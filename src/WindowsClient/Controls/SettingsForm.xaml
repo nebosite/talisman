@@ -114,6 +114,62 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
+            <TabItem Header="Pomodoro">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,6,0">
+                            <Label Content="Short &amp; easy tasks (one per line)" />
+                            <TextBox Text="{Binding Pomodoro.ShortTasks, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="95" VerticalScrollBarVisibility="Auto" />
+                            <Label Content="Joyful tasks" />
+                            <TextBox Text="{Binding Pomodoro.JoyTasks, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="95" VerticalScrollBarVisibility="Auto" />
+                            <Label Content="Administrative tasks" />
+                            <TextBox Text="{Binding Pomodoro.AdminTasks, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="95" VerticalScrollBarVisibility="Auto" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                            <Label Content="Default short tasks (added on top in Phase I)" />
+                            <TextBox Text="{Binding Pomodoro.DefaultShortTasks, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="60" VerticalScrollBarVisibility="Auto" />
+                            <Label Content="Default admin tasks (added on top in Extra phase)" />
+                            <TextBox Text="{Binding Pomodoro.DefaultAdminTasks, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="60" VerticalScrollBarVisibility="Auto" />
+                            <StackPanel Margin="0,8,0,0">
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Time per task (min)" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.TimePerTaskMinutes}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Min short time (min)" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.MinShortMinutes}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Min tasks" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.MinTasks}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Max short time (min)" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.MaxShortMinutes}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Joy time (min)" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.JoyMinutes}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,2">
+                                    <Label Width="150" Content="Admin time (min)" />
+                                    <TextBox Width="50" Text="{Binding Pomodoro.AdminMinutes}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Button Content="Start Pomodoro Day" Click="StartPomodoroClick" Margin="0,12,0,0" Height="30" />
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="About Talisman">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>

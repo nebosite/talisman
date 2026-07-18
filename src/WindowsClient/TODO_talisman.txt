@@ -10,6 +10,7 @@ Talisman TODO
 
 
 NEW
+	[ ] Bug: Single letter buttons sometimes
     [ ] Talisman - minute buttons should be minutes from NOW
     [ ] Talisman: auto-minimize windows that have been unfocused for more than 15 minutes.
 

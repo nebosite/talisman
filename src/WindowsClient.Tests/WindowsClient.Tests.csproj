@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <!-- The classes under test (TimerInstance, HotKeyAssignment) use WPF types
          such as System.Windows.Visibility and System.Windows.Input.Key. -->
     <UseWPF>true</UseWPF>

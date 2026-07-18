@@ -1,5 +1,4 @@
-﻿using Microsoft.Exchange.WebServices.Data;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -249,8 +248,10 @@ namespace Talisman
                 try
                 {
                     var subject = $"Talisman crash report from {Environment.UserName}@{Environment.MachineName}";
+                    var logFolder = _logger?.LogDirectory ?? FileLogger.DefaultLogDirectory;
                     var body = "Talisman closed unexpectedly. Diagnostic details below.\r\n\r\n"
-                             + DescribeEnvironment() + "\r\n\r\n"
+                             + DescribeEnvironment() + "\r\n"
+                             + "Log folder: " + logFolder + "\r\n\r\n"
                              + "----- recent log -----\r\n"
                              + (_logger?.ReadRecentLines() ?? "(no log available)");
 
@@ -365,49 +366,8 @@ namespace Talisman
                 this.newVersionCheck = System.Threading.Tasks.Task.Run(CheckForNewVersion);
             }
 
-            TestEws();
             MaybeNotifyPreviousCrash();
             base.OnStartup(e);
-        }
-
-        /// <summary>
-        /// Prototype code to check exchange over the web
-        /// </summary>
-        async void TestEws()
-        {
-            await System.Threading.Tasks.Task.Run(() =>
-            {
-                //ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
-                //service.Credentials = new WebCredentials("ejorgens@adobe.com", "lord i have been given much");
-                //service.UseDefaultCredentials = false;
-                //service.AutodiscoverUrl("ejorgens@adobe.com", (url) =>
-                //{
-                //    Debug.WriteLine($"Redirect validate: {url}");
-                //    return new Uri(url).Scheme == "https";
-                //});
-
-                //// Initialize values for the start and end times, and the number of appointments to retrieve.
-                //var startDate = DateTime.Now;
-                //var endDate = startDate.AddDays(30);
-
-                //const int NUM_APPTS = 5;
-                //var calendar = CalendarFolder.Bind(service, WellKnownFolderName.Calendar, new PropertySet());
-                //var cView = new CalendarView(startDate, endDate, NUM_APPTS);
-                //cView.PropertySet = new PropertySet(AppointmentSchema.Subject, AppointmentSchema.Start, AppointmentSchema.End);
-
-                //FindItemsResults<Appointment> appointments = calendar.FindAppointments(cView);
-                //Debug.WriteLine("\nThe first " + NUM_APPTS + " appointments on your calendar from " + startDate.Date.ToShortDateString() +
-                //                  " to " + endDate.Date.ToShortDateString() + " are: \n");
-
-                //foreach (Appointment a in appointments)
-                //{
-                //    Debug.Write("Subject: " + a.Subject.ToString() + " ");
-                //    Debug.Write("    Start: " + a.Start.ToString() + " ");
-                //    Debug.Write("    End: " + a.End.ToString());
-                //    Debug.WriteLine("");
-                //}
-            });
-
         }
 
         // --------------------------------------------------------------------------

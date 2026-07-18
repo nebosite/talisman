@@ -25,17 +25,23 @@ Core behavior:
 ## Tech stack
 
 - **Language:** C# — WPF desktop application.
-- **Framework:** .NET Framework **4.8** (`TargetFrameworkVersion v4.8`),
-  `WinExe` output. This is *not* .NET Core / .NET 5+. Use APIs available in
-  .NET Framework 4.8 and C# language features supported by that toolchain.
+- **Framework:** **.NET 8** (`net8.0-windows`, Windows Desktop SDK), `WinExe`
+  output, `UseWPF` + `UseWindowsForms` (the screen/cursor helpers use
+  `System.Windows.Forms`). Modern .NET, not .NET Framework — use current .NET
+  APIs. (Migrated from .NET Framework 4.8; bump the TFM to net9/net10 once that
+  SDK is installed.)
 - **UI:** WPF (XAML + code-behind) with an MVVM-leaning structure — models
   derive from `BaseModel` which implements `INotifyPropertyChanged`.
-- **Build system:** Old-style MSBuild `.csproj` with an explicit
-  `packages.config` NuGet restore (not PackageReference / SDK-style). New source
-  files must be added to `WindowsClient.csproj` `<Compile>` items to be built.
-- **Key dependencies:** Microsoft.Exchange.WebServices, Microsoft.Office.Interop
-  .Outlook / NetOffice (calendar access), Newtonsoft.Json. NSIS builds the
-  installer as a post-build step.
+- **Build system:** **SDK-style** `.csproj` with `PackageReference`. Source and
+  XAML files are globbed automatically — no need to register `<Compile>`/`<Page>`
+  items. Build/test/run with the `dotnet` CLI.
+- **Key dependencies:** Microsoft.Office.Interop.Outlook (COM interop, embedded;
+  the running instance is fetched via a P/Invoke `GetActiveObject` since
+  `Marshal.GetActiveObject` is gone on modern .NET), Newtonsoft.Json,
+  System.Configuration.ConfigurationManager (for `Properties.Settings`). NSIS
+  builds the installer. **Note (spike):** the Outlook interop DLL is still
+  referenced by `HintPath` into the old `packages/` folder — move it to a
+  committed `lib/` or a `COMReference` before relying on a clean checkout.
 
 ## Layout
 
@@ -98,6 +104,27 @@ rolling, 14-day retention). The logging code lives in
   does not support changes ... from a different thread" exception (the original
   wild crash). Any new background work that touches these must marshal first.
 
+## Pomodoro
+
+A guided "Pomodoro day" runs four phases: **Short & Easy** (I), **Joy** (II),
+**Admin** (III), and **Extra** (IV). Short phases show a per-task countdown from
+"time per task"; the Joy/Admin blocks show a per-task elapsed count-up. Phase I
+ends on the min/max-short-time + min-tasks rules and hands its leftovers to
+Phase IV; the blocks end when their time budget is spent or their tasks run out.
+
+- **All rules live in [`PomodoroSession`](src/WindowsClient/Models/Pomodoro/PomodoroSession.cs)** — a
+  pure state machine where every clock-dependent method takes `DateTime now`, so
+  it is fully unit-tested without timers or UI. Config is parsed by
+  `PomodoroSettings` and persisted as one JSON blob in the `PomodoroConfig`
+  setting.
+- **[`PomodoroController`](src/WindowsClient/Controls/PomodoroController.cs)** is the thin
+  WPF glue: it owns the session + a `DispatcherTimer`, drives the floating
+  `PomodoroTaskWindow` (positioned under the talisman), and shows the
+  `PomodoroPromptWindow` / `PomodoroSummaryWindow`. Started from the Settings →
+  Pomodoro tab via `AppModel.StartPomodoro()`.
+- When changing phase behavior, change `PomodoroSession` and its tests; keep the
+  controller free of rules.
+
 ## Code conventions
 
 - **One class per file**, file named for the class. Favor an OO structure that
@@ -112,21 +139,25 @@ rolling, 14-day retention). The logging code lives in
 
 ## Building
 
-- Build the solution `src/Talisman.sln` (Debug|AnyCPU by default). From a
-  developer shell you can use MSBuild, e.g.
-  `msbuild src/Talisman.sln /t:Build /p:Configuration=Debug`.
-- First build needs NuGet packages restored (`nuget restore src/Talisman.sln`
-  or Visual Studio's "Restore NuGet Packages").
-- Release build runs NSIS post-build to produce `TalismanSetup.exe`.
+- `dotnet build src/WindowsClient/WindowsClient.csproj -c Debug` (restore is
+  automatic). Or build the solution `src/Talisman.sln`.
+- Run with `dotnet run --project src/WindowsClient/WindowsClient.csproj`, or
+  launch `bin/Debug/net8.0-windows/Talisman.exe` (framework-dependent — needs
+  the Windows Desktop 8 runtime installed).
+- For distribution, `dotnet publish` (prefer self-contained single-file so users
+  don't need the runtime). **The NSIS installer post-build step was dropped in
+  the SDK migration** and needs reworking around `dotnet publish` output before
+  cutting a real release.
 
 ## Testing — required
 
 Tests live in **`src/WindowsClient.Tests`** — an **xUnit** project targeting
-`net48` (SDK-style csproj, `UseWPF=true` because the classes under test use WPF
-types like `Visibility` and `Key`). It has a `ProjectReference` to
-`WindowsClient` and is part of `Talisman.sln`. Current coverage: `BaseModel`,
-`HotKeyAssignment`, `TimerInstance` (including the attention-word puzzle), and
-`QuickMailItem`.
+`net8.0-windows` (`UseWPF=true` because the classes under test use WPF types like
+`Visibility` and `Key`). It has a `ProjectReference` to `WindowsClient` and is
+part of `Talisman.sln`. Current coverage includes `BaseModel`,
+`HotKeyAssignment`, `TimerInstance` (attention-word puzzle), `QuickMailItem`,
+the logging stack (`FileLogger`/`Log`), `RestartPolicy`, and the whole Pomodoro
+engine (`PomodoroSession`, `PomodoroSettings`, `TaskTimeoutTracker`).
 
 Rules:
 
@@ -147,24 +178,22 @@ Rules:
 
 ### Build & run tests (from a shell)
 
-This machine has VS 2022 Community. The full VS MSBuild builds the legacy WPF
-project correctly (the .NET SDK's `dotnet build` does not), and `vstest.console`
-runs the resulting test assembly:
+Now that the project is SDK-style .NET 8, the `dotnet` CLI just works:
 
 ```
-MSBUILD="/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe"
-VSTEST="/c/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe"
+# build the app
+dotnet build src/WindowsClient/WindowsClient.csproj -c Debug
 
-# restore + build the test project (also builds WindowsClient)
-"$MSBUILD" src/WindowsClient.Tests/WindowsClient.Tests.csproj -restore -t:Build -p:Configuration=Debug
+# build + run the tests
+dotnet test src/WindowsClient.Tests/WindowsClient.Tests.csproj -c Debug
 
-# run the tests
-"$VSTEST" src/WindowsClient.Tests/bin/Debug/net48/Talisman.Tests.dll
+# run the app (framework-dependent; needs the Windows Desktop 8 runtime)
+dotnet run --project src/WindowsClient/WindowsClient.csproj
+# or launch src/WindowsClient/bin/Debug/net8.0-windows/Talisman.exe
 ```
 
-In Visual Studio, just use Test Explorer. Prefer building/running through VS
-MSBuild + vstest over `dotnet build`/`dotnet test`, which struggle with the
-legacy WPF `WindowsClient` project.
+In Visual Studio, just use Test Explorer. (The old VS-MSBuild-only + `vstest`
+workaround is no longer needed — that was a .NET Framework limitation.)
 
 ## Committing
 

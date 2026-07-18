@@ -118,17 +118,20 @@ namespace Talisman.Tests
         [Fact]
         public void SetAttentionWords_IncludesAtLeastOneWordNotInDescription()
         {
-            // By design, exactly one of the three attention words is chosen to be
-            // absent from the decorated description, so the user must actually read
-            // the appointment to pick the odd one out. This holds regardless of the
-            // random choices, so it is safe to assert every run.
-            for (var i = 0; i < 25; i++)
+            // By design, one of the three attention words is chosen to be absent
+            // from the decorated description, so the user must actually read the
+            // appointment to pick the odd one out. The model guarantees this against
+            // the lowercased decorated text using the word's raw casing (it compares
+            // SomeWords entries directly), so we assert the same invariant here -
+            // lowercasing the word too would spuriously fail for single-letter
+            // entries like "V" whose lowercase letter appears in the text.
+            for (var i = 0; i < 50; i++)
             {
                 var timer = MakeTimer();
                 var words = GetAttentionWords(timer);
                 var decorated = timer.DecoratedDescription.ToLower();
 
-                Assert.Contains(words, w => !decorated.Contains(w.ToLower()));
+                Assert.Contains(words, w => !decorated.Contains(w));
             }
         }
 

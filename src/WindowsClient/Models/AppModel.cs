@@ -55,6 +55,24 @@ namespace Talisman
 
         public HotKeyOption[] HotKeyOptions { get; set; }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Pomodoro configuration (bound to the Pomodoro settings tab). Persists
+        /// itself to the PomodoroConfig setting on change.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public PomodoroSettings Pomodoro { get; } = PomodoroSettings.FromSettings();
+
+        /// <summary>Raised when the user clicks "Start Pomodoro Day" in settings.</summary>
+        public event Action StartPomodoroRequested;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Ask the host (MainWindow) to begin a Pomodoro day.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void StartPomodoro() => StartPomodoroRequested?.Invoke();
+
         HotKeyOption _selectedHotKeyOption;
         public HotKeyOption SelectedHotKeyOption
         {
@@ -222,6 +240,21 @@ namespace Talisman
         /// Timer notifications
         /// </summary>
         public event NotificationHandler OnNotification;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Raise one of the circling notification widgets for an ad-hoc task (used
+        /// when a Pomodoro quick task runs out of time). The TimerInstance carries
+        /// the attention-word puzzle, so it is dismissed the same hard-to-ignore way
+        /// as a meeting reminder. It is not added to ActiveTimers.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void RaiseTaskNotification(string title)
+        {
+            var now = DateTime.Now;
+            var instance = new TimerInstance(now, now, "Pomodoro", title ?? "");
+            _dispatch(() => OnNotification?.Invoke(instance));
+        }
 
         /// <summary>
         /// All the timers

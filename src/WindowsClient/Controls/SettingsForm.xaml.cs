@@ -286,6 +286,17 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Kick off a Pomodoro day and get the settings window out of the way.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void StartPomodoroClick(object sender, RoutedEventArgs e)
+        {
+            _appModel.StartPomodoro();
+            this.Hide();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Preview key strokes for hotkey assignment
         /// </summary>
         // --------------------------------------------------------------------------

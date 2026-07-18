@@ -51,6 +51,11 @@ namespace Talisman
         List<NotificationWidget> _notificationWindows = new List<NotificationWidget>();
         Random rand = new Random();
 
+        /// <summary>
+        /// Drives the Pomodoro day (floating task widget + phase dialogs)
+        /// </summary>
+        PomodoroController _pomodoro;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
@@ -63,6 +68,10 @@ namespace Talisman
                 Dispatcher.Invoke(runme);
             });
             _theModel.OnCenter += HandleOnCenter;
+
+            _pomodoro = new PomodoroController(this, _theModel.Pomodoro,
+                onTaskTimedOut: title => _theModel.RaiseTaskNotification(title));
+            _theModel.StartPomodoroRequested += () => _pomodoro.Start();
 
             InitializeComponent();
             CompositionTarget.Rendering += AnimateFrame;

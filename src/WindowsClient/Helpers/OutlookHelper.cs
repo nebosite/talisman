@@ -35,7 +35,27 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// 
+        /// Get the running instance of a COM app by ProgID. Replaces
+        /// Marshal.GetActiveObject, which was removed in modern .NET. Throws a
+        /// COMException with 0x800401E3 (MK_E_UNAVAILABLE) when nothing is running.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        static object GetActiveObject(string progId)
+        {
+            CLSIDFromProgIDEx(progId, out Guid clsid);
+            GetActiveObject(ref clsid, IntPtr.Zero, out object instance);
+            return instance;
+        }
+
+        [DllImport("ole32.dll", PreserveSig = false)]
+        static extern void CLSIDFromProgIDEx([MarshalAs(UnmanagedType.LPWStr)] string lpszProgID, out Guid lpclsid);
+
+        [DllImport("oleaut32.dll", PreserveSig = false)]
+        static extern void GetActiveObject(ref Guid rclsid, IntPtr pvReserved, [MarshalAs(UnmanagedType.IUnknown)] out object ppunk);
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        ///
         /// </summary>
         // --------------------------------------------------------------------------
         Application GetApplicationObject()
@@ -51,8 +71,8 @@ namespace Talisman
                 {
                     try
                     {
-                        // If so, use the GetActiveObject method to obtain the process and cast it to an Application object.
-                        application = Marshal.GetActiveObject("Outlook.Application") as Application;
+                        // If so, obtain the running instance and cast it to an Application object.
+                        application = GetActiveObject("Outlook.Application") as Application;
                         return application;
                     }
                     catch (COMException e)
