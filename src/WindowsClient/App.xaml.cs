@@ -366,8 +366,13 @@ namespace Talisman
                 this.newVersionCheck = System.Threading.Tasks.Task.Run(CheckForNewVersion);
             }
 
-            MaybeNotifyPreviousCrash();
             base.OnStartup(e);
+
+            // Defer the "closed unexpectedly" notice until the app is up and idle so
+            // a modal dialog can't block the main window (and the MCP server) from
+            // starting.
+            Dispatcher.BeginInvoke(new Action(MaybeNotifyPreviousCrash),
+                System.Windows.Threading.DispatcherPriority.ApplicationIdle);
         }
 
         // --------------------------------------------------------------------------

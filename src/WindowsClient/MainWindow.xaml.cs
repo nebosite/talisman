@@ -56,6 +56,11 @@ namespace Talisman
         /// </summary>
         PomodoroController _pomodoro;
 
+        /// <summary>
+        /// Local MCP server exposing Talisman actions (e.g. quicktimer) to Claude
+        /// </summary>
+        McpServer _mcpServer;
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// ctor
@@ -72,6 +77,8 @@ namespace Talisman
             _pomodoro = new PomodoroController(this, _theModel.Pomodoro,
                 onTaskTimedOut: title => _theModel.RaiseTaskNotification(title));
             _theModel.StartPomodoroRequested += () => _pomodoro.Start();
+
+            _mcpServer = StartMcpServer();
 
             InitializeComponent();
             CompositionTarget.Rendering += AnimateFrame;
@@ -95,6 +102,35 @@ namespace Talisman
         private void HandleOnCenter()
         {
             ScreenHelper.CenterWindowOnMainScreen(this);
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Stand up the local MCP server exposing the quicktimer tool. The tool's
+        /// side effect goes through AppModel, which marshals onto the Dispatcher.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private McpServer StartMcpServer()
+        {
+            var tools = new List<McpToolDefinition>
+            {
+                QuickTimerTool.Create((endTime, title, body) => _theModel.StartTitledTimer(endTime, title, body)),
+            };
+            var dispatcher = new McpDispatcher(tools, "talisman", _theModel.VersionText);
+            var server = new McpServer(dispatcher);
+            server.Start();
+            return server;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Shut the MCP server down with the window.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        protected override void OnClosed(EventArgs e)
+        {
+            _mcpServer?.Stop();
+            base.OnClosed(e);
         }
 
         // --------------------------------------------------------------------------
