@@ -703,6 +703,59 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Create a timer at an absolute time with a title and optional body. Any
+        /// URLs in the body become clickable links on the reminder. Marshals onto
+        /// the Dispatcher, so it is safe to call from a background thread (e.g. the
+        /// MCP server). Returns the resulting instance.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public TimerInstance StartTitledTimer(DateTime endTime, string title, string body = null)
+        {
+            title = title ?? "";
+            var links = ExtractLinks(body);
+
+            var description = title;
+            if (!string.IsNullOrWhiteSpace(body))
+                description = string.IsNullOrWhiteSpace(title) ? body : $"{title} — {body}";
+
+            var instance = new TimerInstance(endTime, endTime, "", description, links.ToArray());
+            instance.OnDismiss += () => { AddToRecents(instance); };
+
+            _dispatch(() => StartTimer(instance));
+            return instance;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Pull the (deduped, ignore-filtered) links out of a blob of text, reusing
+        /// the same URL pattern and rename rules as the calendar reminders.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        List<TimerInstance.LinkDetails> ExtractLinks(string text)
+        {
+            var links = new List<TimerInstance.LinkDetails>();
+            if (string.IsNullOrWhiteSpace(text)) return links;
+
+            var seenUrls = new HashSet<string>();
+            foreach (Match urlMatch in Regex.Matches(text, @"(http.*?://[^\s;>]+)"))
+            {
+                var url = urlMatch.Groups[1].Value.TrimEnd('>');
+                if (this.LinkIgnorePatterns.Any(p => Regex.IsMatch(url, p, RegexOptions.IgnoreCase))) continue;
+                if (!seenUrls.Add(url.ToLowerInvariant())) continue;
+
+                var linkText = Regex.Replace(url, "^ht.*?//", "");
+                foreach (var pattern in this.LinkRenamePatterns)
+                {
+                    if (Regex.IsMatch(url, pattern.pattern, RegexOptions.IgnoreCase)) { linkText = pattern.newName; break; }
+                }
+                links.Add(new TimerInstance.LinkDetails { Uri = url, Text = linkText });
+                if (links.Count >= 4) break;
+            }
+            return links;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Remove a timer from our lists
         /// </summary>
         // --------------------------------------------------------------------------
