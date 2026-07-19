@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsClient", "WindowsClient\WindowsClient.csproj", "{C8F7504E-8F4D-4536-A6AB-B0AFD6AC433C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsClient", "WindowsClient\WindowsClient.csproj", "{C8F7504E-8F4D-4536-A6AB-B0AFD6AC433C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsClient.Tests", "WindowsClient.Tests\WindowsClient.Tests.csproj", "{3C44D5EC-4863-4F47-9261-9210641C15F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowsClient.Tests", "WindowsClient.Tests\WindowsClient.Tests.csproj", "{3C44D5EC-4863-4F47-9261-9210641C15F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

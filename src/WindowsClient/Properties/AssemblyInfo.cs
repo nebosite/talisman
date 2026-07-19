@@ -2,7 +2,12 @@
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Windows;
+
+// Talisman is a Windows-only app; this satisfies CA1416 for the Windows-only
+// WinForms APIs (Screen, Cursor) used by the screen/dragging helpers.
+[assembly: SupportedOSPlatform("windows")]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

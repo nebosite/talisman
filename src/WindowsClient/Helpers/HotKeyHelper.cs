@@ -74,7 +74,7 @@ namespace Talisman
 
             // Set up the hook to listen for hot keys
             _windowHandle = new WindowInteropHelper(handlerWindow).Handle;
-            if(_windowHandle == null)
+            if(_windowHandle == IntPtr.Zero)
             {
                 throw new ApplicationException("Cannot find window handle.  Try calling this on or after OnSourceInitialized()");
             }

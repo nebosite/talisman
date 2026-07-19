@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +23,7 @@ namespace Talisman
     public partial class App : Application
     {
         System.Threading.Tasks.Task newVersionCheck;
+        static readonly HttpClient _httpClient = new HttpClient();
         FileLogger _logger;
         bool _previousSessionCrashed;
         bool _launchedByAutoRestart;
@@ -391,10 +393,9 @@ namespace Talisman
                 {
                     var versionUrl = "https://raw.githubusercontent.com/nebosite/talisman/master/installs/currentVersion.txt";
 
-                    var request = HttpWebRequest.Create(versionUrl);
-                    var response = request.GetResponse();
-
-                    string responseText = new StreamReader(response.GetResponseStream()).ReadToEnd().Trim();
+                    // Runs on a thread-pool thread (no sync context), so blocking on
+                    // the async call here is safe.
+                    string responseText = _httpClient.GetStringAsync(versionUrl).GetAwaiter().GetResult().Trim();
 
                     var assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                     var localVersionParts = assemblyVersion.Split('.');
