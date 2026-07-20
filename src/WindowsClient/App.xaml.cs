@@ -56,14 +56,62 @@ namespace Talisman
             DispatcherUnhandledException += OnDispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            // Windows logoff/shutdown is an ordinary way to stop, not a crash.
+            SessionEnding += OnSessionEnding;
 
-            // CrashedLastTime is set true while running and cleared on clean exit,
-            // so if it is still set now the previous session did not exit cleanly.
-            _previousSessionCrashed = Settings.Default.CrashedLastTime;
+            // Classify how the previous session ended. CrashedLastTime alone is a
+            // weak signal - it stays set after ANY ungraceful termination (reboot,
+            // sleep, kill), which produces false "did not exit cleanly" alarms with
+            // no log evidence. Only treat it as a crash when a terminating exception
+            // was actually recorded.
+            var uncleanShutdown = Settings.Default.CrashedLastTime;
+            var fatalCrash = Settings.Default.LastSessionFatalCrash;
+            var previousExit = PreviousExitClassifier.Classify(uncleanShutdown, fatalCrash);
+            _previousSessionCrashed = previousExit == PreviousExitKind.Crashed;
+
+            // Consume the crash marker so a given crash is only surfaced once.
+            if (fatalCrash)
+            {
+                try { Settings.Default.LastSessionFatalCrash = false; Settings.Default.Save(); }
+                catch (Exception ex) { Debug.WriteLine("Could not clear crash marker: " + ex); }
+            }
 
             Log.Info("========================================================");
             Log.Info($"Talisman starting. {DescribeEnvironment()}");
-            if (_previousSessionCrashed) Log.Warn("Previous session did not exit cleanly (possible crash).");
+            switch (previousExit)
+            {
+                case PreviousExitKind.Crashed:
+                    Log.Warn("Previous session ended in an unhandled exception (see the earlier log for details).");
+                    break;
+                case PreviousExitKind.UncleanNoCrash:
+                    Log.Info("Previous session did not shut down cleanly, but no crash was recorded (likely a reboot, sleep, or forced close).");
+                    break;
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Record that this session is dying from a real (terminating) crash, so the
+        /// next launch can tell it apart from an ordinary ungraceful termination.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void RecordFatalCrash()
+        {
+            try { Settings.Default.LastSessionFatalCrash = true; Settings.Default.Save(); }
+            catch (Exception ex) { Log.Error("Could not record fatal-crash marker.", ex); }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Windows is logging off / shutting down - a normal way to stop. Mark a
+        /// clean shutdown so the next launch doesn't mistake the reboot for a crash.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void OnSessionEnding(object sender, SessionEndingCancelEventArgs e)
+        {
+            Log.Info($"Windows session ending ({e.ReasonSessionEnding}); marking a clean shutdown.");
+            try { Settings.Default.CrashedLastTime = false; Settings.Default.Save(); }
+            catch (Exception ex) { Log.Error("Could not mark clean shutdown on session end.", ex); }
         }
 
         // --------------------------------------------------------------------------
@@ -100,7 +148,11 @@ namespace Talisman
         void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Log.Fatal($"Unhandled exception (terminating={e.IsTerminating}).", e.ExceptionObject as Exception);
-            if (e.IsTerminating) AttemptAutoRestart();
+            if (e.IsTerminating)
+            {
+                RecordFatalCrash();
+                AttemptAutoRestart();
+            }
         }
 
         // --------------------------------------------------------------------------

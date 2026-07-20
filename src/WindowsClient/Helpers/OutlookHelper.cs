@@ -161,8 +161,10 @@ namespace Talisman
             {
                 _outlookApplication = null;  // Forget the reference so that we will reconnect next time.
                 failureCount++;
-                Log.Warn($"Failed to read Outlook calendar/tasks (failure #{failureCount}). Will reconnect next time.", ex);
-                if (failureCount > 2) throw;
+                // Outlook is an external dependency that can be closed, busy, or
+                // mid-restart. Never let that propagate - log it and return nothing;
+                // the next poll will try to reconnect.
+                Log.Warn($"Failed to read Outlook calendar/tasks (failure #{failureCount}). Will reconnect next poll.", ex);
             }
             return new TimeRelatedItem[0];
         }

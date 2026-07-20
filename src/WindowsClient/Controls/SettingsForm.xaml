@@ -44,7 +44,11 @@
                         </ListView>
                     </ScrollViewer>
                     
-                    <Label Content="Recent Timers" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Recent Timers" VerticalAlignment="Center" />
+                        <Button Content="Clear Recent Timers" Click="ClearRecentTimersClick"
+                                Margin="10,0,0,0" Padding="8,1" VerticalAlignment="Center" />
+                    </StackPanel>
                     <ScrollViewer>
                         <ListView ItemsSource="{Binding RecentTimers}" MaxHeight="200" Padding="0" >
                             <ListView.ItemTemplate>

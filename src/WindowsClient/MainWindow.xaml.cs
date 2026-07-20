@@ -311,11 +311,30 @@ namespace Talisman
         /// Animations Handled here
         /// </summary>
         // --------------------------------------------------------------------------
+        bool _animateErrorLogged;
         private void AnimateFrame(object sender, EventArgs e)
         {
             _frame++;
             if (_frame % _frameSkip != 0) return;
 
+            // Runs every rendered frame; guard so a transient error can't spam the
+            // crash handler (log once, then stay quiet).
+            try
+            {
+                AnimateFrameCore();
+            }
+            catch (Exception ex)
+            {
+                if (!_animateErrorLogged)
+                {
+                    _animateErrorLogged = true;
+                    Log.Error("Animation frame failed; suppressing further animation errors.", ex);
+                }
+            }
+        }
+
+        private void AnimateFrameCore()
+        {
             var stepSize = 1;
             var radius = 400;
             var t = (DateTime.Now - _startTime).TotalSeconds;

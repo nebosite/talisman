@@ -432,6 +432,24 @@ namespace Talisman
             });
         }
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Clear the whole recent-timers list in one go. Marshals onto the
+        /// Dispatcher since RecentTimers is bound to the UI; the collection-changed
+        /// handler then persists the now-empty list to settings.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void ClearRecentTimers()
+        {
+            _dispatch(() =>
+            {
+                lock (RecentTimers)
+                {
+                    RecentTimers.Clear();
+                }
+            });
+        }
+
         OutlookHelper _outlook;
         DateTime _nextCalendarCheck = DateTime.MinValue;
         IHotKeyTool _hotKeys;
@@ -477,10 +495,12 @@ namespace Talisman
                 }
                 catch(Exception e)
                 {
+                    // Tolerate calendar/Outlook failures: log (throttled) and carry
+                    // on, rather than popping a dialog or letting it bubble up.
                     if(DateTime.Now > _nextCalendarErrorOKTime)
                     {
-                        MessageBox.Show("Calendar error: " + e.ToString());
-                        _nextCalendarErrorOKTime = DateTime.Now.AddDays(1);
+                        Log.Warn("Calendar check failed; will retry on the next poll.", e);
+                        _nextCalendarErrorOKTime = DateTime.Now.AddHours(1);
                     }
                 }
             }
@@ -589,6 +609,26 @@ namespace Talisman
         /// </summary>
         // --------------------------------------------------------------------------
         private void TimerTick(object sender, EventArgs e)
+        {
+            // The tick fires constantly; a transient failure here must never become
+            // an unhandled exception that tears the app down. Contain and log it.
+            try
+            {
+                TimerTickCore();
+            }
+            catch (Exception ex)
+            {
+                if (DateTime.Now > _nextTickErrorOKTime)
+                {
+                    Log.Error("Timer tick failed; continuing.", ex);
+                    _nextTickErrorOKTime = DateTime.Now.AddMinutes(1);
+                }
+            }
+        }
+
+        DateTime _nextTickErrorOKTime = DateTime.MinValue;
+
+        private void TimerTickCore()
         {
             var shouldUpdate = (_frame % 1) == 0;
             _frame++;

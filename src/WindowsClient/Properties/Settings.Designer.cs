@@ -192,5 +192,17 @@ namespace Talisman.Properties {
                 this["PomodoroConfig"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LastSessionFatalCrash {
+            get {
+                return ((bool)(this["LastSessionFatalCrash"]));
+            }
+            set {
+                this["LastSessionFatalCrash"] = value;
+            }
+        }
     }
 }

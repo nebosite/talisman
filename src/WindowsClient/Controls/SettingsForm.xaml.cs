@@ -297,6 +297,16 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Clear the whole recent-timers list.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ClearRecentTimersClick(object sender, RoutedEventArgs e)
+        {
+            _appModel.ClearRecentTimers();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Preview key strokes for hotkey assignment
         /// </summary>
         // --------------------------------------------------------------------------
