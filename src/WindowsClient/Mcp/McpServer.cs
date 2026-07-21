@@ -36,41 +36,105 @@ namespace Talisman
             _port = port;
         }
 
+        /// <summary>
+        /// How long to wait before re-trying a failed bind. The usual cause is a
+        /// previous instance whose http.sys registration hasn't been released yet
+        /// (e.g. after a forced close), which clears on its own within seconds.
+        /// </summary>
+        static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(15);
+
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Start listening on a background thread. Localhost binding does not need a
-        /// URL ACL reservation. Never throws - logs and gives up on failure.
+        /// Start serving on a background thread. Binding is supervised: if the port
+        /// is temporarily unavailable, or the listener later dies, we keep retrying
+        /// instead of leaving the server dead for the rest of the session.
+        /// Never throws.
         /// </summary>
         // --------------------------------------------------------------------------
         public void Start()
         {
-            try
-            {
-                _listener = new HttpListener();
-                _listener.Prefixes.Add(Url);
-                _listener.Start();
-                _running = true;
+            if (_running) return;
+            _running = true;
 
-                _thread = new Thread(Listen) { IsBackground = true, Name = "McpServer" };
-                _thread.Start();
-                Log.Info("MCP server listening at " + Url);
-            }
-            catch (Exception ex)
-            {
-                Log.Error("MCP server failed to start on " + Url, ex);
-            }
+            // Release the http.sys registration on any managed process exit, so the
+            // next launch doesn't collide with our own leftover registration.
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+
+            _thread = new Thread(RunSupervised) { IsBackground = true, Name = "McpServer" };
+            _thread.Start();
         }
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Stop listening.
+        /// Stop listening and stop retrying.
         /// </summary>
         // --------------------------------------------------------------------------
         public void Stop()
         {
             _running = false;
-            try { _listener?.Stop(); } catch { }
-            try { _listener?.Close(); } catch { }
+            try { AppDomain.CurrentDomain.ProcessExit -= OnProcessExit; } catch { }
+
+            var listener = _listener;
+            _listener = null;
+            try { listener?.Stop(); } catch { }
+            try { listener?.Close(); } catch { }
+        }
+
+        void OnProcessExit(object sender, EventArgs e) => Stop();
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Bind, serve, and re-bind. A transient bind conflict or a listener that
+        /// dies mid-session must not take the tool offline permanently.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void RunSupervised()
+        {
+            var consecutiveFailures = 0;
+            while (_running)
+            {
+                if (TryBind(ref consecutiveFailures))
+                {
+                    Listen(); // returns when the listener is stopped or breaks
+                    if (_running) Log.Warn("MCP listener stopped unexpectedly; will rebind.");
+                }
+
+                if (!_running) break;
+                Thread.Sleep(RetryDelay);
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Try to claim the port. Logs the first failure and then only occasionally,
+        /// so a port permanently held by something else can't spam the log.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        bool TryBind(ref int consecutiveFailures)
+        {
+            try
+            {
+                var listener = new HttpListener();
+                listener.Prefixes.Add(Url);
+                listener.Start();
+                _listener = listener;
+
+                Log.Info(consecutiveFailures > 0
+                    ? $"MCP server listening at {Url} (recovered after {consecutiveFailures} failed attempt(s))."
+                    : $"MCP server listening at {Url}");
+                consecutiveFailures = 0;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                consecutiveFailures++;
+                if (consecutiveFailures == 1 || consecutiveFailures % 20 == 0)
+                {
+                    Log.Warn($"MCP server could not bind {Url} (attempt {consecutiveFailures}); " +
+                             $"retrying every {RetryDelay.TotalSeconds:0}s.", ex);
+                }
+                return false;
+            }
         }
 
         void Listen()
@@ -84,8 +148,14 @@ namespace Talisman
                 }
                 catch (Exception)
                 {
-                    if (_running) continue; // transient; keep serving
-                    return;                 // stopped
+                    if (!_running) return;
+                    // If the listener is gone/broken, hand back to the supervisor to
+                    // rebind. Otherwise it was transient - pause briefly so a
+                    // repeated failure can never become a tight spin.
+                    var listener = _listener;
+                    if (listener == null || !listener.IsListening) return;
+                    Thread.Sleep(100);
+                    continue;
                 }
 
                 try { Handle(context); }
