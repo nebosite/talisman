@@ -73,6 +73,52 @@ namespace Talisman
         // --------------------------------------------------------------------------
         public void StartPomodoro() => StartPomodoroRequested?.Invoke();
 
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Read-only view model for the Mail Rules inspection tab.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public MailRulesModel MailRules { get; } = new MailRulesModel();
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Read all Outlook mail rules into the MailRules model. Read-only and
+        /// tolerant - a failure (e.g. Outlook not running) shows a message instead
+        /// of throwing.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void LoadMailRules()
+        {
+            if (MailRules.IsLoading) return;
+            MailRules.BeginLoad(); // on the UI thread
+
+            // Outlook COM requires an STA apartment, so read on a dedicated STA
+            // thread - that keeps the (potentially slow) read off the UI thread.
+            // Each rule is marshalled back to the Dispatcher as it arrives so the
+            // tree fills in live behind a progress bar.
+            var reader = new Thread(() =>
+            {
+                try
+                {
+                    var outlook = new OutlookHelper();
+                    outlook.ReadMailRulesIncremental(
+                        total => _dispatch(() => MailRules.SetTotal(total)),
+                        rule => _dispatch(() => MailRules.AddRule(rule)));
+                    _dispatch(() => MailRules.EndLoad());
+                    Log.Info("Mail rules loaded for inspection.");
+                }
+                catch (Exception ex)
+                {
+                    Log.Warn("Could not read mail rules.", ex);
+                    _dispatch(() => MailRules.SetError("Could not read mail rules (is Outlook running?): " + ex.Message));
+                }
+            });
+            reader.SetApartmentState(ApartmentState.STA);
+            reader.IsBackground = true;
+            reader.Name = "MailRulesReader";
+            reader.Start();
+        }
+
         HotKeyOption _selectedHotKeyOption;
         public HotKeyOption SelectedHotKeyOption
         {

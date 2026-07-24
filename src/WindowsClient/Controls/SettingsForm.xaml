@@ -8,7 +8,7 @@
         Topmost="True"
         Title="Talisman Settings" Height="500" Width="537.321" WindowStyle="ToolWindow">
     <Grid>
-        <TabControl Margin="5,20,5,5">
+        <TabControl Margin="5,20,5,5" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Active Timers" >
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal" Margin="5">
@@ -173,6 +173,50 @@
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Mail Rules">
+                <Grid Margin="6" DataContext="{Binding MailRules}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Label Content="Filter:" VerticalAlignment="Center" />
+                        <TextBox Width="230" VerticalContentAlignment="Center"
+                                 Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="Refresh" Click="RefreshMailRulesClick" Margin="10,0,0,0" Padding="8,1" />
+                        <Button Content="Find shared text" Click="FindSharedTextClick" Margin="6,0,0,0" Padding="8,1" />
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Margin="2,5">
+                        <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <ProgressBar Height="6" Margin="0,3,0,0" Minimum="0"
+                                     Maximum="{Binding LoadTotal}" Value="{Binding LoadValue}"
+                                     IsIndeterminate="{Binding IsConnecting}"
+                                     Visibility="{Binding ProgressVisibility}" />
+                    </StackPanel>
+                    <TreeView Grid.Row="2" ItemsSource="{Binding Nodes}">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="TreeViewItem">
+                                <Setter Property="Visibility" Value="{Binding Visibility}" />
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                        <TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding Text}" />
+                            </HierarchicalDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                    <ScrollViewer Grid.Row="3" MaxHeight="130" Margin="0,5,0,0"
+                                  Visibility="{Binding DuplicateReportVisibility}"
+                                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <TextBox Text="{Binding DuplicateReport, Mode=OneWay}" IsReadOnly="True"
+                                 FontFamily="Consolas" FontSize="11" Background="#FFF7F7F7"
+                                 TextWrapping="NoWrap" BorderThickness="0" />
+                    </ScrollViewer>
+                </Grid>
             </TabItem>
             <TabItem Header="About Talisman">
                 <Grid Margin="5">

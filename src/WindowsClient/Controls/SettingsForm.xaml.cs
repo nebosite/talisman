@@ -305,6 +305,35 @@ namespace Talisman
             _appModel.ClearRecentTimers();
         }
 
+        bool _mailRulesLoaded;
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Lazily read the mail rules the first time the Mail Rules tab is opened,
+        /// so we don't hit Outlook every time settings appears.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!(e.Source is TabControl tabs)) return; // ignore inner selection changes
+            if (tabs.SelectedItem is TabItem tab && (tab.Header as string) == "Mail Rules" && !_mailRulesLoaded)
+            {
+                _mailRulesLoaded = true;
+                _appModel.LoadMailRules();
+            }
+        }
+
+        private void RefreshMailRulesClick(object sender, RoutedEventArgs e)
+        {
+            _mailRulesLoaded = true;
+            _appModel.LoadMailRules();
+        }
+
+        private void FindSharedTextClick(object sender, RoutedEventArgs e)
+        {
+            _appModel.MailRules.RunSharedTextCheck();
+        }
+
         // --------------------------------------------------------------------------
         /// <summary>
         /// Preview key strokes for hotkey assignment

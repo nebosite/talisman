@@ -246,5 +246,193 @@ namespace Talisman
                 ProcessFolder(subFolder, endTime, returnItems);
             }
         }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Read every mail rule from the default store and flatten it into plain
+        /// data. Read-only. Defensive throughout - a single unreadable rule, clause,
+        /// or property is logged and skipped rather than failing the whole read.
+        /// Note: the Outlook object model only exposes a subset of the condition and
+        /// action types, so anything it doesn't model simply won't appear here.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public MailRuleData[] ReadMailRules()
+        {
+            var result = new List<MailRuleData>();
+            ReadMailRulesIncremental(null, result.Add);
+            return result.ToArray();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Read the mail rules one at a time, reporting the total up front and each
+        /// rule as it is read - so a caller can show progress and stream results in
+        /// without waiting for the whole (potentially slow) read to finish. Meant to
+        /// be called on a dedicated STA thread, since it touches Outlook COM.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void ReadMailRulesIncremental(Action<int> onTotalKnown, Action<MailRuleData> onRuleRead)
+        {
+            Rules rules = OutlookApp.Session.DefaultStore.GetRules();
+            onTotalKnown?.Invoke(rules.Count);
+
+            foreach (Rule rule in rules)
+            {
+                MailRuleData data = null;
+                try { data = ReadOneRule(rule); }
+                catch (System.Exception ex) { Log.Warn("Failed to read a mail rule; skipping it.", ex); }
+                if (data != null) onRuleRead?.Invoke(data);
+            }
+        }
+
+        MailRuleData ReadOneRule(Rule rule)
+        {
+            var data = new MailRuleData
+            {
+                Name = rule.Name ?? "(unnamed)",
+                Enabled = rule.Enabled,
+                RuleType = rule.RuleType.ToString(),
+                ExecutionOrder = rule.ExecutionOrder,
+            };
+            ReadConditions(rule.Conditions, data.Conditions);
+            ReadConditions(rule.Exceptions, data.Exceptions);
+            ReadActions(rule.Actions, data.Actions);
+            return data;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Flatten the enabled conditions (or exceptions) of a rule.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void ReadConditions(RuleConditions conditions, List<RuleClauseData> into)
+        {
+            if (conditions == null) return;
+            foreach (RuleCondition cond in conditions)
+            {
+                try
+                {
+                    if (cond == null || !cond.Enabled) continue;
+                    var clause = new RuleClauseData { Kind = cond.ConditionType.ToString() };
+
+                    switch (cond)
+                    {
+                        case TextRuleCondition t:
+                            AddMatchTexts(clause, ToStrings(t.Text));
+                            break;
+                        case AddressRuleCondition a:
+                            AddMatchTexts(clause, ToStrings(a.Address));
+                            break;
+                        case ToOrFromRuleCondition tf:
+                            AddMatchTexts(clause, RecipientNames(tf.Recipients));
+                            break;
+                        case CategoryRuleCondition c:
+                            AddMatchTexts(clause, ToStrings(c.Categories));
+                            break;
+                        case FormNameRuleCondition f:
+                            AddMatchTexts(clause, ToStrings(f.FormName));
+                            break;
+                        case SenderInAddressListRuleCondition s:
+                            clause.Details.Add(SafeGet(() => s.AddressList?.Name, "(address list)"));
+                            break;
+                        case ImportanceRuleCondition i:
+                            clause.Details.Add(i.Importance.ToString());
+                            break;
+                        case AccountRuleCondition ac:
+                            clause.Details.Add(SafeGet(() => ac.Account?.DisplayName, "(account)"));
+                            break;
+                    }
+
+                    into.Add(clause);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Warn("Failed to read a mail-rule condition.", ex);
+                }
+            }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Flatten the enabled actions of a rule.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void ReadActions(RuleActions actions, List<RuleClauseData> into)
+        {
+            if (actions == null) return;
+            foreach (RuleAction act in actions)
+            {
+                try
+                {
+                    if (act == null || !act.Enabled) continue;
+                    var clause = new RuleClauseData { Kind = act.ActionType.ToString() };
+
+                    switch (act)
+                    {
+                        case MoveOrCopyRuleAction m:
+                            clause.Details.Add(SafeGet(() => m.Folder?.FolderPath, "(no folder)"));
+                            break;
+                        case SendRuleAction s:
+                            foreach (var n in RecipientNames(s.Recipients)) clause.Details.Add(n);
+                            break;
+                        case AssignToCategoryRuleAction c:
+                            foreach (var cat in ToStrings(c.Categories)) clause.Details.Add(cat);
+                            break;
+                        case NewItemAlertRuleAction n:
+                            clause.Details.Add(n.Text ?? "");
+                            break;
+                        case PlaySoundRuleAction p:
+                            clause.Details.Add(p.FilePath ?? "");
+                            break;
+                        case MarkAsTaskRuleAction mt:
+                            clause.Details.Add("mark " + mt.MarkInterval);
+                            break;
+                    }
+
+                    into.Add(clause);
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Warn("Failed to read a mail-rule action.", ex);
+                }
+            }
+        }
+
+        // Add match text values both as display details and as searchable texts.
+        static void AddMatchTexts(RuleClauseData clause, IEnumerable<string> texts)
+        {
+            foreach (var t in texts)
+            {
+                if (string.IsNullOrWhiteSpace(t)) continue;
+                clause.Details.Add(t);
+                clause.Texts.Add(t);
+            }
+        }
+
+        // Coerce a COM property (string, string[]/object[], or null) into strings.
+        static IEnumerable<string> ToStrings(object value)
+        {
+            if (value == null) yield break;
+            if (value is string s) { yield return s; yield break; }
+            if (value is System.Collections.IEnumerable items)
+                foreach (var item in items)
+                    if (item != null) yield return item.ToString();
+        }
+
+        static IEnumerable<string> RecipientNames(Recipients recipients)
+        {
+            if (recipients == null) yield break;
+            foreach (Recipient r in recipients)
+            {
+                string name = null;
+                try { name = r.Name ?? r.Address; } catch { }
+                if (!string.IsNullOrWhiteSpace(name)) yield return name;
+            }
+        }
+
+        static string SafeGet(Func<string> get, string fallback)
+        {
+            try { return get() ?? fallback; } catch { return fallback; }
+        }
     }
 }
