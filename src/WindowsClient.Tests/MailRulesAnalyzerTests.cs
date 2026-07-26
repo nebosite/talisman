@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Talisman;
 using Xunit;
@@ -7,17 +6,17 @@ namespace Talisman.Tests
 {
     // --------------------------------------------------------------------------
     /// <summary>
-    /// Tests for MailRulesAnalyzer: the size estimate scales with content, and the
-    /// shared-text finder reports text that appears across more than one rule.
+    /// Tests for MailRulesAnalyzer: size estimate scales with content; shared-text
+    /// finding is substring-based and case-insensitive.
     /// </summary>
     // --------------------------------------------------------------------------
     public class MailRulesAnalyzerTests
     {
-        static MailRuleData Rule(string name, params string[] conditionTexts)
+        static MailRuleData Rule(string name, params string[] conditionValues)
         {
             var rule = new MailRuleData { Name = name, Enabled = true, RuleType = "olRuleReceive" };
-            var clause = new RuleClauseData { Kind = "olConditionBody" };
-            foreach (var t in conditionTexts) { clause.Details.Add(t); clause.Texts.Add(t); }
+            var clause = new RuleClauseData { Kind = "olConditionBody", Editable = true, ValueTarget = RuleValueTarget.Text };
+            clause.Values.AddRange(conditionValues);
             rule.Conditions.Add(clause);
             return rule;
         }
@@ -36,15 +35,13 @@ namespace Talisman.Tests
         public void EstimateTotalBytes_SumsRules()
         {
             var rules = new[] { Rule("A", "x"), Rule("B", "y") };
-            var total = MailRulesAnalyzer.EstimateTotalBytes(rules);
-            Assert.Equal(MailRulesAnalyzer.EstimateBytes(rules[0]) + MailRulesAnalyzer.EstimateBytes(rules[1]), total);
+            Assert.Equal(
+                MailRulesAnalyzer.EstimateBytes(rules[0]) + MailRulesAnalyzer.EstimateBytes(rules[1]),
+                MailRulesAnalyzer.EstimateTotalBytes(rules));
         }
 
         [Fact]
-        public void Limit_Is256Kb()
-        {
-            Assert.Equal(256 * 1024, MailRulesAnalyzer.LimitBytes);
-        }
+        public void Limit_Is256Kb() => Assert.Equal(256 * 1024, MailRulesAnalyzer.LimitBytes);
 
         [Fact]
         public void FindSharedText_ReturnsTextInMultipleRules()
@@ -58,9 +55,8 @@ namespace Talisman.Tests
 
             var shared = MailRulesAnalyzer.FindSharedText(rules);
 
-            Assert.Single(shared);
-            Assert.Equal("newsletter", shared[0].Text);
-            Assert.Equal(new[] { "Newsletters", "Promos" }, shared[0].RuleNames.ToArray());
+            var newsletter = shared.Single(s => s.Text == "newsletter");
+            Assert.Equal(new[] { "Newsletters", "Promos" }, newsletter.RuleNames.ToArray());
         }
 
         [Fact]
@@ -73,20 +69,31 @@ namespace Talisman.Tests
         }
 
         [Fact]
+        public void FindSharedText_MatchesSubstrings()
+        {
+            // "foo" is a substring of "foobar", so anything matching "foobar" also
+            // matches "foo" -> the two rules share "foo".
+            var rules = new[] { Rule("Broad", "foo"), Rule("Narrow", "FOOBAR") };
+            var shared = MailRulesAnalyzer.FindSharedText(rules);
+
+            Assert.Contains(shared, s => s.Text == "foo" && s.RuleNames.Count == 2);
+            Assert.DoesNotContain(shared, s => s.Text == "FOOBAR"); // only in Narrow
+        }
+
+        [Fact]
         public void FindSharedText_IgnoresRepeatWithinOneRule()
         {
-            var rule = Rule("A", "dup", "dup"); // same text twice in ONE rule
-            var shared = MailRulesAnalyzer.FindSharedText(new[] { rule });
-            Assert.Empty(shared);
+            var rule = Rule("A", "dup", "dup");
+            Assert.Empty(MailRulesAnalyzer.FindSharedText(new[] { rule }));
         }
 
         [Fact]
         public void FindSharedText_ConsidersExceptionsToo()
         {
             var a = new MailRuleData { Name = "A" };
-            a.Conditions.Add(new RuleClauseData { Texts = { "vip" } });
+            a.Conditions.Add(new RuleClauseData { Values = { "vip" } });
             var b = new MailRuleData { Name = "B" };
-            b.Exceptions.Add(new RuleClauseData { Texts = { "vip" } });
+            b.Exceptions.Add(new RuleClauseData { Values = { "vip" } });
 
             var shared = MailRulesAnalyzer.FindSharedText(new[] { a, b });
             Assert.Single(shared);

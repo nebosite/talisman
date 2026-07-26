@@ -318,28 +318,28 @@ namespace Talisman
                     switch (cond)
                     {
                         case TextRuleCondition t:
-                            AddMatchTexts(clause, ToStrings(t.Text));
+                            SetEditableValues(clause, RuleValueTarget.Text, ToStrings(t.Text));
                             break;
                         case AddressRuleCondition a:
-                            AddMatchTexts(clause, ToStrings(a.Address));
-                            break;
-                        case ToOrFromRuleCondition tf:
-                            AddMatchTexts(clause, RecipientNames(tf.Recipients));
+                            SetEditableValues(clause, RuleValueTarget.Address, ToStrings(a.Address));
                             break;
                         case CategoryRuleCondition c:
-                            AddMatchTexts(clause, ToStrings(c.Categories));
+                            SetEditableValues(clause, RuleValueTarget.Categories, ToStrings(c.Categories));
                             break;
                         case FormNameRuleCondition f:
-                            AddMatchTexts(clause, ToStrings(f.FormName));
+                            SetEditableValues(clause, RuleValueTarget.FormName, ToStrings(f.FormName));
+                            break;
+                        case ToOrFromRuleCondition tf:
+                            clause.Values.AddRange(RecipientNames(tf.Recipients)); // read-only
                             break;
                         case SenderInAddressListRuleCondition s:
-                            clause.Details.Add(SafeGet(() => s.AddressList?.Name, "(address list)"));
+                            clause.Detail = SafeGet(() => s.AddressList?.Name, "(address list)");
                             break;
                         case ImportanceRuleCondition i:
-                            clause.Details.Add(i.Importance.ToString());
+                            clause.Detail = i.Importance.ToString();
                             break;
                         case AccountRuleCondition ac:
-                            clause.Details.Add(SafeGet(() => ac.Account?.DisplayName, "(account)"));
+                            clause.Detail = SafeGet(() => ac.Account?.DisplayName, "(account)");
                             break;
                     }
 
@@ -370,22 +370,22 @@ namespace Talisman
                     switch (act)
                     {
                         case MoveOrCopyRuleAction m:
-                            clause.Details.Add(SafeGet(() => m.Folder?.FolderPath, "(no folder)"));
+                            clause.Detail = SafeGet(() => m.Folder?.FolderPath, "(no folder)");
                             break;
                         case SendRuleAction s:
-                            foreach (var n in RecipientNames(s.Recipients)) clause.Details.Add(n);
+                            clause.Values.AddRange(RecipientNames(s.Recipients));
                             break;
                         case AssignToCategoryRuleAction c:
-                            foreach (var cat in ToStrings(c.Categories)) clause.Details.Add(cat);
+                            clause.Values.AddRange(ToStrings(c.Categories));
                             break;
                         case NewItemAlertRuleAction n:
-                            clause.Details.Add(n.Text ?? "");
+                            clause.Detail = n.Text ?? "";
                             break;
                         case PlaySoundRuleAction p:
-                            clause.Details.Add(p.FilePath ?? "");
+                            clause.Detail = p.FilePath ?? "";
                             break;
                         case MarkAsTaskRuleAction mt:
-                            clause.Details.Add("mark " + mt.MarkInterval);
+                            clause.Detail = "mark " + mt.MarkInterval;
                             break;
                     }
 
@@ -398,15 +398,13 @@ namespace Talisman
             }
         }
 
-        // Add match text values both as display details and as searchable texts.
-        static void AddMatchTexts(RuleClauseData clause, IEnumerable<string> texts)
+        // Mark a clause as editable and populate its values from a string[] property.
+        static void SetEditableValues(RuleClauseData clause, RuleValueTarget target, IEnumerable<string> values)
         {
-            foreach (var t in texts)
-            {
-                if (string.IsNullOrWhiteSpace(t)) continue;
-                clause.Details.Add(t);
-                clause.Texts.Add(t);
-            }
+            clause.Editable = true;
+            clause.ValueTarget = target;
+            foreach (var v in values)
+                if (!string.IsNullOrWhiteSpace(v)) clause.Values.Add(v);
         }
 
         // Coerce a COM property (string, string[]/object[], or null) into strings.
@@ -433,6 +431,88 @@ namespace Talisman
         static string SafeGet(Func<string> get, string fallback)
         {
             try { return get() ?? fallback; } catch { return fallback; }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Apply a minimal set of condition-value edits and save. Only the named
+        /// conditions on the named rules are touched (matched by execution order and
+        /// condition type); everything else is left exactly as-is. A single Save()
+        /// commits the whole rules collection. Meant to run on an STA thread AFTER a
+        /// backup has been taken.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void ApplyMailRuleEdits(IEnumerable<MailRuleEdit> edits)
+        {
+            var editList = (edits ?? Enumerable.Empty<MailRuleEdit>()).ToList();
+            if (editList.Count == 0) return;
+
+            Rules rules = OutlookApp.Session.DefaultStore.GetRules();
+
+            var byOrder = new Dictionary<int, Rule>();
+            foreach (Rule r in rules)
+            {
+                try { byOrder[r.ExecutionOrder] = r; }
+                catch (System.Exception ex) { Log.Warn("Skipping an unreadable rule during save.", ex); }
+            }
+
+            var changed = false;
+            foreach (var edit in editList)
+            {
+                if (!byOrder.TryGetValue(edit.ExecutionOrder, out var rule))
+                {
+                    Log.Warn($"Rule '{edit.RuleName}' (order {edit.ExecutionOrder}) not found; skipping its edits.");
+                    continue;
+                }
+
+                foreach (var ce in edit.Conditions)
+                {
+                    var conditions = ce.IsException ? rule.Exceptions : rule.Conditions;
+                    var cond = FindCondition(conditions, ce.Kind);
+                    if (cond == null)
+                    {
+                        Log.Warn($"Condition '{ce.Kind}' not found on rule '{edit.RuleName}'; skipping.");
+                        continue;
+                    }
+                    ApplyConditionValues(cond, ce.Target, ce.Values);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+            {
+                rules.Save();
+                Log.Info($"Saved edits to {editList.Count} mail rule(s).");
+            }
+        }
+
+        static RuleCondition FindCondition(RuleConditions conditions, string kind)
+        {
+            if (conditions == null) return null;
+            foreach (RuleCondition c in conditions)
+            {
+                try { if (c != null && c.ConditionType.ToString() == kind) return c; }
+                catch { }
+            }
+            return null;
+        }
+
+        static void ApplyConditionValues(RuleCondition cond, RuleValueTarget target, List<string> values)
+        {
+            var arr = (values ?? new List<string>())
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .ToArray();
+
+            switch (target)
+            {
+                case RuleValueTarget.Text: ((TextRuleCondition)cond).Text = arr; break;
+                case RuleValueTarget.Address: ((AddressRuleCondition)cond).Address = arr; break;
+                case RuleValueTarget.Categories: ((CategoryRuleCondition)cond).Categories = arr; break;
+                case RuleValueTarget.FormName: ((FormNameRuleCondition)cond).FormName = arr; break;
+            }
+
+            // A condition with no values left is disabled rather than left empty.
+            cond.Enabled = arr.Length > 0;
         }
     }
 }

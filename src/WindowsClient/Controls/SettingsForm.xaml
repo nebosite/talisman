@@ -176,46 +176,94 @@
             </TabItem>
             <TabItem Header="Mail Rules">
                 <Grid Margin="6" DataContext="{Binding MailRules}">
+                    <Grid.Resources>
+                        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                        <Style x:Key="ValueBox" TargetType="TextBox">
+                            <Setter Property="Padding" Value="2,0" />
+                            <Setter Property="MinWidth" Value="180" />
+                            <Setter Property="Margin" Value="0,1" />
+                            <Style.Triggers>
+                                <Trigger Property="IsReadOnly" Value="True">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="#FF555555" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Resources>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <WrapPanel Grid.Row="0">
                         <Label Content="Filter:" VerticalAlignment="Center" />
-                        <TextBox Width="230" VerticalContentAlignment="Center"
+                        <TextBox Width="180" VerticalContentAlignment="Center" VerticalAlignment="Center"
                                  Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Content="Refresh" Click="RefreshMailRulesClick" Margin="10,0,0,0" Padding="8,1" />
-                        <Button Content="Find shared text" Click="FindSharedTextClick" Margin="6,0,0,0" Padding="8,1" />
-                    </StackPanel>
+                        <Button Content="Refresh" Click="RefreshMailRulesClick" Margin="8,2,0,2" Padding="8,1" />
+                        <Button Content="Find shared text" Click="FindSharedTextClick" Margin="6,2,0,2" Padding="8,1" />
+                        <Button Content="Save" Click="SaveMailRulesClick" IsEnabled="{Binding CanSave}"
+                                Margin="12,2,0,2" Padding="10,1" FontWeight="Bold" />
+                        <Button Content="Export…" Click="ExportMailRulesClick" Margin="6,2,0,2" Padding="8,1" />
+                        <Button Content="Import…" Click="ImportMailRulesClick" Margin="6,2,0,2" Padding="8,1" />
+                    </WrapPanel>
                     <StackPanel Grid.Row="1" Margin="2,5">
                         <TextBlock Text="{Binding SummaryText}" FontWeight="SemiBold" TextWrapping="Wrap" />
                         <ProgressBar Height="6" Margin="0,3,0,0" Minimum="0"
-                                     Maximum="{Binding LoadTotal}" Value="{Binding LoadValue}"
+                                     Maximum="{Binding LoadTotal, Mode=OneWay}" Value="{Binding LoadValue, Mode=OneWay}"
                                      IsIndeterminate="{Binding IsConnecting}"
                                      Visibility="{Binding ProgressVisibility}" />
                     </StackPanel>
-                    <TreeView Grid.Row="2" ItemsSource="{Binding Nodes}">
+                    <TreeView Grid.Row="2" ItemsSource="{Binding Nodes}"
+                              VirtualizingStackPanel.IsVirtualizing="True"
+                              VirtualizingStackPanel.VirtualizationMode="Recycling"
+                              ScrollViewer.CanContentScroll="True">
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="TreeViewItem">
                                 <Setter Property="Visibility" Value="{Binding Visibility}" />
                                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                             </Style>
                         </TreeView.ItemContainerStyle>
-                        <TreeView.ItemTemplate>
-                            <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                                <TextBlock Text="{Binding Text}" />
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type local:MailRuleNode}" ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding Text}" VerticalAlignment="Center" />
                             </HierarchicalDataTemplate>
-                        </TreeView.ItemTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type local:RuleConditionNode}" ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Text}" VerticalAlignment="Center" />
+                                    <Button Content="+" Click="AddConditionValueClick" Width="18" Height="16"
+                                            Padding="0" Margin="6,0,0,0" VerticalAlignment="Center" ToolTip="Add a value"
+                                            Visibility="{Binding Editable, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                            <DataTemplate DataType="{x:Type local:RuleValueNode}">
+                                <TextBox Style="{StaticResource ValueBox}"
+                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                         IsReadOnly="{Binding ReadOnly}" />
+                            </DataTemplate>
+                        </TreeView.Resources>
                     </TreeView>
-                    <ScrollViewer Grid.Row="3" MaxHeight="130" Margin="0,5,0,0"
-                                  Visibility="{Binding DuplicateReportVisibility}"
-                                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <TextBox Text="{Binding DuplicateReport, Mode=OneWay}" IsReadOnly="True"
-                                 FontFamily="Consolas" FontSize="11" Background="#FFF7F7F7"
-                                 TextWrapping="NoWrap" BorderThickness="0" />
-                    </ScrollViewer>
+                    <StackPanel Grid.Row="3" Margin="0,5,0,0" Visibility="{Binding DuplicateReportVisibility}">
+                        <TextBlock Text="{Binding DuplicateReport}" TextWrapping="Wrap" FontWeight="SemiBold" Margin="0,0,0,3" />
+                        <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding SharedResults}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type local:SharedText}">
+                                        <StackPanel Orientation="Horizontal" Margin="0,1">
+                                            <Button Content="⌕" Click="FilterBySharedTextClick" Width="20" Height="18"
+                                                    Padding="0" VerticalAlignment="Center" ToolTip="Filter the tree by this term" />
+                                            <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                                                <Run Text="{Binding Text, Mode=OneWay}" FontWeight="SemiBold" />
+                                                <Run Text="  →  " Foreground="#FF999999" />
+                                                <Run Text="{Binding RuleNamesText, Mode=OneWay}" Foreground="#FF555555" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </StackPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="About Talisman">
@@ -258,6 +306,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Button Content="Quit!" Click="ExitAppClicked" Margin="414,10,0,0" Height="20"   HorizontalAlignment="Left" Width="36" VerticalAlignment="Top" />
+        <Button Content="Quit!" Click="ExitAppClicked" Height="20" Width="42"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,1,6,0" />
     </Grid>
 </Window>

@@ -15,6 +15,9 @@ namespace Talisman
     {
         public string Text { get; set; }
         public List<string> RuleNames { get; set; } = new List<string>();
+
+        /// <summary>Comma-joined rule names, for display.</summary>
+        public string RuleNamesText => string.Join(", ", RuleNames);
     }
 
     // --------------------------------------------------------------------------
@@ -29,10 +32,10 @@ namespace Talisman
         /// <summary>The classic Exchange rules-blob size limit.</summary>
         public const int LimitBytes = 256 * 1024;
 
-        // Rough per-structure overheads. The real on-the-wire size isn't exposed by
-        // the object model, so this is only an estimate for comparison/inspection.
         const int RuleOverhead = 64;
         const int ClauseOverhead = 24;
+
+        static readonly StringComparer CI = StringComparer.OrdinalIgnoreCase;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -45,8 +48,8 @@ namespace Talisman
             var bytes = RuleOverhead + Bytes(rule.Name);
             foreach (var clause in AllClauses(rule))
             {
-                bytes += ClauseOverhead + Bytes(clause.Kind);
-                foreach (var d in clause.Details) bytes += Bytes(d);
+                bytes += ClauseOverhead + Bytes(clause.Kind) + Bytes(clause.Detail);
+                foreach (var v in clause.Values) bytes += Bytes(v);
             }
             return bytes;
         }
@@ -60,35 +63,68 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Text values that appear (in conditions or exceptions) across more than
-        /// one rule - i.e. rules that "match on the same text". Case-insensitive;
-        /// a value repeated within a single rule does not count.
+        /// Text values that overlap across more than one rule. Matching is
+        /// case-insensitive and by SUBSTRING: a value counts as shared if it appears
+        /// as a substring of some condition value in more than one distinct rule.
+        /// e.g. "foo" is reported as shared between a rule that matches "foo" and one
+        /// that matches "foobar", since anything matching "foobar" also matches "foo".
         /// </summary>
         // --------------------------------------------------------------------------
         public static List<SharedText> FindSharedText(IEnumerable<MailRuleData> rules)
         {
-            var byText = new Dictionary<string, List<MailRuleData>>(StringComparer.OrdinalIgnoreCase);
+            var ruleList = (rules ?? Enumerable.Empty<MailRuleData>()).ToList();
 
-            foreach (var rule in rules ?? Enumerable.Empty<MailRuleData>())
-            {
-                var texts = rule.Conditions.Concat(rule.Exceptions)
-                    .SelectMany(c => c.Texts)
-                    .Where(t => !string.IsNullOrWhiteSpace(t))
-                    .Select(t => t.Trim())
-                    .Distinct(StringComparer.OrdinalIgnoreCase);
-
-                foreach (var t in texts)
+            // Precompute each rule's values once, lowercased, so the inner loop is a
+            // plain ORDINAL substring test (no per-call case folding, no re-parsing).
+            var perRule = ruleList
+                .Select(r => new
                 {
-                    if (!byText.TryGetValue(t, out var list)) byText[t] = list = new List<MailRuleData>();
-                    list.Add(rule);
+                    Rule = r,
+                    Lowered = RuleValues(r).Select(v => v.ToLowerInvariant()).Distinct().ToArray(),
+                })
+                .ToList();
+
+            // Candidate needles: every distinct value (case-insensitive), keeping the
+            // first-seen original casing for display.
+            var candidates = new List<string>();
+            var seen = new HashSet<string>(CI);
+            foreach (var rule in ruleList)
+                foreach (var v in RuleValues(rule))
+                    if (seen.Add(v)) candidates.Add(v);
+
+            var result = new List<SharedText>();
+            foreach (var needle in candidates)
+            {
+                var lowerNeedle = needle.ToLowerInvariant();
+
+                var matching = new List<string>();
+                foreach (var pr in perRule)
+                {
+                    foreach (var v in pr.Lowered)
+                    {
+                        if (v.Contains(lowerNeedle, StringComparison.Ordinal))
+                        {
+                            matching.Add(pr.Rule.Name);
+                            break;
+                        }
+                    }
+                    if (matching.Count > 1 && matching.Count == perRule.Count) break;
                 }
+
+                if (matching.Count > 1)
+                    result.Add(new SharedText { Text = needle, RuleNames = matching });
             }
 
-            return byText
-                .Where(kv => kv.Value.Count > 1)
-                .Select(kv => new SharedText { Text = kv.Key, RuleNames = kv.Value.Select(r => r.Name).ToList() })
-                .OrderBy(s => s.Text, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            return result.OrderBy(s => s.Text, CI).ToList();
+        }
+
+        // All condition/exception match values of a rule (trimmed, non-empty).
+        static IEnumerable<string> RuleValues(MailRuleData rule)
+        {
+            return rule.Conditions.Concat(rule.Exceptions)
+                .SelectMany(c => c.Values)
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(v => v.Trim());
         }
 
         static IEnumerable<RuleClauseData> AllClauses(MailRuleData rule)

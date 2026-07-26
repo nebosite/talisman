@@ -104,7 +104,7 @@ namespace Talisman
                     outlook.ReadMailRulesIncremental(
                         total => _dispatch(() => MailRules.SetTotal(total)),
                         rule => _dispatch(() => MailRules.AddRule(rule)));
-                    _dispatch(() => MailRules.EndLoad());
+                    _dispatch(() => { MailRules.EndLoad(); MailRules.CaptureBaseline(); });
                     Log.Info("Mail rules loaded for inspection.");
                 }
                 catch (Exception ex)
@@ -117,6 +117,66 @@ namespace Talisman
             reader.IsBackground = true;
             reader.Name = "MailRulesReader";
             reader.Start();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Write the pending mail-rule edits back to Outlook. Backs up ALL current
+        /// rules to a timestamped JSON file first, then applies the minimal set of
+        /// edits and reloads. Runs on a dedicated STA thread.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void SaveMailRules()
+        {
+            var edits = MailRules.HarvestEdits();
+            if (edits.Count == 0)
+            {
+                Log.Info("Save requested but there were no rule edits to write.");
+                return;
+            }
+
+            var writer = new Thread(() =>
+            {
+                try
+                {
+                    var outlook = new OutlookHelper();
+                    var backupPath = BackupMailRules(outlook);
+                    Log.Info("Backed up mail rules to " + backupPath);
+
+                    outlook.ApplyMailRuleEdits(edits);
+                    Log.Info($"Applied {edits.Count} mail-rule edit(s).");
+
+                    // Reload from Outlook to reflect the saved state and clear dirty.
+                    _dispatch(() => LoadMailRules());
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("Failed to save mail-rule edits.", ex);
+                    _dispatch(() => MailRules.SetError("Failed to save rules: " + ex.Message));
+                }
+            });
+            writer.SetApartmentState(ApartmentState.STA);
+            writer.IsBackground = true;
+            writer.Name = "MailRulesWriter";
+            writer.Start();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Export all current Outlook rules to a timestamped JSON backup file and
+        /// return its path. Runs on the calling (STA) thread.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        string BackupMailRules(OutlookHelper outlook)
+        {
+            var dir = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Talisman", "rule-backups");
+            System.IO.Directory.CreateDirectory(dir);
+            var path = System.IO.Path.Combine(dir, $"rules-{DateTime.Now:yyyyMMdd-HHmmss}.json");
+            var current = outlook.ReadMailRules();
+            System.IO.File.WriteAllText(path, JsonConvert.SerializeObject(current, Formatting.Indented));
+            return path;
         }
 
         HotKeyOption _selectedHotKeyOption;

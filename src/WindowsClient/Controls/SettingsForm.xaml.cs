@@ -28,7 +28,6 @@ namespace Talisman
     {
         AppModel _appModel;
         bool _hardClose = false;
-        bool _exiting = false;
 
         // --------------------------------------------------------------------------
         /// <summary>
@@ -42,17 +41,6 @@ namespace Talisman
             this.DataContext = appModel;
             this.IsVisibleChanged += SettingsForm_IsVisibleChanged;
             this.Loaded += SettingsForm_Loaded;
-            this.Deactivated += SettingsForm_Deactivated;
-        }
-
-        // --------------------------------------------------------------------------
-        /// <summary>
-        /// Deactivated
-        /// </summary>
-        // --------------------------------------------------------------------------
-        private void SettingsForm_Deactivated(object sender, EventArgs e)
-        {
-            if(!_exiting) this.Close();
         }
 
         // --------------------------------------------------------------------------
@@ -280,7 +268,6 @@ namespace Talisman
         // --------------------------------------------------------------------------
         private void ExitAppClicked(object sender, RoutedEventArgs e)
         {
-            _exiting = true;
             Application.Current.Shutdown();
         }
 
@@ -332,6 +319,89 @@ namespace Talisman
         private void FindSharedTextClick(object sender, RoutedEventArgs e)
         {
             _appModel.MailRules.RunSharedTextCheck();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Filter button next to a shared-text result - filter the tree by that term.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void FilterBySharedTextClick(object sender, RoutedEventArgs e)
+        {
+            if (((FrameworkElement)sender).DataContext is SharedText shared)
+                _appModel.MailRules.FilterText = shared.Text;
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// [+] on a condition node - add a new blank editable value.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void AddConditionValueClick(object sender, RoutedEventArgs e)
+        {
+            (((FrameworkElement)sender).DataContext as RuleConditionNode)?.AddBlankValue();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Save edits back to Outlook after confirmation (a backup is taken first).
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void SaveMailRulesClick(object sender, RoutedEventArgs e)
+        {
+            var edits = _appModel.MailRules.HarvestEdits();
+            if (edits.Count == 0) { MessageBox.Show("No changes to save.", "Talisman"); return; }
+
+            var result = MessageBox.Show(
+                $"This will modify {edits.Count} Outlook rule(s).\r\n\r\n" +
+                "A JSON backup of all your current rules is saved first (to " +
+                @"%LOCALAPPDATA%\Talisman\rule-backups).\r\n\r\nContinue?",
+                "Save mail-rule edits", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.OK) _appModel.SaveMailRules();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Export the current (edited) rule set to a JSON file.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ExportMailRulesClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                    FileName = "mail-rules.json",
+                };
+                if (dlg.ShowDialog() == true)
+                {
+                    File.WriteAllText(dlg.FileName, _appModel.MailRules.ToJson());
+                    MessageBox.Show("Exported rules to:\r\n" + dlg.FileName, "Talisman");
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Export failed: " + ex.Message, "Talisman"); }
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Import a rule set from a JSON file into the editor (marked unsaved).
+        /// </summary>
+        // --------------------------------------------------------------------------
+        private void ImportMailRulesClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                };
+                if (dlg.ShowDialog() == true)
+                {
+                    _appModel.MailRules.LoadJson(File.ReadAllText(dlg.FileName));
+                }
+            }
+            catch (Exception ex) { MessageBox.Show("Import failed: " + ex.Message, "Talisman"); }
         }
 
         // --------------------------------------------------------------------------

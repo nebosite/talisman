@@ -48,6 +48,20 @@ namespace Talisman
             _onTaskTimedOut = onTaskTimedOut;
             _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
             _timer.Tick += (s, e) => OnTick();
+
+            // Keep the pomodoro windows glued under the talisman as it is dragged.
+            if (_owner != null) _owner.LocationChanged += (s, e) => RepositionActiveWindows();
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
+        /// Re-place whichever pomodoro windows are showing under the talisman.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        void RepositionActiveWindows()
+        {
+            if (_taskWindow != null && _taskWindow.IsVisible) PositionTaskWindow();
+            if (_promptWindow != null && _promptWindow.IsVisible) PositionWindowUnderOwner(_promptWindow);
         }
 
         public bool IsRunning =>
