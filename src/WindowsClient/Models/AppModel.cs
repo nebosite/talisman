@@ -163,6 +163,39 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
+        /// Send a text message through Microsoft Phone Link (relayed via the
+        /// connected phone) - see <see cref="PhoneLinkSmsSender"/>. Backs the
+        /// "sendsms" MCP tool. Runs the GUI automation on a dedicated background
+        /// thread and blocks the caller (an MCP background thread, never the UI)
+        /// until it finishes, so the tool can report the real success/failure;
+        /// throws on error or timeout.
+        /// </summary>
+        // --------------------------------------------------------------------------
+        public void SendSms(string number, string message)
+        {
+            System.Exception failure = null;
+
+            // The Phone Link automation must own the foreground to land the recipient
+            // keystrokes, which only works reliably from a thread with a message pump.
+            // Run it on the UI (Dispatcher) thread - it blocks the UI for a few
+            // seconds, which is acceptable for an occasional, tool-invoked send.
+            _dispatch(() =>
+            {
+                try { PhoneLinkSmsSender.Send(number, message); }
+                catch (System.Exception ex) { failure = ex; }
+            });
+
+            if (failure != null)
+            {
+                Log.Warn($"Failed to send SMS to {number} via Phone Link.", failure);
+                throw new ApplicationException(failure.Message, failure);
+            }
+
+            Log.Info($"Sent SMS to {number} via Phone Link.");
+        }
+
+        // --------------------------------------------------------------------------
+        /// <summary>
         /// Export all current Outlook rules to a timestamped JSON backup file and
         /// return its path. Runs on the calling (STA) thread.
         /// </summary>
@@ -272,6 +305,18 @@ namespace Talisman
                 Settings.Default.CrashReportEmail = value;
                 Settings.Default.Save();
                 NotifyPropertyChanged(nameof(CrashReportEmail));
+            }
+        }
+
+        /// <summary>Default recipient number for the "sendsms" MCP tool (used when 'to' is omitted).</summary>
+        public string SmsDefaultNumber
+        {
+            get => Settings.Default.SmsDefaultNumber;
+            set
+            {
+                Settings.Default.SmsDefaultNumber = value;
+                Settings.Default.Save();
+                NotifyPropertyChanged(nameof(SmsDefaultNumber));
             }
         }
 

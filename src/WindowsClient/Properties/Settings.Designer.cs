@@ -204,5 +204,17 @@ namespace Talisman.Properties {
                 this["LastSessionFatalCrash"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SmsDefaultNumber {
+            get {
+                return ((string)(this["SmsDefaultNumber"]));
+            }
+            set {
+                this["SmsDefaultNumber"] = value;
+            }
+        }
     }
 }

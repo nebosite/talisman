@@ -115,6 +115,9 @@ namespace Talisman
             var tools = new List<McpToolDefinition>
             {
                 QuickTimerTool.Create((endTime, title, body) => _theModel.StartTitledTimer(endTime, title, body)),
+                SendSmsTool.Create(
+                    () => _theModel.SmsDefaultNumber,
+                    (number, message) => _theModel.SendSms(number, message)),
             };
             var dispatcher = new McpDispatcher(tools, "talisman", _theModel.VersionText);
             var server = new McpServer(dispatcher);

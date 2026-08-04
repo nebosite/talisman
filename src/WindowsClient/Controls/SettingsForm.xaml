@@ -276,6 +276,7 @@
                         <RowDefinition Height="25"/>
                         <RowDefinition Height="25"/>
                         <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <StackPanel Orientation="Horizontal" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0" Width="206">
@@ -302,7 +303,14 @@
                                  ToolTip="Leave blank to disable. After a crash, Talisman offers to email this address a copy of the diagnostic log." />
                     </StackPanel>
 
-                    <WebBrowser x:Name="HelpText" Margin="0,0,0,1" Grid.ColumnSpan="2"  Grid.Row="3"  />
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Margin="0,3,0,0">
+                        <Label Content="Default text (SMS) to:" VerticalAlignment="Center" />
+                        <TextBox Text="{Binding SmsDefaultNumber, UpdateSourceTrigger=PropertyChanged}" Width="160"
+                                 VerticalContentAlignment="Center"
+                                 ToolTip="Default US mobile number used by the sendsms MCP tool (via Phone Link) when 'to' is omitted." />
+                    </StackPanel>
+
+                    <WebBrowser x:Name="HelpText" Margin="0,0,0,1" Grid.ColumnSpan="2"  Grid.Row="4"  />
                 </Grid>
             </TabItem>
         </TabControl>
