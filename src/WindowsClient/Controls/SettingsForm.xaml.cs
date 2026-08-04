@@ -57,7 +57,7 @@ namespace Talisman
         private void HelpText_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
         {
             e.Cancel = true;
-            System.Diagnostics.Process.Start(e.Uri.ToString());
+            ShellLauncher.Open(e.Uri.ToString());
         }
 
         bool _justActivated = false;

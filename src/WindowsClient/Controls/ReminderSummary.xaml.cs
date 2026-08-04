@@ -28,7 +28,7 @@ namespace Talisman
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(e.Uri.ToString());
+            ShellLauncher.Open(e.Uri.ToString());
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

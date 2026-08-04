@@ -463,7 +463,7 @@ namespace Talisman
                                 "Talisman Version Check", MessageBoxButton.YesNo);
                             if (result == MessageBoxResult.Yes)
                             {
-                                Process.Start("https://github.com/nebosite/talisman/tree/master/installs");
+                                ShellLauncher.Open("https://github.com/nebosite/talisman/tree/master/installs");
                             }
                             break;
                         }

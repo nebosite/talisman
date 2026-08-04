@@ -112,7 +112,7 @@ namespace Talisman
             var processes = Process.GetProcessesByName(searchName);
             if (!processes.Any())
             {
-                Process.Start(processStartCommand);
+                ShellLauncher.Open(processStartCommand);
                 Thread.Sleep(1000);
             }
 
