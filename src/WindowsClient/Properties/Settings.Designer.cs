@@ -208,12 +208,12 @@ namespace Talisman.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SmsDefaultNumber {
+        public string PushoverEmail {
             get {
-                return ((string)(this["SmsDefaultNumber"]));
+                return ((string)(this["PushoverEmail"]));
             }
             set {
-                this["SmsDefaultNumber"] = value;
+                this["PushoverEmail"] = value;
             }
         }
     }

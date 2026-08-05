@@ -163,35 +163,37 @@ namespace Talisman
 
         // --------------------------------------------------------------------------
         /// <summary>
-        /// Send a text message through Microsoft Phone Link (relayed via the
-        /// connected phone) - see <see cref="PhoneLinkSmsSender"/>. Backs the
-        /// "sendsms" MCP tool. Runs the GUI automation on a dedicated background
-        /// thread and blocks the caller (an MCP background thread, never the UI)
-        /// until it finishes, so the tool can report the real success/failure;
-        /// throws on error or timeout.
+        /// Send a push notification to the phone via Pushover's email gateway: emails
+        /// <paramref name="to"/> (a Pushover address) through Outlook with the title
+        /// as the subject and the message as the body. Backs the "notify" MCP tool.
+        /// Silent - no UI, no focus stealing. Runs the COM send on a dedicated STA
+        /// thread and blocks the caller (an MCP background thread, never the UI) so
+        /// the tool can report the real success/failure; throws on error or timeout.
         /// </summary>
         // --------------------------------------------------------------------------
-        public void SendSms(string number, string message)
+        public void SendNotification(string to, string title, string message)
         {
             System.Exception failure = null;
-
-            // The Phone Link automation must own the foreground to land the recipient
-            // keystrokes, which only works reliably from a thread with a message pump.
-            // Run it on the UI (Dispatcher) thread - it blocks the UI for a few
-            // seconds, which is acceptable for an occasional, tool-invoked send.
-            _dispatch(() =>
+            var sender = new Thread(() =>
             {
-                try { PhoneLinkSmsSender.Send(number, message); }
+                try { new OutlookHelper().SendMail(to, title, message); }
                 catch (System.Exception ex) { failure = ex; }
             });
+            sender.SetApartmentState(ApartmentState.STA);
+            sender.IsBackground = true;
+            sender.Name = "Notifier";
+            sender.Start();
+
+            if (!sender.Join(TimeSpan.FromSeconds(30)))
+                throw new TimeoutException("Sending the notification through Outlook timed out.");
 
             if (failure != null)
             {
-                Log.Warn($"Failed to send SMS to {number} via Phone Link.", failure);
+                Log.Warn($"Failed to send notification '{title}' to {to}.", failure);
                 throw new ApplicationException(failure.Message, failure);
             }
 
-            Log.Info($"Sent SMS to {number} via Phone Link.");
+            Log.Info($"Sent notification '{title}' to {to}.");
         }
 
         // --------------------------------------------------------------------------
@@ -308,15 +310,15 @@ namespace Talisman
             }
         }
 
-        /// <summary>Default recipient number for the "sendsms" MCP tool (used when 'to' is omitted).</summary>
-        public string SmsDefaultNumber
+        /// <summary>Default recipient (Pushover email) for the "notify" MCP tool when 'to' is omitted.</summary>
+        public string PushoverEmail
         {
-            get => Settings.Default.SmsDefaultNumber;
+            get => Settings.Default.PushoverEmail;
             set
             {
-                Settings.Default.SmsDefaultNumber = value;
+                Settings.Default.PushoverEmail = value;
                 Settings.Default.Save();
-                NotifyPropertyChanged(nameof(SmsDefaultNumber));
+                NotifyPropertyChanged(nameof(PushoverEmail));
             }
         }
 

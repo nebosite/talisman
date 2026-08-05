@@ -47,7 +47,7 @@
     <Setting Name="LastSessionFatalCrash" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="SmsDefaultNumber" Type="System.String" Scope="User">
+    <Setting Name="PushoverEmail" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>
