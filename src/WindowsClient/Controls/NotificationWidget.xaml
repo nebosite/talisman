@@ -7,19 +7,25 @@
         BorderBrush="Transparent"
         ResizeMode="NoResize"
         AllowsTransparency="True"
-        Title="Talisman" 
-        Height="165" Width="300" 
-        WindowStyle="None" ShowInTaskbar="False" 
+        Title="Talisman"
+        SizeToContent="Height"
+        MinHeight="165" MaxHeight="1200" Width="300"
+        WindowStyle="None" ShowInTaskbar="False"
         Topmost="True"
         Background="Transparent">
     <Grid  Background="Transparent">
         <Border x:Name="MyBorder" BorderThickness="5" BorderBrush="Red" CornerRadius="20"  Background="#a0FFFFFF">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <local:ReminderSummary Grid.Row="0"   />
+                <!-- Summary grows with its (wrapped) text; if it would exceed the
+                     window's 1200px cap, it scrolls instead of clipping. -->
+                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled" Margin="5,5,5,0">
+                    <local:ReminderSummary />
+                </ScrollViewer>
 
                 <StackPanel Grid.Row="1">
                     <StackPanel Orientation="Horizontal" Margin="5">

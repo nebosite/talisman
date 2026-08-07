@@ -9,23 +9,23 @@
     <Grid>
         <StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label Content="{Binding TimeText}" />
-                <Label Content="{Binding Location}" />
+                <TextBlock Text="{Binding TimeText}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Location}" TextWrapping="Wrap" Margin="6,0,0,0" />
             </StackPanel>
-            <Label Content="{Binding DecoratedDescription}" FontWeight="Bold" Padding="0" Margin="5,0,0,0" />
-            <ListView Visibility="{Binding LinkVisibility}"
-                      ItemsSource="{Binding Links}" 
-                      Background="Transparent">
-                <ListView.ItemTemplate>
+            <TextBlock Text="{Binding DecoratedDescription}" TextWrapping="Wrap" FontWeight="Bold" Padding="0" Margin="5,0,0,0" />
+            <ItemsControl Visibility="{Binding LinkVisibility}"
+                          ItemsSource="{Binding Links}"
+                          Background="Transparent">
+                <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Padding="0" Margin="0,-5,0,0" >           
+                        <TextBlock Padding="0" Margin="5,0,0,0" TextWrapping="Wrap">
                             <Hyperlink NavigateUri="{Binding Uri}"  RequestNavigate="Hyperlink_RequestNavigate" Click="Hyperlink_Click" >
-                                <TextBlock Text="{Binding Text}" />
+                                <Run Text="{Binding Text, Mode=OneWay}" />
                             </Hyperlink>
                         </TextBlock>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </StackPanel>
 
     </Grid>
